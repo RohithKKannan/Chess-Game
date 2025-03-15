@@ -16,7 +16,7 @@ void Rook::GetLegalPositions(int row, int col, Board* board, LegalPositionData* 
 
     // Change iteraction origin from row, col
 
-    for(int i = row + 1; i < 8; i++)
+    for(int i = row + 1; i < BOARD_SIZE; i++)
     {
         if(board->board[i][col].piece != NULL)
         {
@@ -52,7 +52,7 @@ void Rook::GetLegalPositions(int row, int col, Board* board, LegalPositionData* 
         count++;
     }
 
-    for(int j = col + 1; j < 8; j++)
+    for(int j = col + 1; j < BOARD_SIZE; j++)
     {
         if(board->board[row][j].piece != NULL)
         {

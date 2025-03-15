@@ -2,13 +2,13 @@
 
 Board::Board()
 {
-    board = new Square*[8];
+    board = new Square*[BOARD_SIZE];
 
-    for(int i = 0; i < 8; i++)
+    for(int i = 0; i < BOARD_SIZE; i++)
     {
-        board[i] = new Square[8];
+        board[i] = new Square[BOARD_SIZE];
 
-        for (int j = 0; j < 8; j++)
+        for (int j = 0; j < BOARD_SIZE; j++)
         {
             board[i][j].SetPosition(i, j);
         }
@@ -17,7 +17,7 @@ Board::Board()
 
 Board::~Board()
 {
-    for(int i = 0; i < 8; i++)
+    for(int i = 0; i < BOARD_SIZE; i++)
     {
         delete[] board[i];
     }
@@ -42,9 +42,9 @@ void Board::SetupBoard()
 
 void Board::ClearBoard()
 {
-    for(int i = 0; i < 8; i++)
+    for(int i = 0; i < BOARD_SIZE; i++)
     {
-        for(int j = 0; j < 8; j++)
+        for(int j = 0; j < BOARD_SIZE; j++)
         {
             board[i][j].ClearPiece();
         }
@@ -54,10 +54,10 @@ void Board::ClearBoard()
 void Board::DisplayBoard()
 {
     cout << endl;
-    for(int i = 7; i >= 0; i--)
+    for(int i = BOARD_SIZE - 1; i >= 0; i--)
     {
         cout << i+1 << " |";
-        for(int j = 0; j < 8; j++)
+        for(int j = 0; j < BOARD_SIZE; j++)
         {
             board[i][j].PrintSquare();
             cout << "|";
@@ -79,9 +79,9 @@ void Board::MarkPositions(LegalPositionData *legalPositionData)
 
 void Board::UnMarkPositions()
 {
-    for(int i = 7; i >= 0; i--)
+    for(int i = BOARD_SIZE - 1; i >= 0; i--)
     {
-        for(int j = 0; j < 8; j++)
+        for(int j = 0; j < BOARD_SIZE; j++)
         {
             board[i][j].UnMarkSquare();
         }

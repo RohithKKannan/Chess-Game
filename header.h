@@ -1,6 +1,10 @@
 #include <iostream>
 using namespace std;
 
+#define BOARD_SIZE 8
+
+#pragma region Data Classes
+
 struct Position
 {
     int row;
@@ -16,23 +20,11 @@ class LegalPositionData
         ~LegalPositionData();
 };
 
-class Board;
+#pragma endregion
 
-class Piece
-{
-    private:
-        char piece;
-        bool isWhite;
-        Position position;
+class Piece;
 
-    public:
-        Piece(char, bool);
-        void SetPosition(int, int);
-        virtual ~Piece();
-        void PrintPiece();
-        Position GetPosition();
-        virtual void GetLegalPositions(int, int, Board*, LegalPositionData*)= 0;
-};
+#pragma region Board Elements
 
 class Square
 {
@@ -67,6 +59,39 @@ class Board
         Piece* SelectSquare(int,int);
 };
 
+#pragma endregion
+
+#pragma region Pieces
+
+class Piece
+{
+    private:
+        char piece;
+        bool isWhite;
+        Position position;
+
+    public:
+        Piece(char, bool);
+        virtual ~Piece();
+        void SetPosition(int, int);
+        void PrintPiece();
+        bool GetIsWhite() { return isWhite; };
+        Position GetPosition();
+        virtual void GetLegalPositions(int, int, Board*, LegalPositionData*)= 0;
+};
+
+class Rook: public Piece
+{
+    public:
+        Rook(char piece, bool isWhite);
+        ~Rook();
+        void GetLegalPositions(int, int, Board*, LegalPositionData*);
+};
+
+#pragma endregion
+
+#pragma region Gameplay
+
 class GameManager
 {
     private:
@@ -79,16 +104,6 @@ class GameManager
         ~GameManager();
         void StartGame();
         void InitiateTurn();
-};
-
-#pragma region Pieces
-
-class Rook: public Piece
-{
-    public:
-        Rook(char piece, bool isWhite);
-        ~Rook();
-        void GetLegalPositions(int, int, Board*, LegalPositionData*);
 };
 
 #pragma endregion

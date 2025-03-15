@@ -22,6 +22,7 @@ void GameManager::StartGame()
     isWhitesTurn = true;
 
     string input;
+    int row, col;
 
     // Select Square
     
@@ -34,8 +35,8 @@ void GameManager::StartGame()
         cin >> input;
     }
     
-    int col = input[0] - 'A';
-    int row = (input[1] - '0') - 1;
+    col = input[0] - 'A';
+    row = (input[1] - '0') - 1;
 
     selectedPiece = board->SelectSquare(row, col);
 
@@ -70,6 +71,12 @@ void GameManager::StartGame()
     row = (input[1] - '0') - 1;
 
     Position* positions = legalPositionData->legalPositions;
+
+    if(legalPositionData->numberOfPositions == 0)
+    {
+        cout << "No more moves!" << endl;
+        return;
+    }
 
     bool isLegal = false;
 
