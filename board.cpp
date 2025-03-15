@@ -88,6 +88,26 @@ void Board::UnMarkPositions()
     }
 }
 
+void Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
+{
+    // Check if destination square is occupied
+
+    Square *destination = &board[row][col];
+
+    if(destination->piece != NULL)
+    {
+        // Take over -> Black takes white and vice versa
+        return;
+    }
+
+    Position oldPosition = selectedPiece->GetPosition();
+
+    Square *source = &board[oldPosition.row][oldPosition.col];
+    source->ClearPiece();
+
+    destination->SetPiece(selectedPiece);
+}
+
 Piece* Board::SelectSquare(int row, int col)
 {
     if(board[row][col].piece == NULL)

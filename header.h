@@ -12,6 +12,8 @@ class LegalPositions
     public:
         Position* positions;
         int numberOfPositions;
+        LegalPositions();
+        ~LegalPositions();
 };
 
 class Piece
@@ -19,11 +21,14 @@ class Piece
     private:
         char piece;
         bool isWhite;
+        Position position;
 
     public:
         Piece(char, bool);
+        void SetPosition(int, int);
         virtual ~Piece();
         void PrintPiece();
+        Position GetPosition();
         virtual LegalPositions* GetLegalPositions(int, int) = 0;
 };
 
@@ -56,6 +61,7 @@ class Board
         void DisplayBoard();
         void MarkPositions(LegalPositions*);
         void UnMarkPositions();
+        void MovePieceToSquare(Piece*, int, int);
         Piece* SelectSquare(int,int);
 };
 

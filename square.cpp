@@ -29,13 +29,14 @@ void Square::UnMarkSquare()
 
 void Square::ClearPiece()
 {
-    delete this->piece;
     this->piece = NULL;
 }
 
 void Square::SetPiece(Piece *piece)
 {
     this->piece = piece;
+
+    piece->SetPosition(this->position.row, this->position.col);
 }
 
 void Square::PrintSquare()
