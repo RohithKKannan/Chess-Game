@@ -3,13 +3,11 @@
 GameManager::GameManager()
 {
     board = new Board();
-    legalPositionData = new LegalPositionData();
 }
 
 GameManager::~GameManager()
 {
     delete board;
-    delete legalPositionData;
 }
 
 void GameManager::StartGame()
@@ -48,7 +46,9 @@ void GameManager::StartGame()
 
     // Print Legal Moves
     
-    selectedPiece->GetLegalPositions(row, col, board, legalPositionData);
+    selectedPiece->RefreshLegalPositions(board);
+
+    LegalPositionData* legalPositionData = selectedPiece->GetLegalPositionData();
 
     board->MarkPositions(legalPositionData);
 

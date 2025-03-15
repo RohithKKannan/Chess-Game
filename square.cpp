@@ -27,9 +27,12 @@ void Square::UnMarkSquare()
     this->isMarked = false;
 }
 
-void Square::ClearPiece()
+Piece* Square::ClearPiece()
 {
+    Piece* pieceToRemove = this->piece;
     this->piece = NULL;
+
+    return pieceToRemove;
 }
 
 void Square::SetPiece(Piece *piece)
@@ -41,17 +44,17 @@ void Square::SetPiece(Piece *piece)
 
 void Square::PrintSquare()
 {
+    if(piece != NULL)
+    {
+        piece->PrintPiece();
+        return;
+    }
+    
     if(isMarked)
     {
         cout << "x";
         return;
     }
 
-    if(piece == NULL)
-    {
-        cout << " ";
-        return;
-    }
-
-    piece->PrintPiece();
+    cout << " ";
 }

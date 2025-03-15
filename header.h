@@ -40,12 +40,20 @@ class Square
         void MarkSquare();
         void UnMarkSquare();
         void SetPiece(Piece *);
-        void ClearPiece();
+        Piece* ClearPiece();
         void PrintSquare();
 };
 
 class Board
 {
+    private:
+        Piece** pieces;
+        Piece** whitePieces;
+        Piece** blackPieces;
+        int whitePieceCount;
+        int blackPieceCount;
+        int pieceCount;
+
     public:
         Square **board;
         Board();
@@ -55,7 +63,10 @@ class Board
         void DisplayBoard();
         void MarkPositions(LegalPositionData*);
         void UnMarkPositions();
-        void MovePieceToSquare(Piece*, int, int);
+        void AddPiece(Piece*, int, int, bool);
+        void RemovePiece(Piece*);
+        bool MovePieceToSquare(Piece*, int, int);
+        bool CheckIfPositionProtected(int, int, bool);
         Piece* SelectSquare(int,int);
 };
 
@@ -65,19 +76,24 @@ class Board
 
 class Piece
 {
-    private:
+    protected:
         char piece;
         bool isWhite;
+        bool isKing;
         Position position;
+        LegalPositionData *legalPositionData;
 
     public:
         Piece(char, bool);
         virtual ~Piece();
         void SetPosition(int, int);
         void PrintPiece();
+        bool GetIsKing() { return isKing; };
         bool GetIsWhite() { return isWhite; };
         Position GetPosition();
-        virtual void GetLegalPositions(int, int, Board*, LegalPositionData*)= 0;
+        LegalPositionData* GetLegalPositionData() { return legalPositionData; };
+        bool CheckIfPositionInLegalPositions(int, int);
+        virtual void RefreshLegalPositions(Board*)= 0;
 };
 
 class Rook: public Piece
@@ -85,7 +101,15 @@ class Rook: public Piece
     public:
         Rook(char piece, bool isWhite);
         ~Rook();
-        void GetLegalPositions(int, int, Board*, LegalPositionData*);
+        void RefreshLegalPositions(Board*);
+};
+
+class King: public Piece
+{
+    public:
+        King(char piece, bool isWhite);
+        ~King();
+        void RefreshLegalPositions(Board*);
 };
 
 #pragma endregion
@@ -96,7 +120,6 @@ class GameManager
 {
     private:
         Board *board;
-        LegalPositionData *legalPositionData;
         Piece *selectedPiece;
         bool isWhitesTurn;
     public:

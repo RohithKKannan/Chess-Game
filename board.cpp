@@ -2,6 +2,10 @@
 
 Board::Board()
 {
+    pieces = new Piece*[32];
+    whitePieces = new Piece*[16];
+    blackPieces = new Piece*[16];
+
     board = new Square*[BOARD_SIZE];
 
     for(int i = 0; i < BOARD_SIZE; i++)
@@ -22,22 +26,27 @@ Board::~Board()
         delete[] board[i];
     }
 
+    for(int i = 0; i < 16; i++)
+    {
+        delete whitePieces[i];
+        delete blackPieces[i];
+    }
+
+    delete[] whitePieces;
+    delete[] blackPieces;
     delete[] board;
 }
 
 void Board::SetupBoard()
 {
-    Rook *whiteRook1 = new Rook('R', true);
-    board[0][0].SetPiece(whiteRook1);
+    AddPiece(new Rook('R', true), 0, 0, true);
+    AddPiece(new Rook('R', true), 0, 7, true);
 
-    Rook *whiteRook2 = new Rook('R', true);
-    board[0][7].SetPiece(whiteRook2);
+    AddPiece(new Rook('r', false), 7, 0, false);
+    AddPiece(new Rook('r', false), 7, 7, false);
 
-    Rook *blackRook1 = new Rook('r', false);
-    board[7][0].SetPiece(blackRook1);
-
-    Rook *blackRook2 = new Rook('r', false);
-    board[7][7].SetPiece(blackRook2);
+    AddPiece(new King('K', true), 0, 4, true);
+    AddPiece(new King('k', false), 7, 4, false);
 }
 
 void Board::ClearBoard()
@@ -88,24 +97,123 @@ void Board::UnMarkPositions()
     }
 }
 
-void Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
+void Board::AddPiece(Piece *piece, int row, int col, bool isWhite)
+{
+    board[row][col].SetPiece(piece);
+
+    if(isWhite)
+        whitePieces[whitePieceCount++] = piece;
+    else
+        blackPieces[blackPieceCount++] = piece;
+
+    pieces[pieceCount++] = piece;
+}
+
+void Board::RemovePiece(Piece *pieceToRemove)
+{
+    bool swap = false;
+    for(int i = 0; i < pieceCount; i++)
+    {
+        if(pieces[i] == pieceToRemove)
+        {
+            swap = true;
+        }
+
+        if(swap)
+        {
+            if(i + 1 < pieceCount)
+            {
+                pieces[i] = pieces[i + 1];
+            }
+        }
+    }
+
+    if(swap) pieceCount--;
+
+    if(pieceToRemove->GetIsWhite())
+    {
+        swap = false;
+
+        for(int i = 0; i < whitePieceCount; i++)
+        {
+            if(whitePieces[i] == pieceToRemove)
+            {
+                swap = true;
+            }
+
+            if(swap)
+            {
+                if(i + 1 < whitePieceCount)
+                {
+                    whitePieces[i] = whitePieces[i + 1];
+                }
+            }
+        }
+    }
+    else
+    {
+        swap = false;
+
+        for(int i = 0; i < blackPieceCount; i++)
+        {
+            if(blackPieces[i] == pieceToRemove)
+            {
+                swap = true;
+            }
+
+            if(swap)
+            {
+                if(i + 1 < blackPieceCount)
+                {
+                    blackPieces[i] = blackPieces[i + 1];
+                }
+            }
+        }
+    }
+
+    delete pieceToRemove;
+}
+
+bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
 {
     // Check if destination square is occupied
 
     Square *destination = &board[row][col];
 
-    if(destination->piece != NULL)
-    {
-        // Take over -> Black takes white and vice versa
-        return;
-    }
-
     Position oldPosition = selectedPiece->GetPosition();
-
+    
     Square *source = &board[oldPosition.row][oldPosition.col];
     source->ClearPiece();
 
-    destination->SetPiece(selectedPiece);
+    if(destination->piece == NULL)
+    {
+        destination->SetPiece(selectedPiece);
+    }
+    else
+    {
+        // Take over -> Black takes white and vice versa
+        Piece* removedPiece = destination->ClearPiece();
+
+        destination->SetPiece(selectedPiece);
+    
+        RemovePiece(removedPiece);
+    }
+
+    return true;
+}
+
+bool Board::CheckIfPositionProtected(int row, int col, bool protectedByWhite)
+{
+    Piece** currentPieces = protectedByWhite ? whitePieces : blackPieces;
+    int pieceCount = protectedByWhite ? whitePieceCount : blackPieceCount;
+
+    for(int i = 0; i < pieceCount; i++)
+    {
+        if(currentPieces[i]->CheckIfPositionInLegalPositions(row, col))
+            return true;
+    }
+
+    return false;
 }
 
 Piece* Board::SelectSquare(int row, int col)

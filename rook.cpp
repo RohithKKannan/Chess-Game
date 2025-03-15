@@ -10,79 +10,96 @@ Rook::~Rook()
 
 }
 
-void Rook::GetLegalPositions(int row, int col, Board* board, LegalPositionData* legalPositions)
+void Rook::RefreshLegalPositions(Board* board)
 {
     int count = 0;
 
-    // Change iteraction origin from row, col
+    int row = position.row;
+    int col = position.col;
 
+    // Up
     for(int i = row + 1; i < BOARD_SIZE; i++)
     {
         if(board->board[i][col].piece != NULL)
         {
-            legalPositions->legalPositions[count].row = i;
-            legalPositions->legalPositions[count].col = col;
+            cout << "Piece found in the way! " << i << " " << col << endl;
+
+            legalPositionData->legalPositions[count].row = i;
+            legalPositionData->legalPositions[count].col = col;
             
             count++;
 
             break;
         }
     
-        legalPositions->legalPositions[count].row = i;
-        legalPositions->legalPositions[count].col = col;
+        legalPositionData->legalPositions[count].row = i;
+        legalPositionData->legalPositions[count].col = col;
         
         count++;
     }
 
+    // Down
     for(int i = row - 1; i >= 0; i --)
     {
         if(board->board[i][col].piece != NULL)
         {
-            legalPositions->legalPositions[count].row = i;
-            legalPositions->legalPositions[count].col = col;
+            cout << "Piece found in the way! " << i << " " << col << endl;
+
+            legalPositionData->legalPositions[count].row = i;
+            legalPositionData->legalPositions[count].col = col;
             
             count++;
 
             break;
         }
     
-        legalPositions->legalPositions[count].row = i;
-        legalPositions->legalPositions[count].col = col;
+        legalPositionData->legalPositions[count].row = i;
+        legalPositionData->legalPositions[count].col = col;
         
         count++;
     }
 
+    // Right
     for(int j = col + 1; j < BOARD_SIZE; j++)
     {
         if(board->board[row][j].piece != NULL)
         {
-            legalPositions->legalPositions[count].row = row;
-            legalPositions->legalPositions[count].col = j;
+            cout << "Piece found in the way! " << row << " " << j << endl;
+
+            legalPositionData->legalPositions[count].row = row;
+            legalPositionData->legalPositions[count].col = j;
 
             count++;
+
+            break;
         }
 
-        legalPositions->legalPositions[count].row = row;
-        legalPositions->legalPositions[count].col = j;
+        legalPositionData->legalPositions[count].row = row;
+        legalPositionData->legalPositions[count].col = j;
 
         count++;
     }
 
+    // Left
     for(int j = col - 1; j >= 0; j--)
     {
         if(board->board[row][j].piece != NULL)
         {
-            legalPositions->legalPositions[count].row = row;
-            legalPositions->legalPositions[count].col = j;
+            cout << "Piece found in the way! " << row << " " << j << endl;
+
+            legalPositionData->legalPositions[count].row = row;
+            legalPositionData->legalPositions[count].col = j;
 
             count++;
+
+            break;
         }
 
-        legalPositions->legalPositions[count].row = row;
-        legalPositions->legalPositions[count].col = j;
+        legalPositionData->legalPositions[count].row = row;
+        legalPositionData->legalPositions[count].col = j;
 
         count++;
     }
 
-    legalPositions->numberOfPositions = count;
+    legalPositionData->numberOfPositions = count;
 }
