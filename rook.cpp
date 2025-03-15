@@ -17,17 +17,22 @@ void Rook::RefreshLegalPositions(Board* board)
     int row = position.row;
     int col = position.col;
 
+    Piece *piece;
+
     // Up
     for(int i = row + 1; i < BOARD_SIZE; i++)
     {
-        if(board->board[i][col].piece != NULL)
-        {
-            cout << "Piece found in the way! " << i << " " << col << endl;
+        piece = board->board[i][col].piece;
 
-            legalPositionData->legalPositions[count].row = i;
-            legalPositionData->legalPositions[count].col = col;
+        if(piece != NULL)
+        {
+            if(piece->GetIsWhite() != isWhite)
+            {
+                legalPositionData->legalPositions[count].row = i;
+                legalPositionData->legalPositions[count].col = col;
             
-            count++;
+                count++;
+            }
 
             break;
         }
@@ -37,19 +42,24 @@ void Rook::RefreshLegalPositions(Board* board)
         
         count++;
     }
+
+    piece = NULL;
 
     // Down
     for(int i = row - 1; i >= 0; i --)
     {
-        if(board->board[i][col].piece != NULL)
+        piece = board->board[i][col].piece;
+
+        if(piece != NULL)
         {
-            cout << "Piece found in the way! " << i << " " << col << endl;
+            if(piece->GetIsWhite() != isWhite)
+            {
+                legalPositionData->legalPositions[count].row = i;
+                legalPositionData->legalPositions[count].col = col;
 
-            legalPositionData->legalPositions[count].row = i;
-            legalPositionData->legalPositions[count].col = col;
+                count++;
+            }
             
-            count++;
-
             break;
         }
     
@@ -59,17 +69,22 @@ void Rook::RefreshLegalPositions(Board* board)
         count++;
     }
 
+    piece = NULL;
+
     // Right
     for(int j = col + 1; j < BOARD_SIZE; j++)
     {
-        if(board->board[row][j].piece != NULL)
+        piece = board->board[row][j].piece;
+
+        if(piece != NULL)
         {
-            cout << "Piece found in the way! " << row << " " << j << endl;
+            if(piece->GetIsWhite() != isWhite)
+            {
+                legalPositionData->legalPositions[count].row = row;
+                legalPositionData->legalPositions[count].col = j;
 
-            legalPositionData->legalPositions[count].row = row;
-            legalPositionData->legalPositions[count].col = j;
-
-            count++;
+                count++;
+            }
 
             break;
         }
@@ -80,17 +95,22 @@ void Rook::RefreshLegalPositions(Board* board)
         count++;
     }
 
+    piece = NULL;
+
     // Left
     for(int j = col - 1; j >= 0; j--)
     {
-        if(board->board[row][j].piece != NULL)
+        piece = board->board[row][j].piece;
+
+        if(piece != NULL)
         {
-            cout << "Piece found in the way! " << row << " " << j << endl;
+            if(piece->GetIsWhite() != isWhite)
+            {
+                legalPositionData->legalPositions[count].row = row;
+                legalPositionData->legalPositions[count].col = j;
 
-            legalPositionData->legalPositions[count].row = row;
-            legalPositionData->legalPositions[count].col = j;
-
-            count++;
+                count++;
+            }
 
             break;
         }

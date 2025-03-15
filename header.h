@@ -112,6 +112,14 @@ class King: public Piece
         void RefreshLegalPositions(Board*);
 };
 
+class Queen: public Piece
+{
+    public:
+        Queen(char piece, bool isWhite);
+        ~Queen();
+        void RefreshLegalPositions(Board*);
+};
+
 #pragma endregion
 
 #pragma region Gameplay

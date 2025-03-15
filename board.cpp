@@ -47,6 +47,9 @@ void Board::SetupBoard()
 
     AddPiece(new King('K', true), 0, 4, true);
     AddPiece(new King('k', false), 7, 4, false);
+
+    AddPiece(new Queen('Q', true), 0, 3, true);
+    AddPiece(new Queen('q', false), 7, 3, false);
 }
 
 void Board::ClearBoard()
