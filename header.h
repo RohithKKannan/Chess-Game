@@ -16,6 +16,8 @@ class LegalPositions
         ~LegalPositions();
 };
 
+class Board;
+
 class Piece
 {
     private:
@@ -29,7 +31,7 @@ class Piece
         virtual ~Piece();
         void PrintPiece();
         Position GetPosition();
-        virtual LegalPositions* GetLegalPositions(int, int) = 0;
+        virtual LegalPositions* GetLegalPositions(int, int, Board*) = 0;
 };
 
 class Square
@@ -72,7 +74,7 @@ class Rook: public Piece
     public:
         Rook(char piece, bool isWhite);
         ~Rook();
-        LegalPositions* GetLegalPositions(int, int);
+        LegalPositions* GetLegalPositions(int, int, Board*);
 };
 
 #pragma endregion

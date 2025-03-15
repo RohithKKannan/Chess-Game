@@ -34,7 +34,7 @@ int main()
 
     // Print Legal Moves
 
-    LegalPositions *legalPositions = selectedPiece->GetLegalPositions(row, col);
+    LegalPositions *legalPositions = selectedPiece->GetLegalPositions(row, col, board);
 
     if(legalPositions == nullptr)
         return 0;
