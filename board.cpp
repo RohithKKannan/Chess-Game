@@ -39,17 +39,35 @@ Board::~Board()
 
 void Board::SetupBoard()
 {
-    AddPiece(new Rook('R', true), 0, 0, true);
-    AddPiece(new Rook('R', true), 0, 7, true);
+    AddPiece(new Rook('R', true), 0, 0);
+    AddPiece(new Rook('R', true), 0, 7);
 
-    AddPiece(new Rook('r', false), 7, 0, false);
-    AddPiece(new Rook('r', false), 7, 7, false);
+    AddPiece(new Rook('r', false), 7, 0);
+    AddPiece(new Rook('r', false), 7, 7);
 
-    AddPiece(new King('K', true), 0, 4, true);
-    AddPiece(new King('k', false), 7, 4, false);
+    AddPiece(new King('K', true), 0, 4);
+    AddPiece(new King('k', false), 7, 4);
 
-    AddPiece(new Queen('Q', true), 0, 3, true);
-    AddPiece(new Queen('q', false), 7, 3, false);
+    AddPiece(new Queen('Q', true), 0, 3);
+    AddPiece(new Queen('q', false), 7, 3);
+
+    AddPiece(new Bishop('B', true), 0, 2);
+    AddPiece(new Bishop('B', true), 0, 5);
+
+    AddPiece(new Bishop('b', false), 7, 2);
+    AddPiece(new Bishop('b', false), 7, 5);
+
+    AddPiece(new Knight('N', true), 0, 1);
+    AddPiece(new Knight('N', true), 0, 6);
+
+    AddPiece(new Knight('n', false), 7, 1);
+    AddPiece(new Knight('n', false), 7, 6);
+
+    for(int i = 0; i < BOARD_SIZE; i++)
+    {
+        AddPiece(new Pawn('P', true), 1, i);
+        AddPiece(new Pawn('p', false), 6, i);
+    }
 }
 
 void Board::ClearBoard()
@@ -100,11 +118,11 @@ void Board::UnMarkPositions()
     }
 }
 
-void Board::AddPiece(Piece *piece, int row, int col, bool isWhite)
+void Board::AddPiece(Piece *piece, int row, int col)
 {
     board[row][col].SetPiece(piece);
 
-    if(isWhite)
+    if(piece->GetIsWhite())
         whitePieces[whitePieceCount++] = piece;
     else
         blackPieces[blackPieceCount++] = piece;

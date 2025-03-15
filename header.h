@@ -63,7 +63,7 @@ class Board
         void DisplayBoard();
         void MarkPositions(LegalPositionData*);
         void UnMarkPositions();
-        void AddPiece(Piece*, int, int, bool);
+        void AddPiece(Piece*, int, int);
         void RemovePiece(Piece*);
         bool MovePieceToSquare(Piece*, int, int);
         bool CheckIfPositionProtected(int, int, bool);
@@ -117,6 +117,30 @@ class Queen: public Piece
     public:
         Queen(char piece, bool isWhite);
         ~Queen();
+        void RefreshLegalPositions(Board*);
+};
+
+class Bishop: public Piece
+{
+    public:
+        Bishop(char piece, bool isWhite);
+        ~Bishop();
+        void RefreshLegalPositions(Board*);
+};
+
+class Knight: public Piece
+{
+    public:
+        Knight(char piece, bool isWhite);
+        ~Knight();
+        void RefreshLegalPositions(Board*);
+};
+
+class Pawn: public Piece
+{
+    public:
+        Pawn(char piece, bool isWhite);
+        ~Pawn();
         void RefreshLegalPositions(Board*);
 };
 
