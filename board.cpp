@@ -67,11 +67,11 @@ void Board::DisplayBoard()
     cout << "   A B C D E F G H" << endl << endl;
 }
 
-void Board::MarkPositions(LegalPositions *legalPositions)
+void Board::MarkPositions(LegalPositionData *legalPositionData)
 {
-    Position* positions = legalPositions->positions;
+    Position* positions = legalPositionData->legalPositions;
 
-    for(int i = 0; i < legalPositions->numberOfPositions; i++)
+    for(int i = 0; i < legalPositionData->numberOfPositions; i++)
     {
         board[positions[i].row][positions[i].col].MarkSquare();
     }

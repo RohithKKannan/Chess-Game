@@ -7,13 +7,13 @@ struct Position
     int col;
 };
 
-class LegalPositions
+class LegalPositionData
 {
     public:
-        Position* positions;
+        Position* legalPositions;
         int numberOfPositions;
-        LegalPositions();
-        ~LegalPositions();
+        LegalPositionData();
+        ~LegalPositionData();
 };
 
 class Board;
@@ -31,7 +31,7 @@ class Piece
         virtual ~Piece();
         void PrintPiece();
         Position GetPosition();
-        virtual LegalPositions* GetLegalPositions(int, int, Board*) = 0;
+        virtual void GetLegalPositions(int, int, Board*, LegalPositionData*)= 0;
 };
 
 class Square
@@ -61,10 +61,24 @@ class Board
         void SetupBoard();
         void ClearBoard();
         void DisplayBoard();
-        void MarkPositions(LegalPositions*);
+        void MarkPositions(LegalPositionData*);
         void UnMarkPositions();
         void MovePieceToSquare(Piece*, int, int);
         Piece* SelectSquare(int,int);
+};
+
+class GameManager
+{
+    private:
+        Board *board;
+        LegalPositionData *legalPositionData;
+        Piece *selectedPiece;
+        bool isWhitesTurn;
+    public:
+        GameManager();
+        ~GameManager();
+        void StartGame();
+        void InitiateTurn();
 };
 
 #pragma region Pieces
@@ -74,7 +88,7 @@ class Rook: public Piece
     public:
         Rook(char piece, bool isWhite);
         ~Rook();
-        LegalPositions* GetLegalPositions(int, int, Board*);
+        void GetLegalPositions(int, int, Board*, LegalPositionData*);
 };
 
 #pragma endregion

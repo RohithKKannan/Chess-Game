@@ -10,10 +10,8 @@ Rook::~Rook()
 
 }
 
-LegalPositions* Rook::GetLegalPositions(int row, int col, Board* board)
+void Rook::GetLegalPositions(int row, int col, Board* board, LegalPositionData* legalPositions)
 {
-    LegalPositions *legalPositions = new LegalPositions();
-
     int count = 0;
 
     // Change iteraction origin from row, col
@@ -22,16 +20,16 @@ LegalPositions* Rook::GetLegalPositions(int row, int col, Board* board)
     {
         if(board->board[i][col].piece != NULL)
         {
-            legalPositions->positions[count].row = i;
-            legalPositions->positions[count].col = col;
+            legalPositions->legalPositions[count].row = i;
+            legalPositions->legalPositions[count].col = col;
             
             count++;
 
             break;
         }
     
-        legalPositions->positions[count].row = i;
-        legalPositions->positions[count].col = col;
+        legalPositions->legalPositions[count].row = i;
+        legalPositions->legalPositions[count].col = col;
         
         count++;
     }
@@ -40,16 +38,16 @@ LegalPositions* Rook::GetLegalPositions(int row, int col, Board* board)
     {
         if(board->board[i][col].piece != NULL)
         {
-            legalPositions->positions[count].row = i;
-            legalPositions->positions[count].col = col;
+            legalPositions->legalPositions[count].row = i;
+            legalPositions->legalPositions[count].col = col;
             
             count++;
 
             break;
         }
     
-        legalPositions->positions[count].row = i;
-        legalPositions->positions[count].col = col;
+        legalPositions->legalPositions[count].row = i;
+        legalPositions->legalPositions[count].col = col;
         
         count++;
     }
@@ -58,14 +56,14 @@ LegalPositions* Rook::GetLegalPositions(int row, int col, Board* board)
     {
         if(board->board[row][j].piece != NULL)
         {
-            legalPositions->positions[count].row = row;
-            legalPositions->positions[count].col = j;
+            legalPositions->legalPositions[count].row = row;
+            legalPositions->legalPositions[count].col = j;
 
             count++;
         }
 
-        legalPositions->positions[count].row = row;
-        legalPositions->positions[count].col = j;
+        legalPositions->legalPositions[count].row = row;
+        legalPositions->legalPositions[count].col = j;
 
         count++;
     }
@@ -74,19 +72,17 @@ LegalPositions* Rook::GetLegalPositions(int row, int col, Board* board)
     {
         if(board->board[row][j].piece != NULL)
         {
-            legalPositions->positions[count].row = row;
-            legalPositions->positions[count].col = j;
+            legalPositions->legalPositions[count].row = row;
+            legalPositions->legalPositions[count].col = j;
 
             count++;
         }
 
-        legalPositions->positions[count].row = row;
-        legalPositions->positions[count].col = j;
+        legalPositions->legalPositions[count].row = row;
+        legalPositions->legalPositions[count].col = j;
 
         count++;
     }
 
     legalPositions->numberOfPositions = count;
-
-    return legalPositions;
 }
