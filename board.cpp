@@ -70,6 +70,14 @@ void Board::SetupBoard()
     }
 }
 
+void Board::RefreshAllLegalMoves()
+{
+    for (int i = 0; i < pieceCount; i++)
+    {
+        pieces[i]->RefreshLegalPositions(this);
+    }
+}
+
 void Board::ClearBoard()
 {
     for(int i = 0; i < BOARD_SIZE; i++)
@@ -237,10 +245,21 @@ bool Board::CheckIfPositionProtected(int row, int col, bool protectedByWhite)
     return false;
 }
 
-Piece* Board::SelectSquare(int row, int col)
+bool Board::CheckIfAnyLegalMovesAvailable(bool isWhite)
 {
-    if(board[row][col].piece == NULL)
-        return NULL;
+    Piece **currentPieces = isWhite ? whitePieces : blackPieces;
+    int currentPiecesCount = isWhite ? whitePieceCount : blackPieceCount;
 
-    return board[row][col].piece;
+    for (int i = 0; i < currentPiecesCount; i++)
+    {
+        if (currentPieces[i]->GetLegalPositionData()->numberOfPositions > 0)
+            return true;
+    }
+
+    return false;
+}
+
+Square *Board::SelectSquare(int row, int col)
+{
+    return &board[row][col];
 }

@@ -37,6 +37,7 @@ class Square
         Square();
         ~Square();
         void SetPosition(int, int);
+        Position GetPosition() { return position; };
         void MarkSquare();
         void UnMarkSquare();
         void SetPiece(Piece *);
@@ -59,6 +60,7 @@ class Board
         Board();
         ~Board();
         void SetupBoard();
+        void RefreshAllLegalMoves();
         void ClearBoard();
         void DisplayBoard();
         void MarkPositions(LegalPositionData*);
@@ -66,8 +68,9 @@ class Board
         void AddPiece(Piece*, int, int);
         void RemovePiece(Piece*);
         bool MovePieceToSquare(Piece*, int, int);
-        bool CheckIfPositionProtected(int, int, bool);
-        Piece* SelectSquare(int,int);
+        bool CheckIfPositionProtected(int row, int col, bool protectedByWhite);
+        bool CheckIfAnyLegalMovesAvailable(bool isWhite);
+        Square *SelectSquare(int, int);
 };
 
 #pragma endregion
@@ -148,17 +151,31 @@ class Pawn: public Piece
 
 #pragma region Gameplay
 
+enum GameState
+{
+    WhiteTurn,
+    BlackTurn,
+    Stalemate,
+    WhiteWins,
+    BlackWins,
+    Draw
+};
+
 class GameManager
 {
     private:
         Board *board;
         Piece *selectedPiece;
-        bool isWhitesTurn;
+        Square *selectedSquare;
+        GameState currentGameState;
+
     public:
         GameManager();
         ~GameManager();
         void StartGame();
         void InitiateTurn();
+        Square *SelectSquare();
+        bool ParseInput(string *, int *, int *);
 };
 
 #pragma endregion
