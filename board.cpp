@@ -34,7 +34,7 @@ Board::Board()
 
 Board::~Board()
 {
-    for (int i = 0; i < 32; i++)
+    for (int i = 0; i < pieceCount; i++)
     {
         if (pieces[i] != nullptr)
         {
@@ -84,11 +84,11 @@ void Board::SetupBoard()
     // AddPiece(new Knight('n', false), 7, 1);
     // AddPiece(new Knight('n', false), 7, 6);
 
-    // for(int i = 0; i < BOARD_SIZE; i++)
-    // {
-    //     AddPiece(new Pawn('P', true), 1, i);
-    //     AddPiece(new Pawn('p', false), 6, i);
-    // }
+    for (int i = 0; i < BOARD_SIZE; i++)
+    {
+        AddPiece(new Pawn('P', true), 1, i);
+        AddPiece(new Pawn('p', false), 6, i);
+    }
 }
 
 void Board::ResetAllPieceInfo()
@@ -107,13 +107,13 @@ void Board::ResetAllPieceInfo()
 
 void Board::PreprocessAllAttacks()
 {
-    cout << "Starting Preprocessed Attack : " << endl;
+    // cout << "Starting Preprocessed Attack : " << endl;
     for (int i = 0; i < pieceCount; i++)
     {
-        cout << "Preprocessed Attack for : " << endl;
-        pieces[i]->PrintPiece();
-        cout << endl;
-        cout << "Piece position : " << pieces[i]->GetPosition().row << " " << pieces[i]->GetPosition().col << endl;
+        // cout << "Preprocessed Attack for : " << endl;
+        // pieces[i]->PrintPiece();
+        // cout << endl;
+        // cout << "Piece position : " << pieces[i]->GetPosition().row << " " << pieces[i]->GetPosition().col << endl;
 
         pieces[i]->PreprocessAttackInfo(this);
     }
@@ -121,31 +121,33 @@ void Board::PreprocessAllAttacks()
 
 void Board::SetAllLegalMoves()
 {
-    cout << endl
-         << "Refreshing All Legal moves!" << endl;
+    // cout << endl
+    //      << "Refreshing All Legal moves!" << endl;
     for (int i = 0; i < pieceCount; i++)
     {
-        cout << endl
-             << "Refresh Legal Moves for : " << endl;
-        pieces[i]->PrintPiece();
-        cout << endl;
-        cout << "Piece position : " << pieces[i]->GetPosition().row << " " << pieces[i]->GetPosition().col << endl;
         if (!pieces[i]->GetIsKing())
+        {
+            // cout << endl
+            //      << "Refresh Legal Moves for : " << endl;
+            // pieces[i]->PrintPiece();
+            // cout << endl;
+            // cout << "Piece position : " << pieces[i]->GetPosition().row << " " << pieces[i]->GetPosition().col << endl;
             pieces[i]->SetLegalPositions(this);
+        }
     }
 
-    cout << endl
-         << "Refresh Legal Moves for : " << endl;
-    whiteKing->PrintPiece();
-    cout << endl;
-    cout << "Piece position : " << whiteKing->GetPosition().row << " " << whiteKing->GetPosition().col << endl;
+    // cout << endl
+    //      << "Refresh Legal Moves for : " << endl;
+    // whiteKing->PrintPiece();
+    // cout << endl;
+    // cout << "Piece position : " << whiteKing->GetPosition().row << " " << whiteKing->GetPosition().col << endl;
     whiteKing->SetLegalPositions(this);
 
-    cout << endl
-         << "Refresh Legal Moves for : " << endl;
-    blackKing->PrintPiece();
-    cout << endl;
-    cout << "Piece position : " << blackKing->GetPosition().row << " " << blackKing->GetPosition().col << endl;
+    // cout << endl
+    //      << "Refresh Legal Moves for : " << endl;
+    // blackKing->PrintPiece();
+    // cout << endl;
+    // cout << "Piece position : " << blackKing->GetPosition().row << " " << blackKing->GetPosition().col << endl;
     blackKing->SetLegalPositions(this);
 }
 
@@ -218,6 +220,8 @@ void Board::AddPiece(Piece *piece, int row, int col)
         if (piece->GetIsKing())
             blackKing = piece;
     }
+
+    piece->SetPosition(row, col);
 
     pieces[pieceCount++] = piece;
 }
@@ -328,6 +332,8 @@ bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
         RemovePiece(removedPiece);
     }
 
+    selectedPiece->SetPieceHasMoved();
+
     return true;
 }
 
@@ -364,7 +370,7 @@ Square *Board::SelectSquare(int row, int col)
     return &board[row][col];
 }
 
-bool Board::ProcessAttackInDirection(Piece *piece, int rowDir, int colDir, bool tillEnd)
+bool Board::ProcessAttackInDirection(Piece *piece, int rowDir, int colDir, bool isPawn)
 {
     Piece *firstPiece = nullptr;
     Piece *secondPiece = nullptr;
@@ -378,9 +384,11 @@ bool Board::ProcessAttackInDirection(Piece *piece, int rowDir, int colDir, bool 
     Piece *tempPiece;
     Square *currentSquare;
 
-    cout << "Piece square " << row << " " << col << endl;
+    int limit = isPawn ? 2 : BOARD_SIZE;
 
-    for (int i = 1; i < tillEnd ? BOARD_SIZE : 2; i++)
+    // cout << "Piece square " << row << " " << col << " Limit : " << limit << endl;
+
+    for (int i = 1; i < limit; i++)
     {
         int newRow = row + (i * rowDir);
         int newCol = col + (i * colDir);
@@ -388,7 +396,7 @@ bool Board::ProcessAttackInDirection(Piece *piece, int rowDir, int colDir, bool 
         if (newRow < 0 || newRow >= BOARD_SIZE || newCol < 0 || newCol >= BOARD_SIZE)
             break; // Out of bounds, stop checking
 
-        cout << "Checking square at " << newRow << " " << newCol << endl;
+        // cout << "Checking square at " << newRow << " " << newCol << endl;
 
         currentSquare = &board[newRow][newCol];
         tempPiece = currentSquare->piece;
@@ -397,20 +405,20 @@ bool Board::ProcessAttackInDirection(Piece *piece, int rowDir, int colDir, bool 
         {
             if (tempPiece->GetIsWhite() == piece->GetIsWhite())
             {
-                cout << "Piece encountered - Same color - Ending traversal!" << endl;
+                // cout << "Piece encountered - Same color - Ending traversal!" << endl;
                 // piece of same color -> end traversal
                 break;
             }
 
             if (firstPiece == nullptr)
             {
-                cout << "First Piece encountered : " << endl;
+                // cout << "First Piece encountered : " << endl;
                 firstPiece = tempPiece;
-                firstPiece->PrintPiece();
-                cout << endl;
+                // firstPiece->PrintPiece();
+                // cout << endl;
                 if (firstPiece->GetIsKing())
                 {
-                    cout << "First piece is king - setting in check - adding attack path" << endl;
+                    // cout << "First piece is king - setting in check - adding attack path" << endl;
                     firstPiece->SetKingIsInCheck();
                     for (int i = 0; i < attackPathIndex; i++)
                     {
@@ -421,21 +429,21 @@ bool Board::ProcessAttackInDirection(Piece *piece, int rowDir, int colDir, bool 
             }
             else if (secondPiece == nullptr)
             {
-                cout << "Second Piece encountered" << endl;
+                // cout << "Second Piece encountered" << endl;
                 secondPiece = tempPiece;
-                secondPiece->PrintPiece();
-                cout << endl;
+                // secondPiece->PrintPiece();
+                // cout << endl;
                 if (secondPiece->GetIsKing())
                 {
-                    cout << "Second piece is king - setting first piece is pinned - adding pin path" << endl;
+                    // cout << "Second piece is king - setting first piece is pinned - adding pin path" << endl;
                     firstPiece->SetPieceIsPinned();
                     for (int i = 0; i < attackPathIndex; i++)
                     {
-                        cout << "Adding square " << attackPath[i]->GetPosition().row << " " << attackPath[i]->GetPosition().col << endl;
+                        // cout << "Adding square " << attackPath[i]->GetPosition().row << " " << attackPath[i]->GetPosition().col << endl;
                         firstPiece->AddSquareToAttackPath(attackPath[i]);
                     }
                     // Add attacking piece to attack path
-                    cout << "Adding current square " << row << " " << col << endl;
+                    // cout << "Adding current square " << row << " " << col << endl;
                     firstPiece->AddSquareToAttackPath(SelectSquare(row, col));
                     break;
                 }
@@ -445,17 +453,17 @@ bool Board::ProcessAttackInDirection(Piece *piece, int rowDir, int colDir, bool 
         attackPath[attackPathIndex++] = currentSquare;
     }
 
-    cout << "Direction complete!" << endl;
+    // cout << "Direction complete!" << endl;
 
     return true;
 }
 
-bool Board::SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir, bool tillEnd)
+bool Board::SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir, bool isPawn, bool hasPawnMoved)
 {
     int row = piece->GetPosition().row;
     int col = piece->GetPosition().col;
 
-    cout << "Piece square " << row << " " << col << endl;
+    // cout << "Piece square " << row << " " << col << endl;
 
     Piece *king = GetKing(piece->GetIsWhite());
 
@@ -463,7 +471,7 @@ bool Board::SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir, bool 
 
     if (kingInCheck && king->GetAttackerCount() > 1)
     {
-        cout << "King in check more than once! Skip legal moves for this piece!" << endl;
+        // cout << "King in check more than once! Skip legal moves for this piece!" << endl;
         return false;
     }
 
@@ -471,7 +479,11 @@ bool Board::SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir, bool 
 
     Piece *tempPiece;
 
-    for (int i = 1; i < tillEnd ? BOARD_SIZE : 2; i++)
+    int limit = isPawn ? (hasPawnMoved ? 2 : (colDir == 0 ? 3 : 2)) : BOARD_SIZE;
+
+    // cout << "Limit : " << limit << endl;
+
+    for (int i = 1; i < limit; i++)
     {
         int newRow = row + (i * rowDir);
         int newCol = col + (i * colDir);
@@ -479,15 +491,15 @@ bool Board::SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir, bool 
         if (newRow < 0 || newRow >= BOARD_SIZE || newCol < 0 || newCol >= BOARD_SIZE)
             break; // Out of bounds, stop checking
 
-        cout << "Checking square at " << newRow << " " << newCol << endl;
+        // cout << "Checking square at " << newRow << " " << newCol << endl;
 
         if (piece->GetIsPinned() && !piece->CheckIfAttackPathContainsPosition(newRow, newCol))
         {
-            cout << "Pinned piece and Square " << newRow << " " << newCol << " not in attack path" << endl;
+            // cout << "Pinned piece and Square " << newRow << " " << newCol << " not in attack path" << endl;
             continue;
         }
 
-        cout << "Adding square " << newRow << " " << newCol << " to Legal Positions without King " << endl;
+        // cout << "Adding square " << newRow << " " << newCol << " to Legal Positions without King " << endl;
 
         legalPositionData->legalPositionsWithoutKing[legalPositionData->numberOfPositionsWithoutKing].row = newRow;
         legalPositionData->legalPositionsWithoutKing[legalPositionData->numberOfPositionsWithoutKing].col = newCol;
@@ -498,24 +510,30 @@ bool Board::SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir, bool 
 
         if (tempPiece != NULL)
         {
-            cout << "Piece in path : " << endl;
-            tempPiece->PrintPiece();
-            cout << endl;
+            if (isPawn && colDir == 0)
+            {
+                // cout << "Piece found but in straight path from pawn!" << endl;
+                return true;
+            }
+
+            // cout << "Piece in path : " << endl;
+            // tempPiece->PrintPiece();
+            // cout << endl;
 
             if (tempPiece->GetIsWhite() == piece->GetIsWhite())
             {
-                cout << "Piece is of same color! Stop iteration! " << piece->GetIsWhite() << " " << tempPiece->GetIsWhite() << endl;
+                // cout << "Piece is of same color! Stop iteration! " << piece->GetIsWhite() << " " << tempPiece->GetIsWhite() << endl;
                 break;
             }
             else
             {
                 if (kingInCheck && !king->CheckIfAttackPathContainsPosition(newRow, newCol))
                 {
-                    cout << "King in check and Square " << newRow << " " << newCol << " not in King's attack path" << endl;
+                    // cout << "King in check and Square " << newRow << " " << newCol << " not in King's attack path" << endl;
                     continue;
                 }
 
-                cout << "Adding square " << newRow << " " << newCol << " to Legal Positions " << endl;
+                // cout << "Adding square " << newRow << " " << newCol << " to Legal Positions " << endl;
 
                 legalPositionData->legalPositions[legalPositionData->numberOfPositions].row = newRow;
                 legalPositionData->legalPositions[legalPositionData->numberOfPositions].col = newCol;
@@ -524,7 +542,7 @@ bool Board::SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir, bool 
 
                 if (!tempPiece->GetIsKing())
                 {
-                    cout << "Piece found is not king and an opp! End traversal!" << endl;
+                    // cout << "Piece found is not king and an opp! End traversal!" << endl;
 
                     break;
                 }
@@ -532,13 +550,19 @@ bool Board::SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir, bool 
         }
         else
         {
+            if (isPawn && colDir != 0)
+            {
+                // cout << "Empty square but from cross of pawn!" << endl;
+                return true;
+            }
+
             if (kingInCheck && !king->CheckIfAttackPathContainsPosition(newRow, newCol))
             {
-                cout << "King in check and Square " << newRow << " " << newCol << " not in King's attack path" << endl;
+                // cout << "King in check and Square " << newRow << " " << newCol << " not in King's attack path" << endl;
                 continue;
             }
 
-            cout << "Adding square " << newRow << " " << newCol << " to Legal Positions " << endl;
+            // cout << "Adding square " << newRow << " " << newCol << " to Legal Positions " << endl;
 
             legalPositionData->legalPositions[legalPositionData->numberOfPositions].row = newRow;
             legalPositionData->legalPositions[legalPositionData->numberOfPositions].col = newCol;
@@ -547,7 +571,8 @@ bool Board::SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir, bool 
         }
     }
 
-    cout << "Direction complete!" << endl;
+    // cout << "Direction complete!" << endl
+    //  << endl;
 
     return true;
 }

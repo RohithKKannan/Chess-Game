@@ -79,8 +79,8 @@ class Board
         bool CheckIfAnyLegalMovesAvailable(bool isWhite);
         Square *SelectSquare(int, int);
         Piece *GetKing(bool isWhite) { return isWhite ? whiteKing : blackKing; };
-        bool ProcessAttackInDirection(Piece *piece, int rowDir, int colDir, bool tillEnd);
-        bool SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir, bool tillEnd);
+        bool ProcessAttackInDirection(Piece *piece, int rowDir, int colDir, bool isPawn);
+        bool SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir, bool isPawn, bool hasPawnMoved);
 };
 
 #pragma endregion
@@ -93,6 +93,7 @@ class Piece
         char piece;
         bool isWhite;
         bool isKing = false;
+        bool hasMoved = false;
         Position position;
         LegalPositionData *legalPositionData;
 
@@ -123,6 +124,7 @@ class Piece
         virtual void PreprocessAttackInfo(Board *) = 0;
         virtual void SetLegalPositions(Board *) = 0;
 
+        void SetPieceHasMoved() { hasMoved = true; };
         void SetPieceIsPinned() { isPinned = true; };
         void AddPieceToPinningPiece(Piece *piece) { pinningPiece = piece; };
         void SetKingIsInCheck() { isInCheck = true; };
