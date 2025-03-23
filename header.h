@@ -81,6 +81,9 @@ class Board
         Piece *GetKing(bool isWhite) { return isWhite ? whiteKing : blackKing; };
         bool ProcessAttackInDirection(Piece *piece, int rowDir, int colDir, bool isPawn);
         bool SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir, bool isPawn, bool hasPawnMoved);
+
+        bool ProcessKnightAttack(Piece *knight, int row, int col);
+        bool SetLegalMoveForKnight(Piece *knight, int row, int col);
 };
 
 #pragma endregion
@@ -127,7 +130,11 @@ class Piece
         void SetPieceHasMoved() { hasMoved = true; };
         void SetPieceIsPinned() { isPinned = true; };
         void AddPieceToPinningPiece(Piece *piece) { pinningPiece = piece; };
-        void SetKingIsInCheck() { isInCheck = true; };
+        void SetKingIsInCheck()
+        {
+            attackerCount++;
+            isInCheck = true;
+        };
         void AddSquareToAttackPath(Square *square) { attackPath[attackPathSquareCount++] = square; };
         bool CheckIfAttackPathContainsPosition(int row, int col);
 };

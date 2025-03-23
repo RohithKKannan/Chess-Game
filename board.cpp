@@ -78,11 +78,11 @@ void Board::SetupBoard()
     AddPiece(new Bishop('b', false), 7, 2);
     AddPiece(new Bishop('b', false), 7, 5);
 
-    // AddPiece(new Knight('N', true), 0, 1);
-    // AddPiece(new Knight('N', true), 0, 6);
+    AddPiece(new Knight('N', true), 0, 1);
+    AddPiece(new Knight('N', true), 0, 6);
 
-    // AddPiece(new Knight('n', false), 7, 1);
-    // AddPiece(new Knight('n', false), 7, 6);
+    AddPiece(new Knight('n', false), 7, 1);
+    AddPiece(new Knight('n', false), 7, 6);
 
     for (int i = 0; i < BOARD_SIZE; i++)
     {
@@ -573,6 +573,101 @@ bool Board::SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir, bool 
 
     // cout << "Direction complete!" << endl
     //  << endl;
+
+    return true;
+}
+
+bool Board::ProcessKnightAttack(Piece *knight, int rowDir, int colDir)
+{
+    int row = knight->GetPosition().row + rowDir;
+    int col = knight->GetPosition().col + colDir;
+
+    Piece *tempPiece;
+    Square *attackingSquare;
+
+    Piece *king = GetKing(knight->GetIsWhite());
+
+    bool kingInCheck = king->GetIsInCheck();
+
+    if (kingInCheck && king->GetAttackerCount() > 1)
+    {
+        // cout << "King in check more than once! Skip legal moves for this piece!" << endl;
+        return false;
+    }
+
+    // cout << "Preprocessing Knight at " << row << " " << col << endl;
+
+    attackingSquare = &board[knight->GetPosition().row][knight->GetPosition().col];
+
+    if (row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE)
+    {
+        tempPiece = board[row][col].piece;
+        if (tempPiece != nullptr && (tempPiece->GetIsWhite() != knight->GetIsWhite()) && tempPiece->GetIsKing())
+        {
+            // knight attacks opp king
+            tempPiece->SetKingIsInCheck();
+            tempPiece->AddSquareToAttackPath(attackingSquare);
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool Board::SetLegalMoveForKnight(Piece *knight, int rowDir, int colDir)
+{
+    int row = knight->GetPosition().row + rowDir;
+    int col = knight->GetPosition().col + colDir;
+
+    Piece *tempPiece;
+    Square *attackingSquare;
+
+    Piece *king = GetKing(knight->GetIsWhite());
+
+    bool kingInCheck = king->GetIsInCheck();
+
+    if (kingInCheck && king->GetAttackerCount() > 1)
+    {
+        // cout << "King in check more than once! Skip legal moves for this piece!" << endl;
+        return false;
+    }
+
+    LegalPositionData *legalPositionData = knight->GetLegalPositionData();
+
+    attackingSquare = &board[knight->GetPosition().row][knight->GetPosition().col];
+
+    int count = 0;
+
+    if (row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE)
+    {
+        legalPositionData->legalPositionsWithoutKing[legalPositionData->numberOfPositionsWithoutKing].row = row;
+        legalPositionData->legalPositionsWithoutKing[legalPositionData->numberOfPositionsWithoutKing].col = col;
+
+        legalPositionData->numberOfPositionsWithoutKing++;
+
+        tempPiece = board[row][col].piece;
+
+        if (knight->GetIsPinned() && !knight->CheckIfAttackPathContainsPosition(row, col))
+        {
+            return false;
+        }
+
+        if (tempPiece != nullptr)
+        {
+            if (tempPiece->GetIsWhite() == knight->GetIsWhite())
+                return true;
+        }
+
+        if (kingInCheck && !king->CheckIfAttackPathContainsPosition(row, col))
+        {
+            return true;
+        }
+
+        legalPositionData->legalPositions[legalPositionData->numberOfPositions].row = row;
+        legalPositionData->legalPositions[legalPositionData->numberOfPositions].col = col;
+
+        legalPositionData->numberOfPositions++;
+    }
 
     return true;
 }
