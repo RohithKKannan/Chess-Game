@@ -67,6 +67,7 @@ class Board
         void ResetAllPieceInfo();
         void PreprocessAllAttacks();
         void SetAllLegalMoves();
+        bool CheckForDraw();
         void ClearBoard();
         void DisplayBoard();
         void MarkPositions(LegalPositionData*);
@@ -100,8 +101,6 @@ class Piece
         Piece *pinningPiece;
 
         bool isInCheck;
-
-        Piece **attackingPieces;
         int attackerCount;
 
         Square **attackPath;
@@ -120,7 +119,7 @@ class Piece
         Position GetPosition() { return position; };
         LegalPositionData* GetLegalPositionData() { return legalPositionData; };
         bool CheckIfPositionInLegalPositionsWithoutKing(int, int);
-        void ResetPiecesInfo();
+        void ResetPieceInfo();
         virtual void PreprocessAttackInfo(Board *) = 0;
         virtual void SetLegalPositions(Board *) = 0;
 
@@ -128,7 +127,6 @@ class Piece
         void AddPieceToPinningPiece(Piece *piece) { pinningPiece = piece; };
         void SetKingIsInCheck() { isInCheck = true; };
         void AddSquareToAttackPath(Square *square) { attackPath[attackPathSquareCount++] = square; };
-        void AddPieceToAttackingPieces(Piece *piece) { attackingPieces[attackerCount++] = piece; };
         bool CheckIfAttackPathContainsPosition(int row, int col);
 };
 

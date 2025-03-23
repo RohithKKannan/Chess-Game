@@ -6,6 +6,15 @@ Board::Board()
     whitePieces = new Piece*[16];
     blackPieces = new Piece*[16];
 
+    for (int i = 0; i < 32; i++)
+        pieces[i] = nullptr;
+
+    for (int i = 0; i < 16; i++)
+    {
+        whitePieces[i] = nullptr;
+        blackPieces[i] = nullptr;
+    }
+
     board = new Square*[BOARD_SIZE];
 
     for(int i = 0; i < BOARD_SIZE; i++)
@@ -17,24 +26,36 @@ Board::Board()
             board[i][j].SetPosition(i, j);
         }
     }
+
+    pieceCount = 0;
+    whitePieceCount = 0;
+    blackPieceCount = 0;
 }
 
 Board::~Board()
 {
-    for(int i = 0; i < BOARD_SIZE; i++)
+    for (int i = 0; i < 32; i++)
     {
-        delete[] board[i];
+        if (pieces[i] != nullptr)
+        {
+            delete pieces[i];
+        }
     }
 
-    for(int i = 0; i < 16; i++)
+    delete[] pieces;
+
+    for (int i = 0; i < BOARD_SIZE; i++)
     {
-        delete whitePieces[i];
-        delete blackPieces[i];
+        if (board[i] != nullptr)
+        {
+            delete[] board[i];
+        }
     }
+
+    delete[] board;
 
     delete[] whitePieces;
     delete[] blackPieces;
-    delete[] board;
 }
 
 void Board::SetupBoard()
@@ -42,8 +63,8 @@ void Board::SetupBoard()
     AddPiece(new Rook('R', true), 0, 0);
     AddPiece(new Rook('R', true), 0, 7);
 
-    AddPiece(new Rook('r', false), 7, 0);
-    AddPiece(new Rook('r', false), 7, 7);
+    // AddPiece(new Rook('r', false), 7, 0);
+    // AddPiece(new Rook('r', false), 7, 7);
 
     AddPiece(new King('K', true), 0, 4);
     AddPiece(new King('k', false), 7, 4);
@@ -74,7 +95,13 @@ void Board::ResetAllPieceInfo()
 {
     for (int i = 0; i < pieceCount; i++)
     {
-        pieces[i]->ResetPiecesInfo();
+        if (pieces[i] == nullptr)
+        {
+            std::cout << "ERROR: Found NULL piece at index " << i << std::endl;
+            continue;
+        }
+
+        pieces[i]->ResetPieceInfo();
     }
 }
 
@@ -120,6 +147,11 @@ void Board::SetAllLegalMoves()
     cout << endl;
     cout << "Piece position : " << blackKing->GetPosition().row << " " << blackKing->GetPosition().col << endl;
     blackKing->SetLegalPositions(this);
+}
+
+bool Board::CheckForDraw()
+{
+    return false;
 }
 
 void Board::ClearBoard()
@@ -209,7 +241,11 @@ void Board::RemovePiece(Piece *pieceToRemove)
         }
     }
 
-    if(swap) pieceCount--;
+    if (swap)
+    {
+        pieces[pieceCount] = nullptr;
+        pieceCount--;
+    }
 
     if(pieceToRemove->GetIsWhite())
     {
@@ -230,6 +266,12 @@ void Board::RemovePiece(Piece *pieceToRemove)
                 }
             }
         }
+
+        if (swap)
+        {
+            whitePieces[whitePieceCount] = nullptr;
+            whitePieceCount--;
+        }
     }
     else
     {
@@ -249,6 +291,12 @@ void Board::RemovePiece(Piece *pieceToRemove)
                     blackPieces[i] = blackPieces[i + 1];
                 }
             }
+        }
+
+        if (swap)
+        {
+            blackPieces[blackPieceCount] = nullptr;
+            blackPieceCount--;
         }
     }
 

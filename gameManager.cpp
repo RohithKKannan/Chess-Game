@@ -20,10 +20,13 @@ void GameManager::StartGame()
         cout << "Game complete!" << endl;
 
         char choice;
-        std::cout << "Do you want to play again? (y/n): ";
-        std::cin >> choice;
 
-        if (choice != 'n' && choice != 'N')
+        cin.clear();
+
+        cout << "Do you want to play again? (y/n): " << flush;
+        cin >> choice;
+
+        if (choice == 'n' || choice == 'N')
         {
             playAgain = false;
         }
@@ -39,32 +42,17 @@ void GameManager::Game()
 
     currentGameState = WhiteTurn;
 
-    cout << "Game Start!" << endl;
-
     while (isRunning)
     {
         board->ResetAllPieceInfo();
 
-        cout << endl
-             << "All Piece info reset!" << endl
-             << endl;
-
         board->PreprocessAllAttacks();
 
-        cout << endl
-             << "All Preprocess attacks complete!" << endl
-             << endl;
-
         board->SetAllLegalMoves();
-
-        cout << endl
-             << "Refreshed all Legal moves!" << endl
-             << endl;
 
         switch (currentGameState)
         {
         case WhiteTurn:
-            // Check If player has any available moves
             if (!board->CheckIfAnyLegalMovesAvailable(currentGameState == WhiteTurn))
             {
                 if (board->GetKing(currentGameState == WhiteTurn)->GetIsInCheck())
@@ -85,7 +73,6 @@ void GameManager::Game()
             currentGameState = BlackTurn;
             break;
         case BlackTurn:
-            // Check If player has any available moves
             if (!board->CheckIfAnyLegalMovesAvailable(currentGameState == WhiteTurn))
             {
                 if (board->GetKing(currentGameState == WhiteTurn)->GetIsInCheck())

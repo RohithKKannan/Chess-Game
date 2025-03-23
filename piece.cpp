@@ -7,9 +7,9 @@ Piece::Piece(char piece, bool isWhite)
 
     legalPositionData = new LegalPositionData();
 
-    pinningPiece = nullptr;
-    attackingPieces = new Piece *[100];
     attackPath = new Square *[100];
+
+    ResetPieceInfo();
 }
 
 void Piece::SetPosition(int row, int col)
@@ -41,13 +41,12 @@ bool Piece::CheckIfPositionInLegalPositionsWithoutKing(int row, int col)
     return false;
 }
 
-void Piece::ResetPiecesInfo()
+void Piece::ResetPieceInfo()
 {
     legalPositionData->numberOfPositions = 0;
     legalPositionData->numberOfPositionsWithoutKing = 0;
 
     attackPathSquareCount = 0;
-    attackingPieces = 0;
 
     pinningPiece = nullptr;
 
