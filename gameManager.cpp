@@ -15,63 +15,9 @@ void GameManager::StartGame()
 
     while (playAgain)
     {
-        bool isRunning = true;
+        Game();
 
-        board = new Board();
-        board->SetupBoard();
-
-        currentGameState = WhiteTurn;
-
-        cout << "Game Start!" << endl;
-
-        while (isRunning)
-        {
-            board->RefreshAllLegalMoves();
-
-            switch (currentGameState)
-            {
-            case WhiteTurn:
-                // Check If player has any available moves
-                if (!board->CheckIfAnyLegalMovesAvailable(currentGameState == WhiteTurn))
-                {
-                    currentGameState = Stalemate;
-                    cout << "No Legal moves available for " << (currentGameState == WhiteTurn ? "White " : "Black ") << endl;
-                    break;
-                }
-
-                InitiateTurn();
-                currentGameState = BlackTurn;
-                break;
-            case BlackTurn:
-                // Check If player has any available moves
-                if (!board->CheckIfAnyLegalMovesAvailable(currentGameState == WhiteTurn))
-                {
-                    currentGameState = Stalemate;
-                    cout << "No Legal moves available for " << (currentGameState == WhiteTurn ? "White " : "Black ") << endl;
-                    break;
-                }
-
-                InitiateTurn();
-                currentGameState = WhiteTurn;
-                break;
-            case Stalemate:
-                cout << "Game ended in Stalemate!" << endl;
-                isRunning = false;
-                break;
-            case WhiteWins:
-                cout << "White wins the game!" << endl;
-                isRunning = false;
-                break;
-            case BlackWins:
-                cout << "Black wins the game!" << endl;
-                isRunning = false;
-                break;
-            case Draw:
-                cout << "The game ends in a Draw!" << endl;
-                isRunning = false;
-                break;
-            }
-        }
+        cout << "Game complete!" << endl;
 
         char choice;
         std::cout << "Do you want to play again? (y/n): ";
@@ -79,12 +25,107 @@ void GameManager::StartGame()
 
         if (choice != 'n' && choice != 'N')
         {
-            playAgain = false; // Exit the rematch loop
+            playAgain = false;
         }
-
-        delete board;
-        board = nullptr;
     }
+}
+
+void GameManager::Game()
+{
+    bool isRunning = true;
+
+    board = new Board();
+    board->SetupBoard();
+
+    currentGameState = WhiteTurn;
+
+    cout << "Game Start!" << endl;
+
+    while (isRunning)
+    {
+        board->ResetAllPieceInfo();
+
+        cout << endl
+             << "All Piece info reset!" << endl
+             << endl;
+
+        board->PreprocessAllAttacks();
+
+        cout << endl
+             << "All Preprocess attacks complete!" << endl
+             << endl;
+
+        board->SetAllLegalMoves();
+
+        cout << endl
+             << "Refreshed all Legal moves!" << endl
+             << endl;
+
+        switch (currentGameState)
+        {
+        case WhiteTurn:
+            // Check If player has any available moves
+            if (!board->CheckIfAnyLegalMovesAvailable(currentGameState == WhiteTurn))
+            {
+                if (board->GetKing(currentGameState == WhiteTurn)->GetIsInCheck())
+                {
+                    cout << "White King is in check, and there are no other moves!" << endl;
+                    currentGameState = BlackWins;
+                    break;
+                }
+                else
+                {
+                    currentGameState = Stalemate;
+                    cout << "No Legal moves available for " << (currentGameState == WhiteTurn ? "White " : "Black ") << endl;
+                    break;
+                }
+            }
+
+            InitiateTurn();
+            currentGameState = BlackTurn;
+            break;
+        case BlackTurn:
+            // Check If player has any available moves
+            if (!board->CheckIfAnyLegalMovesAvailable(currentGameState == WhiteTurn))
+            {
+                if (board->GetKing(currentGameState == WhiteTurn)->GetIsInCheck())
+                {
+                    cout << "Black King is in check, and there are no other moves!" << endl;
+                    currentGameState = WhiteWins;
+                    break;
+                }
+                else
+                {
+                    currentGameState = Stalemate;
+                    cout << "No Legal moves available for " << (currentGameState == WhiteTurn ? "White " : "Black ") << endl;
+                    break;
+                }
+            }
+
+            InitiateTurn();
+            currentGameState = WhiteTurn;
+            break;
+        case Stalemate:
+            cout << "Game ended in Stalemate!" << endl;
+            isRunning = false;
+            break;
+        case WhiteWins:
+            cout << "White wins the game!" << endl;
+            isRunning = false;
+            break;
+        case BlackWins:
+            cout << "Black wins the game!" << endl;
+            isRunning = false;
+            break;
+        case Draw:
+            cout << "The game ends in a Draw!" << endl;
+            isRunning = false;
+            break;
+        }
+    }
+
+    delete board;
+    board = nullptr;
 }
 
 void GameManager::InitiateTurn()

@@ -2,15 +2,19 @@
 
 Pawn::Pawn(char piece, bool isWhite) : Piece(piece, isWhite)
 {
-
 }
 
 Pawn::~Pawn()
 {
-
 }
 
-void Pawn::RefreshLegalPositions(Board* board)
+void Pawn::PreprocessAttackInfo(Board *board)
+{
+    board->ProcessAttackInDirection(this, 1, 0, false);
+    board->ProcessAttackInDirection(this, -1, 0, false);
+}
+
+void Pawn::SetLegalPositions(Board *board)
 {
     int count = 0;
 
@@ -19,44 +23,44 @@ void Pawn::RefreshLegalPositions(Board* board)
 
     int i, j;
 
-    Piece* piece = NULL;
-    
+    Piece *piece = NULL;
+
     // up
-    if(isWhite)
+    if (isWhite)
     {
         // norm
         i = row + 1;
         j = col;
-        
-        if(i < BOARD_SIZE)
+
+        if (i < BOARD_SIZE)
         {
             piece = board->board[i][j].piece;
 
-            if(piece == NULL)
+            if (piece == NULL)
             {
                 legalPositionData->legalPositions[count].row = i;
-                legalPositionData->legalPositions[count].col = j; 
-            
-                count++;            
+                legalPositionData->legalPositions[count].col = j;
+
+                count++;
             }
         }
 
         piece = NULL;
 
         // double
-        if(row == 1)
+        if (row == 1)
         {
             i = row + 2;
             j = col;
 
-            if(i < BOARD_SIZE)
+            if (i < BOARD_SIZE)
             {
                 piece = board->board[i][j].piece;
-    
-                if(piece == NULL)
+
+                if (piece == NULL)
                 {
                     legalPositionData->legalPositions[count].row = i;
-                    legalPositionData->legalPositions[count].col = j; 
+                    legalPositionData->legalPositions[count].col = j;
 
                     count++;
                 }
@@ -69,14 +73,14 @@ void Pawn::RefreshLegalPositions(Board* board)
         i = row + 1;
         j = col - 1;
 
-        if(i < BOARD_SIZE && j >= 0)
+        if (i < BOARD_SIZE && j >= 0)
         {
             piece = board->board[i][j].piece;
 
-            if(piece != NULL && piece->GetIsWhite() != isWhite)
+            if (piece != NULL && piece->GetIsWhite() != isWhite)
             {
                 legalPositionData->legalPositions[count].row = i;
-                legalPositionData->legalPositions[count].col = j; 
+                legalPositionData->legalPositions[count].col = j;
 
                 count++;
             }
@@ -88,14 +92,14 @@ void Pawn::RefreshLegalPositions(Board* board)
         i = row + 1;
         j = col + 1;
 
-        if(i < BOARD_SIZE && j < BOARD_SIZE)
+        if (i < BOARD_SIZE && j < BOARD_SIZE)
         {
             piece = board->board[i][j].piece;
 
-            if(piece != NULL && piece->GetIsWhite() != isWhite)
+            if (piece != NULL && piece->GetIsWhite() != isWhite)
             {
                 legalPositionData->legalPositions[count].row = i;
-                legalPositionData->legalPositions[count].col = j; 
+                legalPositionData->legalPositions[count].col = j;
 
                 count++;
             }
@@ -107,35 +111,35 @@ void Pawn::RefreshLegalPositions(Board* board)
     {
         i = row - 1;
         j = col;
-        
-        if(i >= 0)
+
+        if (i >= 0)
         {
             piece = board->board[i][j].piece;
 
-            if(piece == NULL)
+            if (piece == NULL)
             {
                 legalPositionData->legalPositions[count].row = i;
-                legalPositionData->legalPositions[count].col = j; 
-            
-                count++;            
+                legalPositionData->legalPositions[count].col = j;
+
+                count++;
             }
         }
 
         piece = NULL;
 
-        if(row == 6)
+        if (row == 6)
         {
             i = row - 2;
             j = col;
 
-            if(i < BOARD_SIZE)
+            if (i < BOARD_SIZE)
             {
                 piece = board->board[i][j].piece;
-    
-                if(piece == NULL)
+
+                if (piece == NULL)
                 {
                     legalPositionData->legalPositions[count].row = row + 1;
-                    legalPositionData->legalPositions[count].col = col; 
+                    legalPositionData->legalPositions[count].col = col;
 
                     count++;
                 }
@@ -148,14 +152,14 @@ void Pawn::RefreshLegalPositions(Board* board)
         i = row - 1;
         j = col - 1;
 
-        if(i >= 0 && j >= 0)
+        if (i >= 0 && j >= 0)
         {
             piece = board->board[i][j].piece;
 
-            if(piece != NULL && piece->GetIsWhite() != isWhite)
+            if (piece != NULL && piece->GetIsWhite() != isWhite)
             {
                 legalPositionData->legalPositions[count].row = i;
-                legalPositionData->legalPositions[count].col = j; 
+                legalPositionData->legalPositions[count].col = j;
 
                 count++;
             }
@@ -167,14 +171,14 @@ void Pawn::RefreshLegalPositions(Board* board)
         i = row - 1;
         j = col + 1;
 
-        if(i >= 0 && j < BOARD_SIZE)
+        if (i >= 0 && j < BOARD_SIZE)
         {
             piece = board->board[i][j].piece;
 
-            if(piece != NULL && piece->GetIsWhite() != isWhite)
+            if (piece != NULL && piece->GetIsWhite() != isWhite)
             {
                 legalPositionData->legalPositions[count].row = i;
-                legalPositionData->legalPositions[count].col = j; 
+                legalPositionData->legalPositions[count].col = j;
 
                 count++;
             }

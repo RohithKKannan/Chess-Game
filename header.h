@@ -15,7 +15,9 @@ class LegalPositionData
 {
     public:
         Position* legalPositions;
+        Position *legalPositionsWithoutKing;
         int numberOfPositions;
+        int numberOfPositionsWithoutKing;
         LegalPositionData();
         ~LegalPositionData();
 };
@@ -54,13 +56,17 @@ class Board
         int whitePieceCount;
         int blackPieceCount;
         int pieceCount;
+        Piece *whiteKing;
+        Piece *blackKing;
 
     public:
         Square **board;
         Board();
         ~Board();
         void SetupBoard();
-        void RefreshAllLegalMoves();
+        void ResetAllPieceInfo();
+        void PreprocessAllAttacks();
+        void SetAllLegalMoves();
         void ClearBoard();
         void DisplayBoard();
         void MarkPositions(LegalPositionData*);
@@ -71,6 +77,9 @@ class Board
         bool CheckIfPositionProtected(int row, int col, bool protectedByWhite);
         bool CheckIfAnyLegalMovesAvailable(bool isWhite);
         Square *SelectSquare(int, int);
+        Piece *GetKing(bool isWhite) { return isWhite ? whiteKing : blackKing; };
+        bool ProcessAttackInDirection(Piece *piece, int rowDir, int colDir, bool tillEnd);
+        bool SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir, bool tillEnd);
 };
 
 #pragma endregion
@@ -82,9 +91,21 @@ class Piece
     protected:
         char piece;
         bool isWhite;
-        bool isKing;
+        bool isKing = false;
         Position position;
         LegalPositionData *legalPositionData;
+
+        bool isPinned;
+
+        Piece *pinningPiece;
+
+        bool isInCheck;
+
+        Piece **attackingPieces;
+        int attackerCount;
+
+        Square **attackPath;
+        int attackPathSquareCount;
 
     public:
         Piece(char, bool);
@@ -93,10 +114,22 @@ class Piece
         void PrintPiece();
         bool GetIsKing() { return isKing; };
         bool GetIsWhite() { return isWhite; };
-        Position GetPosition();
+        bool GetIsInCheck() { return isInCheck; };
+        bool GetIsPinned() { return isPinned; };
+        int GetAttackerCount() { return attackerCount; };
+        Position GetPosition() { return position; };
         LegalPositionData* GetLegalPositionData() { return legalPositionData; };
-        bool CheckIfPositionInLegalPositions(int, int);
-        virtual void RefreshLegalPositions(Board*)= 0;
+        bool CheckIfPositionInLegalPositionsWithoutKing(int, int);
+        void ResetPiecesInfo();
+        virtual void PreprocessAttackInfo(Board *) = 0;
+        virtual void SetLegalPositions(Board *) = 0;
+
+        void SetPieceIsPinned() { isPinned = true; };
+        void AddPieceToPinningPiece(Piece *piece) { pinningPiece = piece; };
+        void SetKingIsInCheck() { isInCheck = true; };
+        void AddSquareToAttackPath(Square *square) { attackPath[attackPathSquareCount++] = square; };
+        void AddPieceToAttackingPieces(Piece *piece) { attackingPieces[attackerCount++] = piece; };
+        bool CheckIfAttackPathContainsPosition(int row, int col);
 };
 
 class Rook: public Piece
@@ -104,7 +137,8 @@ class Rook: public Piece
     public:
         Rook(char piece, bool isWhite);
         ~Rook();
-        void RefreshLegalPositions(Board*);
+        void PreprocessAttackInfo(Board *);
+        void SetLegalPositions(Board *);
 };
 
 class King: public Piece
@@ -112,7 +146,8 @@ class King: public Piece
     public:
         King(char piece, bool isWhite);
         ~King();
-        void RefreshLegalPositions(Board*);
+        void PreprocessAttackInfo(Board *);
+        void SetLegalPositions(Board *);
 };
 
 class Queen: public Piece
@@ -120,7 +155,8 @@ class Queen: public Piece
     public:
         Queen(char piece, bool isWhite);
         ~Queen();
-        void RefreshLegalPositions(Board*);
+        void PreprocessAttackInfo(Board *);
+        void SetLegalPositions(Board *);
 };
 
 class Bishop: public Piece
@@ -128,7 +164,8 @@ class Bishop: public Piece
     public:
         Bishop(char piece, bool isWhite);
         ~Bishop();
-        void RefreshLegalPositions(Board*);
+        void PreprocessAttackInfo(Board *);
+        void SetLegalPositions(Board *);
 };
 
 class Knight: public Piece
@@ -136,7 +173,8 @@ class Knight: public Piece
     public:
         Knight(char piece, bool isWhite);
         ~Knight();
-        void RefreshLegalPositions(Board*);
+        void PreprocessAttackInfo(Board *);
+        void SetLegalPositions(Board *);
 };
 
 class Pawn: public Piece
@@ -144,7 +182,8 @@ class Pawn: public Piece
     public:
         Pawn(char piece, bool isWhite);
         ~Pawn();
-        void RefreshLegalPositions(Board*);
+        void PreprocessAttackInfo(Board *);
+        void SetLegalPositions(Board *);
 };
 
 #pragma endregion
@@ -173,6 +212,7 @@ class GameManager
         GameManager();
         ~GameManager();
         void StartGame();
+        void Game();
         void InitiateTurn();
         Square *SelectSquare();
         bool ParseInput(string *, int *, int *);

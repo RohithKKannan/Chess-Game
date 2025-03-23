@@ -2,208 +2,53 @@
 
 King::King(char piece, bool isWhite) : Piece(piece, isWhite)
 {
+    isKing = true;
 }
 
 King::~King()
 {
 }
 
-void King::RefreshLegalPositions(Board *board)
+void King::PreprocessAttackInfo(Board *board)
+{
+    return;
+}
+
+void King::SetLegalPositions(Board *board)
 {
     int count = 0;
-
     int row = position.row;
     int col = position.col;
 
     Piece *pieceAtPosition = nullptr;
 
-    // up
-    if (row + 1 < BOARD_SIZE && !board->CheckIfPositionProtected(row + 1, col, !isWhite))
+    int directions[8][2] = {
+        {1, 0},   // Up
+        {-1, 0},  // Down
+        {0, -1},  // Left
+        {0, 1},   // Right
+        {1, -1},  // UpLeft
+        {1, 1},   // UpRight
+        {-1, -1}, // DownLeft
+        {-1, 1}   // DownRight
+    };
+
+    for (int i = 0; i < 8; i++)
     {
-        pieceAtPosition = board->SelectSquare(row + 1, col)->piece;
+        int newRow = row + directions[i][0];
+        int newCol = col + directions[i][1];
 
-        if (pieceAtPosition == nullptr)
-        {
-            legalPositionData->legalPositions[count].row = row + 1;
-            legalPositionData->legalPositions[count].col = col;
+        if (board->CheckIfPositionProtected(newRow, newCol, !isWhite) || CheckIfAttackPathContainsPosition(newRow, newCol))
+            continue;
 
-            count++;
-        }
-        else
+        if (newRow >= 0 && newRow < BOARD_SIZE && newCol >= 0 && newCol < BOARD_SIZE)
         {
-            if (pieceAtPosition->GetIsWhite() == !isWhite)
+            pieceAtPosition = board->SelectSquare(newRow, newCol)->piece;
+
+            if (pieceAtPosition == nullptr || pieceAtPosition->GetIsWhite() != isWhite)
             {
-                legalPositionData->legalPositions[count].row = row + 1;
-                legalPositionData->legalPositions[count].col = col;
-
-                count++;
-            }
-        }
-    }
-
-    // down
-    if (row - 1 >= 0 && !board->CheckIfPositionProtected(row - 1, col, !isWhite))
-    {
-        pieceAtPosition = board->SelectSquare(row - 1, col)->piece;
-
-        if (pieceAtPosition == nullptr)
-        {
-            legalPositionData->legalPositions[count].row = row - 1;
-            legalPositionData->legalPositions[count].col = col;
-
-            count++;
-        }
-        else
-        {
-            if (pieceAtPosition->GetIsWhite() == !isWhite)
-            {
-                legalPositionData->legalPositions[count].row = row - 1;
-                legalPositionData->legalPositions[count].col = col;
-
-                count++;
-            }
-        }
-    }
-
-    // left
-    if (col - 1 >= 0 && !board->CheckIfPositionProtected(row, col - 1, !isWhite))
-    {
-        pieceAtPosition = board->SelectSquare(row, col - 1)->piece;
-
-        if (pieceAtPosition == nullptr)
-        {
-            legalPositionData->legalPositions[count].row = row;
-            legalPositionData->legalPositions[count].col = col - 1;
-
-            count++;
-        }
-        else
-        {
-            if (pieceAtPosition->GetIsWhite() == !isWhite)
-            {
-                legalPositionData->legalPositions[count].row = row;
-                legalPositionData->legalPositions[count].col = col - 1;
-
-                count++;
-            }
-        }
-    }
-
-    // right
-    if (col + 1 < BOARD_SIZE && !board->CheckIfPositionProtected(row, col + 1, !isWhite))
-    {
-        pieceAtPosition = board->SelectSquare(row, col + 1)->piece;
-
-        if (pieceAtPosition == nullptr)
-        {
-            legalPositionData->legalPositions[count].row = row;
-            legalPositionData->legalPositions[count].col = col + 1;
-
-            count++;
-        }
-        else
-        {
-            if (pieceAtPosition->GetIsWhite() == !isWhite)
-            {
-                legalPositionData->legalPositions[count].row = row;
-                legalPositionData->legalPositions[count].col = col + 1;
-
-                count++;
-            }
-        }
-    }
-
-    // upLeft
-    if (row + 1 < BOARD_SIZE && col - 1 >= 0 && !board->CheckIfPositionProtected(row + 1, col - 1, !isWhite))
-    {
-        pieceAtPosition = board->SelectSquare(row + 1, col + 1)->piece;
-
-        if (pieceAtPosition == nullptr)
-        {
-            legalPositionData->legalPositions[count].row = row + 1;
-            legalPositionData->legalPositions[count].col = col + 1;
-
-            count++;
-        }
-        else
-        {
-            if (pieceAtPosition->GetIsWhite() == !isWhite)
-            {
-                legalPositionData->legalPositions[count].row = row + 1;
-                legalPositionData->legalPositions[count].col = col + 1;
-
-                count++;
-            }
-        }
-    }
-
-    // upRight
-    if (row + 1 < BOARD_SIZE && col + 1 < BOARD_SIZE && !board->CheckIfPositionProtected(row + 1, col + 1, !isWhite))
-    {
-        pieceAtPosition = board->SelectSquare(row + 1, col + 1)->piece;
-
-        if (pieceAtPosition == nullptr)
-        {
-            legalPositionData->legalPositions[count].row = row + 1;
-            legalPositionData->legalPositions[count].col = col + 1;
-
-            count++;
-        }
-        else
-        {
-            if (pieceAtPosition->GetIsWhite() == !isWhite)
-            {
-                legalPositionData->legalPositions[count].row = row + 1;
-                legalPositionData->legalPositions[count].col = col + 1;
-
-                count++;
-            }
-        }
-    }
-
-    // downLeft
-    if (row - 1 >= 0 && col - 1 >= 0 && !board->CheckIfPositionProtected(row - 1, col - 1, !isWhite))
-    {
-        pieceAtPosition = board->SelectSquare(row - 1, col - 1)->piece;
-
-        if (pieceAtPosition == nullptr)
-        {
-            legalPositionData->legalPositions[count].row = row - 1;
-            legalPositionData->legalPositions[count].col = col - 1;
-
-            count++;
-        }
-        else
-        {
-            if (pieceAtPosition->GetIsWhite() == !isWhite)
-            {
-                legalPositionData->legalPositions[count].row = row - 1;
-                legalPositionData->legalPositions[count].col = col - 1;
-
-                count++;
-            }
-        }
-    }
-
-    // downRight
-    if (row - 1 >= 0 && col + 1 < BOARD_SIZE && !board->CheckIfPositionProtected(row - 1, col + 1, !isWhite))
-    {
-        pieceAtPosition = board->SelectSquare(row - 1, col + 1)->piece;
-
-        if (pieceAtPosition == nullptr)
-        {
-            legalPositionData->legalPositions[count].row = row - 1;
-            legalPositionData->legalPositions[count].col = col + 1;
-
-            count++;
-        }
-        else
-        {
-            if (pieceAtPosition->GetIsWhite() == !isWhite)
-            {
-                legalPositionData->legalPositions[count].row = row - 1;
-                legalPositionData->legalPositions[count].col = col + 1;
-
+                legalPositionData->legalPositions[count].row = newRow;
+                legalPositionData->legalPositions[count].col = newCol;
                 count++;
             }
         }

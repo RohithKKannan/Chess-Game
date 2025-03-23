@@ -10,116 +10,63 @@ Rook::~Rook()
 
 }
 
-void Rook::RefreshLegalPositions(Board* board)
+void Rook::PreprocessAttackInfo(Board *board)
 {
-    int count = 0;
-
-    int row = position.row;
-    int col = position.col;
-
-    Piece *piece;
-
+    cout << endl
+         << "Processing Attack in Direction : " << 1 << " " << 0 << endl;
     // Up
-    for(int i = row + 1; i < BOARD_SIZE; i++)
-    {
-        piece = board->board[i][col].piece;
+    if (!board->ProcessAttackInDirection(this, 1, 0, true))
+        return;
 
-        if(piece != NULL)
-        {
-            if(piece->GetIsWhite() != isWhite)
-            {
-                legalPositionData->legalPositions[count].row = i;
-                legalPositionData->legalPositions[count].col = col;
-            
-                count++;
-            }
-
-            break;
-        }
-    
-        legalPositionData->legalPositions[count].row = i;
-        legalPositionData->legalPositions[count].col = col;
-        
-        count++;
-    }
-
-    piece = NULL;
+    cout << endl
+         << "Processing Attack in Direction : " << -1 << " " << 0 << endl;
 
     // Down
-    for(int i = row - 1; i >= 0; i --)
-    {
-        piece = board->board[i][col].piece;
+    if (!board->ProcessAttackInDirection(this, -1, 0, true))
+        return;
 
-        if(piece != NULL)
-        {
-            if(piece->GetIsWhite() != isWhite)
-            {
-                legalPositionData->legalPositions[count].row = i;
-                legalPositionData->legalPositions[count].col = col;
-
-                count++;
-            }
-            
-            break;
-        }
-    
-        legalPositionData->legalPositions[count].row = i;
-        legalPositionData->legalPositions[count].col = col;
-        
-        count++;
-    }
-
-    piece = NULL;
-
-    // Right
-    for(int j = col + 1; j < BOARD_SIZE; j++)
-    {
-        piece = board->board[row][j].piece;
-
-        if(piece != NULL)
-        {
-            if(piece->GetIsWhite() != isWhite)
-            {
-                legalPositionData->legalPositions[count].row = row;
-                legalPositionData->legalPositions[count].col = j;
-
-                count++;
-            }
-
-            break;
-        }
-
-        legalPositionData->legalPositions[count].row = row;
-        legalPositionData->legalPositions[count].col = j;
-
-        count++;
-    }
-
-    piece = NULL;
+    cout << endl
+         << "Processing Attack in Direction : " << 0 << " " << -1 << endl;
 
     // Left
-    for(int j = col - 1; j >= 0; j--)
-    {
-        piece = board->board[row][j].piece;
+    if (!board->ProcessAttackInDirection(this, 0, -1, true))
+        return;
 
-        if(piece != NULL)
-        {
-            if(piece->GetIsWhite() != isWhite)
-            {
-                legalPositionData->legalPositions[count].row = row;
-                legalPositionData->legalPositions[count].col = j;
+    cout << endl
+         << "Processing Attack in Direction : " << 0 << " " << 1 << endl;
 
-                count++;
-            }
+    // Right
+    if (!board->ProcessAttackInDirection(this, 0, 1, true))
+        return;
+}
 
-            break;
-        }
+void Rook::SetLegalPositions(Board *board)
+{
+    cout << endl
+         << "Setting legal positions in Direction : " << 1 << " " << 0 << endl;
 
-        legalPositionData->legalPositions[count].row = row;
-        legalPositionData->legalPositions[count].col = j;
+    // Up
+    if (!board->SetLegalMovesInDirection(this, 1, 0, true))
+        return;
 
-        count++;
-    }
+    cout << endl
+         << "Setting legal positions in Direction : " << -1 << " " << 0 << endl;
 
-    legalPositionData->numberOfPositions = count;
+    // Down
+    if (!board->SetLegalMovesInDirection(this, -1, 0, true))
+        return;
+
+    cout << endl
+         << "Setting legal positions in Direction : " << 0 << " " << -1 << endl;
+
+    // Left
+    if (!board->SetLegalMovesInDirection(this, 0, -1, true))
+        return;
+
+    cout << endl
+         << "Setting legal positions in Direction : " << 0 << " " << 1 << endl;
+
+    // Right
+    if (!board->SetLegalMovesInDirection(this, 0, 1, true))
+        return;
 }

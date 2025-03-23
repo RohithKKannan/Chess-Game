@@ -10,7 +10,13 @@ Knight::~Knight()
 
 }
 
-void Knight::RefreshLegalPositions(Board* board)
+void Knight::PreprocessAttackInfo(Board *board)
+{
+    board->ProcessAttackInDirection(this, 1, 0, false);
+    board->ProcessAttackInDirection(this, -1, 0, false);
+}
+
+void Knight::SetLegalPositions(Board *board)
 {
     int count = 0;
 
