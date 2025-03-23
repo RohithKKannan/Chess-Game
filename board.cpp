@@ -63,20 +63,20 @@ void Board::SetupBoard()
     AddPiece(new Rook('R', true), 0, 0);
     AddPiece(new Rook('R', true), 0, 7);
 
-    // AddPiece(new Rook('r', false), 7, 0);
-    // AddPiece(new Rook('r', false), 7, 7);
+    AddPiece(new Rook('r', false), 7, 0);
+    AddPiece(new Rook('r', false), 7, 7);
 
     AddPiece(new King('K', true), 0, 4);
     AddPiece(new King('k', false), 7, 4);
 
-    // AddPiece(new Queen('Q', true), 0, 3);
-    // AddPiece(new Queen('q', false), 7, 3);
+    AddPiece(new Queen('Q', true), 0, 3);
+    AddPiece(new Queen('q', false), 7, 3);
 
-    // AddPiece(new Bishop('B', true), 0, 2);
-    // AddPiece(new Bishop('B', true), 0, 5);
+    AddPiece(new Bishop('B', true), 0, 2);
+    AddPiece(new Bishop('B', true), 0, 5);
 
-    // AddPiece(new Bishop('b', false), 7, 2);
-    // AddPiece(new Bishop('b', false), 7, 5);
+    AddPiece(new Bishop('b', false), 7, 2);
+    AddPiece(new Bishop('b', false), 7, 5);
 
     // AddPiece(new Knight('N', true), 0, 1);
     // AddPiece(new Knight('N', true), 0, 6);

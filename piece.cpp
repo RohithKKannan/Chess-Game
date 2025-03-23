@@ -46,6 +46,7 @@ void Piece::ResetPieceInfo()
     legalPositionData->numberOfPositions = 0;
     legalPositionData->numberOfPositionsWithoutKing = 0;
 
+    attackerCount = 0;
     attackPathSquareCount = 0;
 
     pinningPiece = nullptr;

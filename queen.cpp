@@ -10,221 +10,70 @@ Queen::~Queen()
 
 void Queen::PreprocessAttackInfo(Board *board)
 {
-    board->ProcessAttackInDirection(this, 1, 0, false);
-    board->ProcessAttackInDirection(this, -1, 0, false);
+    // up
+    if (!board->ProcessAttackInDirection(this, 1, 0, true))
+        return;
+
+    // down
+    if (!board->ProcessAttackInDirection(this, -1, 0, true))
+        return;
+
+    // left
+    if (!board->ProcessAttackInDirection(this, 0, -1, true))
+        return;
+
+    // right
+    if (!board->ProcessAttackInDirection(this, 0, 1, true))
+        return;
+
+    // up-left
+    if (!board->ProcessAttackInDirection(this, 1, -1, true))
+        return;
+
+    // up-right
+    if (!board->ProcessAttackInDirection(this, 1, 1, true))
+        return;
+
+    // down-left
+    if (!board->ProcessAttackInDirection(this, -1, -1, true))
+        return;
+
+    // down-right
+    if (!board->ProcessAttackInDirection(this, -1, 1, true))
+        return;
 }
 
 void Queen::SetLegalPositions(Board *board)
 {
-    int count = 0;
+    // up
+    if (!board->SetLegalMovesInDirection(this, 1, 0, true))
+        return;
 
-    int row = position.row;
-    int col = position.col;
+    // down
+    if (!board->SetLegalMovesInDirection(this, -1, 0, true))
+        return;
 
-    Piece *piece = NULL;
+    // left
+    if (!board->SetLegalMovesInDirection(this, 0, -1, true))
+        return;
 
-    // Up
-    for (int i = row + 1; i < BOARD_SIZE; i++)
-    {
-        piece = board->board[i][col].piece;
+    // right
+    if (!board->SetLegalMovesInDirection(this, 0, 1, true))
+        return;
 
-        if (piece != NULL)
-        {
-            if (piece->GetIsWhite() != isWhite)
-            {
-                legalPositionData->legalPositions[count].row = i;
-                legalPositionData->legalPositions[count].col = col;
+    // up-left
+    if (!board->SetLegalMovesInDirection(this, 1, -1, true))
+        return;
 
-                count++;
-            }
+    // up-right
+    if (!board->SetLegalMovesInDirection(this, 1, 1, true))
+        return;
 
-            break;
-        }
+    // down-left
+    if (!board->SetLegalMovesInDirection(this, -1, -1, true))
+        return;
 
-        legalPositionData->legalPositions[count].row = i;
-        legalPositionData->legalPositions[count].col = col;
-
-        count++;
-    }
-
-    piece = NULL;
-
-    // Down
-    for (int i = row - 1; i >= 0; i--)
-    {
-        piece = board->board[i][col].piece;
-
-        if (piece != NULL)
-        {
-            if (piece->GetIsWhite() != isWhite)
-            {
-                legalPositionData->legalPositions[count].row = i;
-                legalPositionData->legalPositions[count].col = col;
-
-                count++;
-            }
-
-            break;
-        }
-
-        legalPositionData->legalPositions[count].row = i;
-        legalPositionData->legalPositions[count].col = col;
-
-        count++;
-    }
-
-    piece = NULL;
-
-    // Right
-    for (int j = col + 1; j < BOARD_SIZE; j++)
-    {
-        piece = board->board[row][j].piece;
-
-        if (piece != NULL)
-        {
-            if (piece->GetIsWhite() != isWhite)
-            {
-                legalPositionData->legalPositions[count].row = row;
-                legalPositionData->legalPositions[count].col = j;
-
-                count++;
-            }
-
-            break;
-        }
-
-        legalPositionData->legalPositions[count].row = row;
-        legalPositionData->legalPositions[count].col = j;
-
-        count++;
-    }
-
-    piece = NULL;
-
-    // Left
-    for (int j = col - 1; j >= 0; j--)
-    {
-        piece = board->board[row][j].piece;
-
-        if (piece != NULL)
-        {
-            if (piece->GetIsWhite() != isWhite)
-            {
-                legalPositionData->legalPositions[count].row = row;
-                legalPositionData->legalPositions[count].col = j;
-
-                count++;
-            }
-
-            break;
-        }
-
-        legalPositionData->legalPositions[count].row = row;
-        legalPositionData->legalPositions[count].col = j;
-
-        count++;
-    }
-
-    piece = NULL;
-
-    // Up Left
-    for (int i = row + 1, j = col - 1; i < BOARD_SIZE && j >= 0; i++, j--)
-    {
-        piece = board->board[i][j].piece;
-        if (piece != NULL)
-        {
-            if (piece->GetIsWhite() != isWhite)
-            {
-                legalPositionData->legalPositions[count].row = i;
-                legalPositionData->legalPositions[count].col = j;
-
-                count++;
-            }
-
-            break;
-        }
-
-        legalPositionData->legalPositions[count].row = i;
-        legalPositionData->legalPositions[count].col = j;
-
-        count++;
-    }
-
-    piece = NULL;
-
-    // Up Right
-    for (int i = row + 1, j = col + 1; i < BOARD_SIZE && j < BOARD_SIZE; i++, j++)
-    {
-        piece = board->board[i][j].piece;
-        if (piece != NULL)
-        {
-            if (piece->GetIsWhite() != isWhite)
-            {
-                legalPositionData->legalPositions[count].row = i;
-                legalPositionData->legalPositions[count].col = j;
-
-                count++;
-            }
-
-            break;
-        }
-
-        legalPositionData->legalPositions[count].row = i;
-        legalPositionData->legalPositions[count].col = j;
-
-        count++;
-    }
-
-    piece = NULL;
-
-    // Down Left
-    for (int i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--)
-    {
-        piece = board->board[i][j].piece;
-        if (piece != NULL)
-        {
-            if (piece->GetIsWhite() != isWhite)
-            {
-                legalPositionData->legalPositions[count].row = i;
-                legalPositionData->legalPositions[count].col = j;
-
-                count++;
-            }
-
-            break;
-        }
-
-        legalPositionData->legalPositions[count].row = i;
-        legalPositionData->legalPositions[count].col = j;
-
-        count++;
-    }
-
-    piece = NULL;
-
-    // Down Right
-    for (int i = row - 1, j = col + 1; i >= 0 && j < BOARD_SIZE; i--, j++)
-    {
-        piece = board->board[i][j].piece;
-
-        if (piece != NULL)
-        {
-            if (piece->GetIsWhite() != isWhite)
-            {
-                legalPositionData->legalPositions[count].row = i;
-                legalPositionData->legalPositions[count].col = j;
-
-                count++;
-            }
-
-            break;
-        }
-
-        legalPositionData->legalPositions[count].row = i;
-        legalPositionData->legalPositions[count].col = j;
-
-        count++;
-    }
-
-    legalPositionData->numberOfPositions = count;
+    // down-right
+    if (!board->SetLegalMovesInDirection(this, -1, 1, true))
+        return;
 }
