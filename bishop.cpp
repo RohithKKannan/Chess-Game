@@ -2,6 +2,7 @@
 
 Bishop::Bishop(char piece, bool isWhite) : Piece(piece, isWhite)
 {
+    pieceType = PieceType::Bishop;
 }
 
 Bishop::~Bishop()

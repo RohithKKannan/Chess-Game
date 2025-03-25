@@ -2,7 +2,7 @@
 
 Rook::Rook(char piece, bool isWhite) : Piece(piece, isWhite)
 {
-
+    pieceType = PieceType::Rook;
 }
 
 Rook::~Rook()

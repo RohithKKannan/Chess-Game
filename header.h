@@ -3,6 +3,22 @@ using namespace std;
 
 #define BOARD_SIZE 8
 
+enum class PieceType
+{
+    King,
+    Queen,
+    Bishop,
+    Knight,
+    Rook,
+    Pawn
+};
+
+enum BishopType
+{
+    WhiteBishop,
+    BlackBishop
+};
+
 #pragma region Data Classes
 
 struct Position
@@ -59,6 +75,15 @@ class Board
         Piece *whiteKing;
         Piece *blackKing;
 
+        int blackKnightCount = 0;
+        int whiteKnightCount = 0;
+        int blackWhiteBishopCount = 0;
+        int blackBlackBishopCount = 0;
+        int whiteWhiteBishopCount = 0;
+        int whiteBlackBishopCount = 0;
+
+        int moveCountWithoutPawnMoveOrCapture = 0;
+
     public:
         Square **board;
         Board();
@@ -68,6 +93,7 @@ class Board
         void PreprocessAllAttacks();
         void SetAllLegalMoves();
         bool CheckForDraw();
+        bool CheckIfPositionRepeatedThrice();
         void ClearBoard();
         void DisplayBoard();
         void MarkPositions(LegalPositionData*);
@@ -99,6 +125,7 @@ class Piece
         bool hasMoved = false;
         Position position;
         LegalPositionData *legalPositionData;
+        PieceType pieceType;
 
         bool isPinned;
 
@@ -121,6 +148,7 @@ class Piece
         bool GetIsPinned() { return isPinned; };
         int GetAttackerCount() { return attackerCount; };
         Position GetPosition() { return position; };
+        PieceType GetPieceType() { return pieceType; };
         LegalPositionData* GetLegalPositionData() { return legalPositionData; };
         bool CheckIfPositionInLegalPositionsWithoutKing(int, int);
         void ResetPieceInfo();

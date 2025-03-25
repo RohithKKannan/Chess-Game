@@ -2,7 +2,7 @@
 
 King::King(char piece, bool isWhite) : Piece(piece, isWhite)
 {
-    isKing = true;
+    pieceType = PieceType::King;
 }
 
 King::~King()

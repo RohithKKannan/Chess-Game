@@ -2,7 +2,7 @@
 
 Knight::Knight(char piece, bool isWhite) : Piece(piece, isWhite)
 {
-
+    pieceType = PieceType::Knight;
 }
 
 Knight::~Knight()

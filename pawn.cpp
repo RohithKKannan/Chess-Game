@@ -2,6 +2,7 @@
 
 Pawn::Pawn(char piece, bool isWhite) : Piece(piece, isWhite)
 {
+    pieceType = PieceType::Pawn;
 }
 
 Pawn::~Pawn()

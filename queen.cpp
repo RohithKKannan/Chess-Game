@@ -2,6 +2,7 @@
 
 Queen::Queen(char piece, bool isWhite) : Piece(piece, isWhite)
 {
+    pieceType = PieceType::Queen;
 }
 
 Queen::~Queen()

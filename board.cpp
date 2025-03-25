@@ -153,6 +153,29 @@ void Board::SetAllLegalMoves()
 
 bool Board::CheckForDraw()
 {
+    // Repeating moves
+    if (CheckIfPositionRepeatedThrice)
+        return true;
+
+    // Insufficient material
+    if (pieceCount == 2)
+        return true;
+
+    if (pieceCount == 3 && (whiteKnightCount == 1 || blackKnightCount == 1 || whiteBlackBishopCount == 1 || blackBlackBishopCount == 1 || whiteWhiteBishopCount == 1 || whiteBlackBishopCount == 1))
+        return true;
+
+    if (pieceCount == 4 && ((blackWhiteBishopCount == 1 && whiteWhiteBishopCount == 1) || (blackBlackBishopCount == 1 && whiteBlackBishopCount == 1)))
+        return true;
+
+    // Fifty move rule
+    if (moveCountWithoutPawnMoveOrCapture == 50)
+        return true;
+
+    return false;
+}
+
+bool Board::CheckIfPositionRepeatedThrice()
+{
     return false;
 }
 
@@ -213,12 +236,30 @@ void Board::AddPiece(Piece *piece, int row, int col)
         whitePieces[whitePieceCount++] = piece;
         if (piece->GetIsKing())
             whiteKing = piece;
+
+        if (piece->GetPieceType() == PieceType::Bishop)
+        {
+            (row + col) % 2 == 0 ? whiteBlackBishopCount++ : whiteWhiteBishopCount++;
+        }
+        else if (piece->GetPieceType() == PieceType::Knight)
+        {
+            whiteKnightCount++;
+        }
     }
     else
     {
         blackPieces[blackPieceCount++] = piece;
         if (piece->GetIsKing())
             blackKing = piece;
+
+        if (piece->GetPieceType() == PieceType::Bishop)
+        {
+            (row + col) % 2 == 0 ? blackBlackBishopCount++ : blackWhiteBishopCount++;
+        }
+        else if (piece->GetPieceType() == PieceType::Knight)
+        {
+            blackKnightCount++;
+        }
     }
 
     piece->SetPosition(row, col);
@@ -321,6 +362,11 @@ bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
     if(destination->piece == NULL)
     {
         destination->SetPiece(selectedPiece);
+
+        if (selectedPiece->GetPieceType() == PieceType::Pawn)
+            moveCountWithoutPawnMoveOrCapture = 0;
+        else
+            moveCountWithoutPawnMoveOrCapture++;
     }
     else
     {
@@ -330,6 +376,8 @@ bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
         destination->SetPiece(selectedPiece);
     
         RemovePiece(removedPiece);
+
+        moveCountWithoutPawnMoveOrCapture = 0;
     }
 
     selectedPiece->SetPieceHasMoved();
@@ -369,6 +417,8 @@ Square *Board::SelectSquare(int row, int col)
 {
     return &board[row][col];
 }
+
+#pragma region Directional processing
 
 bool Board::ProcessAttackInDirection(Piece *piece, int rowDir, int colDir, bool isPawn)
 {
@@ -577,6 +627,10 @@ bool Board::SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir, bool 
     return true;
 }
 
+#pragma endregion
+
+#pragma region Knight
+
 bool Board::ProcessKnightAttack(Piece *knight, int rowDir, int colDir)
 {
     int row = knight->GetPosition().row + rowDir;
@@ -671,3 +725,5 @@ bool Board::SetLegalMoveForKnight(Piece *knight, int rowDir, int colDir)
 
     return true;
 }
+
+#pragma endregion

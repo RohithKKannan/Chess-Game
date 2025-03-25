@@ -50,6 +50,8 @@ void GameManager::Game()
 
         board->SetAllLegalMoves();
 
+        board->CheckForDraw();
+
         switch (currentGameState)
         {
         case WhiteTurn:
