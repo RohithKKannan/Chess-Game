@@ -23,8 +23,6 @@ Piece::~Piece()
     delete legalPositionData;
 
     delete[] attackPath;
-
-    cout << "Piece deleted successfully!" << endl;
 }
 
 void Piece::PrintPiece()

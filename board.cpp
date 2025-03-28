@@ -60,34 +60,21 @@ Board::~Board()
 
 void Board::SetupBoard()
 {
-    AddPiece(new Rook('R', true), 0, 0);
-    AddPiece(new Rook('R', true), 0, 7);
+    string initialBoardState = "RA1 RH1 rA8 rH8 KE1 kE8 QD1 qD8 BC1 BF1 bC8 bF8 NB1 NG1 nB8 nG8 PA2 pA7 PB2 pB7 PC2 pC7 PD2 pD7 PE2 pE7 PF2 pF7 PG2 pG7 PH2 pH7";
 
-    AddPiece(new Rook('r', false), 7, 0);
-    AddPiece(new Rook('r', false), 7, 7);
+    std::stringstream ss(initialBoardState);
+    std::string word;
 
-    AddPiece(new King('K', true), 0, 4);
-    AddPiece(new King('k', false), 7, 4);
+    char pieceChar;
+    int row, col;
 
-    AddPiece(new Queen('Q', true), 0, 3);
-    AddPiece(new Queen('q', false), 7, 3);
-
-    AddPiece(new Bishop('B', true), 0, 2);
-    AddPiece(new Bishop('B', true), 0, 5);
-
-    AddPiece(new Bishop('b', false), 7, 2);
-    AddPiece(new Bishop('b', false), 7, 5);
-
-    AddPiece(new Knight('N', true), 0, 1);
-    AddPiece(new Knight('N', true), 0, 6);
-
-    AddPiece(new Knight('n', false), 7, 1);
-    AddPiece(new Knight('n', false), 7, 6);
-
-    for (int i = 0; i < BOARD_SIZE; i++)
+    while (std::getline(ss, word, ' '))
     {
-        AddPiece(new Pawn('P', true), 1, i);
-        AddPiece(new Pawn('p', false), 6, i);
+        pieceChar = word[0];
+        col = (int)word[1] - 'A';
+        row = (int)word[2] - '1';
+
+        AddPiece(pieceChar, row, col);
     }
 }
 
@@ -154,7 +141,7 @@ void Board::SetAllLegalMoves()
 bool Board::CheckForDraw()
 {
     // Repeating moves
-    if (CheckIfPositionRepeatedThrice)
+    if (CheckIfPositionRepeatedThrice())
         return true;
 
     // Insufficient material
@@ -176,6 +163,12 @@ bool Board::CheckForDraw()
 
 bool Board::CheckIfPositionRepeatedThrice()
 {
+    for (const auto &pair : positionCount)
+    {
+        if (pair.second >= 3)
+            return true;
+    }
+
     return false;
 }
 
@@ -265,6 +258,43 @@ void Board::AddPiece(Piece *piece, int row, int col)
     piece->SetPosition(row, col);
 
     pieces[pieceCount++] = piece;
+}
+
+void Board::AddPiece(char pieceChar, int row, int col)
+{
+    auto [pieceType, isWhite] = GetPieceTypeAndIsWhiteForChar(pieceChar);
+
+    if (pieceType == PieceType::None)
+    {
+        cout << "Invalid piece char!" << endl;
+        return;
+    }
+
+    Piece *piece = nullptr;
+
+    switch (pieceType)
+    {
+    case PieceType::King:
+        AddPiece(new King(pieceChar, isWhite), row, col);
+        break;
+    case PieceType::Queen:
+        AddPiece(new Queen(pieceChar, isWhite), row, col);
+        break;
+    case PieceType::Bishop:
+        AddPiece(new Bishop(pieceChar, isWhite), row, col);
+        break;
+    case PieceType::Knight:
+        AddPiece(new Knight(pieceChar, isWhite), row, col);
+        break;
+    case PieceType::Rook:
+        AddPiece(new Rook(pieceChar, isWhite), row, col);
+        break;
+    case PieceType::Pawn:
+        AddPiece(new Pawn(pieceChar, isWhite), row, col);
+        break;
+    default:
+        break;
+    }
 }
 
 void Board::RemovePiece(Piece *pieceToRemove)
@@ -724,6 +754,23 @@ bool Board::SetLegalMoveForKnight(Piece *knight, int rowDir, int colDir)
     }
 
     return true;
+}
+
+string Board::GetBoardState()
+{
+    ostringstream oss;
+
+    for (int i = 0; i < pieceCount; i++)
+    {
+        oss << GetCodeForPiece(pieces[i]) << ' ';
+    }
+
+    return oss.str();
+}
+
+void Board::TrackBoardState(const string &boardState)
+{
+    positionCount[boardState]++;
 }
 
 #pragma endregion

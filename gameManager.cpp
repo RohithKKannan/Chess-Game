@@ -44,13 +44,16 @@ void GameManager::Game()
 
     while (isRunning)
     {
+        board->TrackBoardState(board->GetBoardState());
+
         board->ResetAllPieceInfo();
 
         board->PreprocessAllAttacks();
 
         board->SetAllLegalMoves();
 
-        board->CheckForDraw();
+        if (board->CheckForDraw())
+            currentGameState = GameState::Draw;
 
         switch (currentGameState)
         {
@@ -232,7 +235,7 @@ bool GameManager::ParseInput(string *input, int *row, int *col)
     }
 
     *col = (*input)[0] - 'A';       // 'A' → 0, 'B' → 1, ..., 'H' → 7
-    *row = ((*input)[1] - '0') - 1; // '1' → 0, '2' → 1, ..., '8' → 7
+    *row = (*input)[1] - '1';       // '1' → 0, '2' → 1, ..., '8' → 7
 
     return true;
 }

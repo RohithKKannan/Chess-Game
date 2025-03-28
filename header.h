@@ -1,4 +1,6 @@
 #include <iostream>
+#include <unordered_map>
+#include <sstream>
 using namespace std;
 
 #define BOARD_SIZE 8
@@ -10,7 +12,8 @@ enum class PieceType
     Bishop,
     Knight,
     Rook,
-    Pawn
+    Pawn,
+    None
 };
 
 enum BishopType
@@ -84,6 +87,10 @@ class Board
 
         int moveCountWithoutPawnMoveOrCapture = 0;
 
+        string boardState;
+
+        std::unordered_map<string, int> positionCount;
+
     public:
         Square **board;
         Board();
@@ -99,6 +106,7 @@ class Board
         void MarkPositions(LegalPositionData*);
         void UnMarkPositions();
         void AddPiece(Piece*, int, int);
+        void AddPiece(char, int, int);
         void RemovePiece(Piece*);
         bool MovePieceToSquare(Piece*, int, int);
         bool CheckIfPositionProtected(int row, int col, bool protectedByWhite);
@@ -110,6 +118,9 @@ class Board
 
         bool ProcessKnightAttack(Piece *knight, int row, int col);
         bool SetLegalMoveForKnight(Piece *knight, int row, int col);
+
+        string GetBoardState();
+        void TrackBoardState(const string &boardState);
 };
 
 #pragma endregion
@@ -121,7 +132,6 @@ class Piece
     protected:
         char piece;
         bool isWhite;
-        bool isKing = false;
         bool hasMoved = false;
         Position position;
         LegalPositionData *legalPositionData;
@@ -142,7 +152,7 @@ class Piece
         virtual ~Piece();
         void SetPosition(int, int);
         void PrintPiece();
-        bool GetIsKing() { return isKing; };
+        bool GetIsKing() { return pieceType == PieceType::King; };
         bool GetIsWhite() { return isWhite; };
         bool GetIsInCheck() { return isInCheck; };
         bool GetIsPinned() { return isPinned; };
@@ -254,3 +264,69 @@ class GameManager
 };
 
 #pragma endregion
+
+std::tuple<PieceType, bool> static GetPieceTypeAndIsWhiteForChar(char pieceChar)
+{
+    PieceType pieceType;
+    bool isWhite = (pieceChar >= 'A' && pieceChar <= 'Z');
+
+    switch (tolower(pieceChar))
+    {
+    case 'k':
+        pieceType = PieceType::King;
+        break;
+    case 'q':
+        pieceType = PieceType::Queen;
+        break;
+    case 'b':
+        pieceType = PieceType::Bishop;
+        break;
+    case 'n':
+        pieceType = PieceType::Knight;
+        break;
+    case 'r':
+        pieceType = PieceType::Rook;
+        break;
+    case 'p':
+        pieceType = PieceType::Pawn;
+        break;
+    default:
+        return {PieceType::None, false};
+    }
+
+    return {pieceType, isWhite};
+}
+
+char static GetCharForPiece(Piece *piece)
+{
+    bool isWhite = piece->GetIsWhite();
+    switch (piece->GetPieceType())
+    {
+    case PieceType::King:
+        return isWhite ? 'K' : 'k';
+    case PieceType::Queen:
+        return isWhite ? 'Q' : 'q';
+    case PieceType::Bishop:
+        return isWhite ? 'B' : 'b';
+    case PieceType::Knight:
+        return isWhite ? 'N' : 'n';
+    case PieceType::Rook:
+        return isWhite ? 'R' : 'r';
+    case PieceType::Pawn:
+        return isWhite ? 'P' : 'p';
+    }
+
+    return '-';
+}
+
+string static GetCodeForPiece(Piece *piece)
+{
+    char pieceChar = GetCharForPiece(piece);
+
+    char xPos = (char)piece->GetPosition().col + 'A';
+    char yPos = (char)(piece->GetPosition().row + '1');
+
+    std::ostringstream oss;
+    oss << pieceChar << xPos << yPos;
+    return oss.str();
+}
