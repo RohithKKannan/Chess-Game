@@ -48,9 +48,9 @@ void GameManager::Game()
 
         board->ResetAllPieceInfo();
 
-        board->PreprocessAllAttacks();
+        board->PreprocessAllPieceAttacks();
 
-        board->SetAllLegalMoves();
+        board->SetAllPieceLegalMoves();
 
         if (board->CheckForDraw())
             currentGameState = GameState::Draw;
@@ -129,16 +129,16 @@ void GameManager::InitiateTurn()
         board->DisplayBoard();
 
         // Get Input - Select Square
-        selectedSquare = SelectSquare();
+        selectedSquare = SelectSquareFromInput();
 
         // Select Piece
-        if (selectedSquare->piece == NULL)
+        if (selectedSquare->GetPiece() == NULL)
         {
             cout << "No piece found at square! Pick valid square!" << endl;
         }
         else
         {
-            selectedPiece = selectedSquare->piece;
+            selectedPiece = selectedSquare->GetPiece();
 
             if (selectedPiece->GetIsWhite() != currentGameState == WhiteTurn)
             {
@@ -167,7 +167,7 @@ void GameManager::InitiateTurn()
         board->DisplayBoard();
 
         // Get Input - Destination Square
-        selectedSquare = SelectSquare();
+        selectedSquare = SelectSquareFromInput();
 
         bool isLegal = false;
 
@@ -197,7 +197,7 @@ void GameManager::InitiateTurn()
     board->DisplayBoard();
 }
 
-Square *GameManager::SelectSquare()
+Square *GameManager::SelectSquareFromInput()
 {
     string input;
     int row, col;

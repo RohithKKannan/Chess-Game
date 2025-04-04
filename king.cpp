@@ -43,7 +43,7 @@ void King::SetLegalPositions(Board *board)
 
         if (newRow >= 0 && newRow < BOARD_SIZE && newCol >= 0 && newCol < BOARD_SIZE)
         {
-            pieceAtPosition = board->SelectSquare(newRow, newCol)->piece;
+            pieceAtPosition = board->SelectSquare(newRow, newCol)->GetPiece();
 
             if (pieceAtPosition == nullptr || pieceAtPosition->GetIsWhite() != isWhite)
             {

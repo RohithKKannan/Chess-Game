@@ -92,7 +92,7 @@ void Board::ResetAllPieceInfo()
     }
 }
 
-void Board::PreprocessAllAttacks()
+void Board::PreprocessAllPieceAttacks()
 {
     // cout << "Starting Preprocessed Attack : " << endl;
     for (int i = 0; i < pieceCount; i++)
@@ -106,7 +106,7 @@ void Board::PreprocessAllAttacks()
     }
 }
 
-void Board::SetAllLegalMoves()
+void Board::SetAllPieceLegalMoves()
 {
     // cout << endl
     //      << "Refreshing All Legal moves!" << endl;
@@ -389,7 +389,7 @@ bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
     Square *source = &board[oldPosition.row][oldPosition.col];
     source->ClearPiece();
 
-    if(destination->piece == NULL)
+    if(destination->GetPiece() == NULL)
     {
         destination->SetPiece(selectedPiece);
 
@@ -479,7 +479,7 @@ bool Board::ProcessAttackInDirection(Piece *piece, int rowDir, int colDir, bool 
         // cout << "Checking square at " << newRow << " " << newCol << endl;
 
         currentSquare = &board[newRow][newCol];
-        tempPiece = currentSquare->piece;
+        tempPiece = currentSquare->GetPiece();
 
         if (tempPiece != nullptr)
         {
@@ -586,7 +586,7 @@ bool Board::SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir, bool 
 
         legalPositionData->numberOfPositionsWithoutKing++;
 
-        tempPiece = board[newRow][newCol].piece;
+        tempPiece = board[newRow][newCol].GetPiece();
 
         if (tempPiece != NULL)
         {
@@ -685,7 +685,7 @@ bool Board::ProcessKnightAttack(Piece *knight, int rowDir, int colDir)
 
     if (row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE)
     {
-        tempPiece = board[row][col].piece;
+        tempPiece = board[row][col].GetPiece();
         if (tempPiece != nullptr && (tempPiece->GetIsWhite() != knight->GetIsWhite()) && tempPiece->GetIsKing())
         {
             // knight attacks opp king
@@ -729,7 +729,7 @@ bool Board::SetLegalMoveForKnight(Piece *knight, int rowDir, int colDir)
 
         legalPositionData->numberOfPositionsWithoutKing++;
 
-        tempPiece = board[row][col].piece;
+        tempPiece = board[row][col].GetPiece();
 
         if (knight->GetIsPinned() && !knight->CheckIfAttackPathContainsPosition(row, col))
         {

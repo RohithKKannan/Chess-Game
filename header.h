@@ -33,12 +33,14 @@ struct Position
 class LegalPositionData
 {
     public:
-        Position* legalPositions;
-        Position *legalPositionsWithoutKing;
-        int numberOfPositions;
-        int numberOfPositionsWithoutKing;
         LegalPositionData();
         ~LegalPositionData();
+
+        Position *legalPositions;
+        Position *legalPositionsWithoutKing;
+        
+        int numberOfPositions;
+        int numberOfPositionsWithoutKing;
 };
 
 #pragma endregion
@@ -52,29 +54,36 @@ class Square
     private:
         Position position;
         bool isMarked;
+        Piece *piece;
 
     public:
-        Piece *piece;
         Square();
         ~Square();
+        
         void SetPosition(int, int);
         Position GetPosition() { return position; };
+        
         void MarkSquare();
         void UnMarkSquare();
+        
         void SetPiece(Piece *);
+        Piece* GetPiece() { return piece; };
         Piece* ClearPiece();
+        
         void PrintSquare();
 };
 
 class Board
 {
     private:
+        Square **board;
+
         Piece** pieces;
         Piece** whitePieces;
         Piece** blackPieces;
+        int pieceCount;
         int whitePieceCount;
         int blackPieceCount;
-        int pieceCount;
         Piece *whiteKing;
         Piece *blackKing;
 
@@ -92,35 +101,45 @@ class Board
         std::unordered_map<string, int> positionCount;
 
     public:
-        Square **board;
         Board();
         ~Board();
+
         void SetupBoard();
-        void ResetAllPieceInfo();
-        void PreprocessAllAttacks();
-        void SetAllLegalMoves();
-        bool CheckForDraw();
-        bool CheckIfPositionRepeatedThrice();
         void ClearBoard();
         void DisplayBoard();
+
+        bool CheckForDraw();
+        bool CheckIfPositionRepeatedThrice();
+
         void MarkPositions(LegalPositionData*);
         void UnMarkPositions();
+
+        string GetBoardState();
+        void TrackBoardState(const string &boardState);
+
+        Square *SelectSquare(int, int);
+
         void AddPiece(Piece*, int, int);
         void AddPiece(char, int, int);
+
         void RemovePiece(Piece*);
+
         bool MovePieceToSquare(Piece*, int, int);
+
         bool CheckIfPositionProtected(int row, int col, bool protectedByWhite);
         bool CheckIfAnyLegalMovesAvailable(bool isWhite);
-        Square *SelectSquare(int, int);
+
         Piece *GetKing(bool isWhite) { return isWhite ? whiteKing : blackKing; };
+
+        void PreprocessAllPieceAttacks();
+        void SetAllPieceLegalMoves();
+        void ResetAllPieceInfo();
+
         bool ProcessAttackInDirection(Piece *piece, int rowDir, int colDir, bool isPawn);
         bool SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir, bool isPawn, bool hasPawnMoved);
 
         bool ProcessKnightAttack(Piece *knight, int row, int col);
         bool SetLegalMoveForKnight(Piece *knight, int row, int col);
-
-        string GetBoardState();
-        void TrackBoardState(const string &boardState);
 };
 
 #pragma endregion
@@ -133,25 +152,26 @@ class Piece
         char piece;
         bool isWhite;
         bool hasMoved = false;
-        Position position;
-        LegalPositionData *legalPositionData;
         PieceType pieceType;
 
-        bool isPinned;
+        Position position;
+        LegalPositionData *legalPositionData;
 
+        bool isPinned;
         Piece *pinningPiece;
 
         bool isInCheck;
         int attackerCount;
-
         Square **attackPath;
         int attackPathSquareCount;
 
     public:
         Piece(char, bool);
         virtual ~Piece();
+
         void SetPosition(int, int);
         void PrintPiece();
+
         bool GetIsKing() { return pieceType == PieceType::King; };
         bool GetIsWhite() { return isWhite; };
         bool GetIsInCheck() { return isInCheck; };
@@ -160,10 +180,6 @@ class Piece
         Position GetPosition() { return position; };
         PieceType GetPieceType() { return pieceType; };
         LegalPositionData* GetLegalPositionData() { return legalPositionData; };
-        bool CheckIfPositionInLegalPositionsWithoutKing(int, int);
-        void ResetPieceInfo();
-        virtual void PreprocessAttackInfo(Board *) = 0;
-        virtual void SetLegalPositions(Board *) = 0;
 
         void SetPieceHasMoved() { hasMoved = true; };
         void SetPieceIsPinned() { isPinned = true; };
@@ -173,8 +189,13 @@ class Piece
             attackerCount++;
             isInCheck = true;
         };
-        void AddSquareToAttackPath(Square *square) { attackPath[attackPathSquareCount++] = square; };
+
+        virtual void PreprocessAttackInfo(Board *) = 0;
+        virtual void SetLegalPositions(Board *) = 0;
         bool CheckIfAttackPathContainsPosition(int row, int col);
+        bool CheckIfPositionInLegalPositionsWithoutKing(int, int);
+        void AddSquareToAttackPath(Square *square) { attackPath[attackPathSquareCount++] = square; };
+        void ResetPieceInfo();
 };
 
 class Rook: public Piece
@@ -256,10 +277,12 @@ class GameManager
     public:
         GameManager();
         ~GameManager();
+        
         void StartGame();
         void Game();
         void InitiateTurn();
-        Square *SelectSquare();
+
+        Square *SelectSquareFromInput();
         bool ParseInput(string *, int *, int *);
 };
 
