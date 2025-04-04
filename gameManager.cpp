@@ -75,6 +75,8 @@ void GameManager::Game()
             }
 
             InitiateTurn();
+
+            board->ResetPawnsTwoStepsMove(false);
             currentGameState = BlackTurn;
             break;
         case BlackTurn:
@@ -95,6 +97,8 @@ void GameManager::Game()
             }
 
             InitiateTurn();
+
+            board->ResetPawnsTwoStepsMove(true);
             currentGameState = WhiteTurn;
             break;
         case Stalemate:

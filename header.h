@@ -46,6 +46,7 @@ class LegalPositionData
 #pragma endregion
 
 class Piece;
+class Pawn;
 
 #pragma region Board Elements
 
@@ -81,9 +82,13 @@ class Board
         Piece** pieces;
         Piece** whitePieces;
         Piece** blackPieces;
+        Pawn** whitePawns;
+        Pawn** blackPawns;
         int pieceCount;
         int whitePieceCount;
         int blackPieceCount;
+        int whitePawnCount;
+        int blackPawnCount;
         Piece *whiteKing;
         Piece *blackKing;
 
@@ -117,6 +122,7 @@ class Board
         string GetBoardState();
         void TrackBoardState(const string &boardState);
 
+        Square* GetSquare(int row, int col) { return &board[row][col]; };
         Square *SelectSquare(int, int);
 
         void AddPiece(Piece*, int, int);
@@ -134,9 +140,10 @@ class Board
         void PreprocessAllPieceAttacks();
         void SetAllPieceLegalMoves();
         void ResetAllPieceInfo();
+        void ResetPawnsTwoStepsMove(bool isWhite);
 
-        bool ProcessAttackInDirection(Piece *piece, int rowDir, int colDir, bool isPawn);
-        bool SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir, bool isPawn, bool hasPawnMoved);
+        bool ProcessAttackInDirection(Piece *piece, int rowDir, int colDir);
+        bool SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir);
 
         bool ProcessKnightAttack(Piece *knight, int row, int col);
         bool SetLegalMoveForKnight(Piece *knight, int row, int col);
@@ -150,8 +157,8 @@ class Piece
 {
     protected:
         char piece;
+        int moveCount;
         bool isWhite;
-        bool hasMoved = false;
         PieceType pieceType;
 
         Position position;
@@ -170,6 +177,7 @@ class Piece
         virtual ~Piece();
 
         void SetPosition(int, int);
+        void SetPieceMoved() { moveCount++; };
         void PrintPiece();
 
         bool GetIsKing() { return pieceType == PieceType::King; };
@@ -177,11 +185,11 @@ class Piece
         bool GetIsInCheck() { return isInCheck; };
         bool GetIsPinned() { return isPinned; };
         int GetAttackerCount() { return attackerCount; };
+        int GetMoveCount() { return moveCount; };
         Position GetPosition() { return position; };
         PieceType GetPieceType() { return pieceType; };
         LegalPositionData* GetLegalPositionData() { return legalPositionData; };
 
-        void SetPieceHasMoved() { hasMoved = true; };
         void SetPieceIsPinned() { isPinned = true; };
         void AddPieceToPinningPiece(Piece *piece) { pinningPiece = piece; };
         void SetKingIsInCheck()
@@ -245,9 +253,15 @@ class Knight: public Piece
 
 class Pawn: public Piece
 {
+    private:
+        bool hasMovedTwoSteps;
     public:
         Pawn(char piece, bool isWhite);
         ~Pawn();
+
+        void SetHasMovedTwoSteps(bool hasMovedTwoSteps) { this->hasMovedTwoSteps = hasMovedTwoSteps; };
+        bool GetHasMovedTwoSteps() { return hasMovedTwoSteps; };
+
         void PreprocessAttackInfo(Board *);
         void SetLegalPositions(Board *);
 };

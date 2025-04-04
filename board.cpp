@@ -5,6 +5,8 @@ Board::Board()
     pieces = new Piece*[32];
     whitePieces = new Piece*[16];
     blackPieces = new Piece*[16];
+    whitePawns = new Pawn*[8];
+    blackPawns = new Pawn*[8];
 
     for (int i = 0; i < 32; i++)
         pieces[i] = nullptr;
@@ -30,6 +32,8 @@ Board::Board()
     pieceCount = 0;
     whitePieceCount = 0;
     blackPieceCount = 0;
+    whitePawnCount = 0;
+    blackPawnCount = 0;
 }
 
 Board::~Board()
@@ -89,6 +93,24 @@ void Board::ResetAllPieceInfo()
         }
 
         pieces[i]->ResetPieceInfo();
+    }
+}
+
+void Board::ResetPawnsTwoStepsMove(bool isWhite)
+{
+    Pawn **pawns = isWhite ? whitePawns : blackPawns;
+    int pawnCount = isWhite ? whitePawnCount : blackPawnCount;
+
+    for (int i = 0; i < pawnCount; i++)
+    {
+        if (pawns[i] == nullptr)
+        {
+            std::cout << "ERROR: Found NULL pawn at index " << i << std::endl;
+            continue;
+        }
+
+        if(pawns[i]->GetHasMovedTwoSteps())
+            pawns[i]->SetHasMovedTwoSteps(false);
     }
 }
 
@@ -227,32 +249,28 @@ void Board::AddPiece(Piece *piece, int row, int col)
     if(piece->GetIsWhite())
     {
         whitePieces[whitePieceCount++] = piece;
+        
         if (piece->GetIsKing())
             whiteKing = piece;
-
-        if (piece->GetPieceType() == PieceType::Bishop)
-        {
+        else if (piece->GetPieceType() == PieceType::Bishop)
             (row + col) % 2 == 0 ? whiteBlackBishopCount++ : whiteWhiteBishopCount++;
-        }
         else if (piece->GetPieceType() == PieceType::Knight)
-        {
             whiteKnightCount++;
-        }
+        else if (piece->GetPieceType() == PieceType::Pawn)
+            whitePawns[whitePawnCount++] = (Pawn*)piece;
     }
     else
     {
         blackPieces[blackPieceCount++] = piece;
+        
         if (piece->GetIsKing())
             blackKing = piece;
-
-        if (piece->GetPieceType() == PieceType::Bishop)
-        {
+        else if (piece->GetPieceType() == PieceType::Bishop)
             (row + col) % 2 == 0 ? blackBlackBishopCount++ : blackWhiteBishopCount++;
-        }
         else if (piece->GetPieceType() == PieceType::Knight)
-        {
             blackKnightCount++;
-        }
+        else if (piece->GetPieceType() == PieceType::Pawn)
+            blackPawns[blackPawnCount++] = (Pawn*)piece;
     }
 
     piece->SetPosition(row, col);
@@ -394,7 +412,36 @@ bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
         destination->SetPiece(selectedPiece);
 
         if (selectedPiece->GetPieceType() == PieceType::Pawn)
+        {
+            Pawn* pawn = (Pawn*)selectedPiece;
+            
+            if(row - oldPosition.row == 2 || row - oldPosition.row == -2)
+            {
+                pawn->SetHasMovedTwoSteps(true);
+            }
+
+            // En passant
+            // Check if pawn moved diagonally
+            // Check if the square in the direction of the move , in the same row, is occupied by an opponent's pawn
+            // Remove that pawn from the board
+            
+            if(col - oldPosition.col == 1 || col - oldPosition.col == -1)
+            {
+                int opponentRow = oldPosition.row;
+                int opponentCol = col;
+
+                Piece* opponentPiece = board[opponentRow][opponentCol].GetPiece();
+    
+                if(opponentPiece != NULL && opponentPiece->GetIsWhite() != selectedPiece->GetIsWhite() && opponentPiece->GetPieceType() == PieceType::Pawn)
+                {
+                    Piece* removedPiece = board[opponentRow][opponentCol].ClearPiece();
+
+                    RemovePiece(removedPiece);
+                }
+            }
+
             moveCountWithoutPawnMoveOrCapture = 0;
+        }
         else
             moveCountWithoutPawnMoveOrCapture++;
     }
@@ -410,7 +457,7 @@ bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
         moveCountWithoutPawnMoveOrCapture = 0;
     }
 
-    selectedPiece->SetPieceHasMoved();
+    selectedPiece->SetPieceMoved();
 
     return true;
 }
@@ -450,7 +497,7 @@ Square *Board::SelectSquare(int row, int col)
 
 #pragma region Directional processing
 
-bool Board::ProcessAttackInDirection(Piece *piece, int rowDir, int colDir, bool isPawn)
+bool Board::ProcessAttackInDirection(Piece *piece, int rowDir, int colDir)
 {
     Piece *firstPiece = nullptr;
     Piece *secondPiece = nullptr;
@@ -464,7 +511,7 @@ bool Board::ProcessAttackInDirection(Piece *piece, int rowDir, int colDir, bool 
     Piece *tempPiece;
     Square *currentSquare;
 
-    int limit = isPawn ? 2 : BOARD_SIZE;
+    int limit = BOARD_SIZE;
 
     // cout << "Piece square " << row << " " << col << " Limit : " << limit << endl;
 
@@ -538,7 +585,7 @@ bool Board::ProcessAttackInDirection(Piece *piece, int rowDir, int colDir, bool 
     return true;
 }
 
-bool Board::SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir, bool isPawn, bool hasPawnMoved)
+bool Board::SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir)
 {
     int row = piece->GetPosition().row;
     int col = piece->GetPosition().col;
@@ -559,7 +606,7 @@ bool Board::SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir, bool 
 
     Piece *tempPiece;
 
-    int limit = isPawn ? (hasPawnMoved ? 2 : (colDir == 0 ? 3 : 2)) : BOARD_SIZE;
+    int limit = BOARD_SIZE;
 
     // cout << "Limit : " << limit << endl;
 
@@ -590,12 +637,6 @@ bool Board::SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir, bool 
 
         if (tempPiece != NULL)
         {
-            if (isPawn && colDir == 0)
-            {
-                // cout << "Piece found but in straight path from pawn!" << endl;
-                return true;
-            }
-
             // cout << "Piece in path : " << endl;
             // tempPiece->PrintPiece();
             // cout << endl;
@@ -630,12 +671,6 @@ bool Board::SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir, bool 
         }
         else
         {
-            if (isPawn && colDir != 0)
-            {
-                // cout << "Empty square but from cross of pawn!" << endl;
-                return true;
-            }
-
             if (kingInCheck && !king->CheckIfAttackPathContainsPosition(newRow, newCol))
             {
                 // cout << "King in check and Square " << newRow << " " << newCol << " not in King's attack path" << endl;
