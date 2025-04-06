@@ -76,6 +76,8 @@ void King::SetLegalPositions(Board *board)
 
     // Long castling - loop left until rook
 
+    isLongCastlingPossible = false;
+
     for(int i = col - 1; i >= 0; i--)
     {
         Piece *piece = board->SelectSquare(row, i)->GetPiece();
@@ -122,6 +124,8 @@ void King::SetLegalPositions(Board *board)
                 legalPositionData->legalPositions[count].row = row;
                 legalPositionData->legalPositions[count].col = col - 2;
                 count++;
+
+                isLongCastlingPossible = true;
             }
         }
     }
@@ -130,6 +134,8 @@ void King::SetLegalPositions(Board *board)
     pathProtected = false;
 
     // Short castling - for white its loop right until rook, for black its loop left until rook
+
+    isShortCastlingPossible = false;
 
     for(int i = col + 1; i < BOARD_SIZE; i++)
     {
@@ -177,6 +183,8 @@ void King::SetLegalPositions(Board *board)
                 legalPositionData->legalPositions[count].row = row;
                 legalPositionData->legalPositions[count].col = col + 2;
                 count++;
+
+                isShortCastlingPossible = true;
             }
         }
     }

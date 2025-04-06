@@ -65,18 +65,60 @@ void Board::SetupBoard()
     // string initialBoardState = "PB7 pA2 rA8 KE1 kE8";
 
     std::stringstream ss(initialBoardState);
-    std::string word;
+    std::string piece;
+    std::string pieceSpecifics;
 
     char pieceChar;
     int row, col;
 
-    while (std::getline(ss, word, ' '))
+    while (std::getline(ss, piece, ' '))
     {
-        pieceChar = word[0];
-        col = (int)word[1] - 'A';
-        row = (int)word[2] - '1';
+        pieceChar = piece[0];
+        col = (int)piece[1] - 'A';
+        row = (int)piece[2] - '1';
+        
+        if(piece.length() == 3)
+            AddPiece(pieceChar, row, col);
+        else
+        {
+            // pA4/EL/ER
+            // kA5/o-o/o-o-o/
 
-        AddPiece(pieceChar, row, col);
+            if(pieceChar == 'k' || pieceChar == 'K')
+            {
+                King* king = new King(pieceChar, pieceChar == 'K');
+                
+                std::stringstream specificsSS(piece);
+                while(std::getline(specificsSS, pieceSpecifics, '/'))
+                {
+                    if(pieceSpecifics == "o-o")
+                        king->SetIsShortCastlingPossible();
+
+                    if(pieceSpecifics == "o-o-o")
+                        king->SetIsLongCastlingPossible();
+                }
+
+                AddPiece(king, row, col);
+            }
+
+            if(pieceChar == 'p' || pieceChar == 'P')
+            {
+                Pawn* pawn = new Pawn(pieceChar, pieceChar == 'P');
+
+                std::stringstream specificsSS(piece);
+                while(std::getline(specificsSS, pieceSpecifics, '/'))
+                {
+                    if(pieceSpecifics == "T")
+                        pawn->SetCanMoveTwoSteps();
+                    if(pieceSpecifics == "L")
+                        pawn->SetCanEnPassantLeft();
+                    if(pieceSpecifics == "R")
+                        pawn->SetCanEnPassantRight();
+                }
+
+                AddPiece(pawn, row, col);
+            }
+        }
     }
 }
 
@@ -886,14 +928,29 @@ bool Board::SetLegalMoveForKnight(Piece *knight, int rowDir, int colDir)
 
 string Board::GetBoardState()
 {
-    ostringstream oss;
+    std::ostringstream oss;
 
-    for (int i = 0; i < pieceCount; i++)
+    Piece* piece = nullptr;
+
+    for (int row = 0; row < BOARD_SIZE; row++)
     {
-        oss << GetCodeForPiece(pieces[i]) << ' ';
+        for (int col = 0; col < BOARD_SIZE; col++)
+        {
+            piece = board[row][col].GetPiece();
+
+            if(piece != nullptr)
+            {
+                oss << GetCodeForPiece(piece) << " ";
+            }
+        
+            piece = nullptr;
+        }
     }
 
-    return oss.str();
+    std::string result = oss.str();
+    
+    result.pop_back();
+    return result;
 }
 
 void Board::TrackBoardState(const string &boardState)

@@ -42,8 +42,6 @@ void Queen::PreprocessAttackInfo(Board *board)
     // down-right
     if (!board->ProcessAttackInDirection(this, -1, 1))
         return;
-
-    cout << "Queen process attack complete!" << endl;
 }
 
 void Queen::SetLegalPositions(Board *board)

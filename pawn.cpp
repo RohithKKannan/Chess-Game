@@ -3,6 +3,11 @@
 Pawn::Pawn(char piece, bool isWhite) : Piece(piece, isWhite)
 {
     pieceType = PieceType::Pawn;
+
+    canMoveTwoSteps = false;
+    hasMovedTwoSteps = false;
+    canEnPassantLeft = false;
+    canEnPassantRight = false;
 }
 
 Pawn::~Pawn()
@@ -86,6 +91,8 @@ void Pawn::SetLegalPositions(Board *board)
     int newRow = row + direction;
     int newCol = col;
 
+    canMoveTwoSteps = false;
+
     Piece *tempPiece;
 
     if (newRow >= 0 && newRow < BOARD_SIZE && newCol >= 0 && newCol < BOARD_SIZE)
@@ -114,6 +121,8 @@ void Pawn::SetLegalPositions(Board *board)
                             legalPositionData->legalPositions[legalPositionData->numberOfPositions].row = newRow;
                             legalPositionData->legalPositions[legalPositionData->numberOfPositions].col = newCol;
                             legalPositionData->numberOfPositions++;
+
+                            canMoveTwoSteps = true;
                         }
                     }
                 }
@@ -161,6 +170,8 @@ void Pawn::SetLegalPositions(Board *board)
     // En passant - check piece next to pawn - if it is an opponent's pawn, and it has moved two squares, add it to legal positions
     // Check left en passant
 
+    canEnPassantLeft = false;
+
     newRow = row;
     newCol = col - 1;
 
@@ -178,12 +189,16 @@ void Pawn::SetLegalPositions(Board *board)
                     legalPositionData->legalPositions[legalPositionData->numberOfPositions].row = newRow + direction;
                     legalPositionData->legalPositions[legalPositionData->numberOfPositions].col = newCol;
                     legalPositionData->numberOfPositions++;
+
+                    canEnPassantLeft = true;
                 }
             }
         }
     }
 
     // Check right en passant
+
+    canEnPassantRight = false;
 
     newCol = col + 1;
 
@@ -201,6 +216,8 @@ void Pawn::SetLegalPositions(Board *board)
                     legalPositionData->legalPositions[legalPositionData->numberOfPositions].row = newRow + direction;
                     legalPositionData->legalPositions[legalPositionData->numberOfPositions].col = newCol;
                     legalPositionData->numberOfPositions++;
+
+                    canEnPassantRight = true;
                 }
             }
         }

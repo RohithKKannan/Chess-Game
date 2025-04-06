@@ -45,19 +45,13 @@ bool GameManager::Game()
 
     while (isRunning)
     {
-        board->TrackBoardState(board->GetBoardState());
-
         board->ResetAllPieceInfo();
 
         board->PreprocessAllPieceAttacks();
-        
-        Piece* king = board->GetKing(currentGameState == WhiteTurn);
-        if (king->GetIsInCheck())
-        {
-            cout << "King is in check!" << endl;
-        }
 
         board->SetAllPieceLegalMoves();
+
+        board->TrackBoardState(board->GetBoardState());
 
         if (board->CheckForDraw())
             currentGameState = GameState::Draw;

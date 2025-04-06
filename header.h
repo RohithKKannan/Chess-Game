@@ -235,6 +235,10 @@ class King: public Piece
     public:
         King(char piece, bool isWhite);
         ~King();
+        bool GetIsShortCastlingPossible() { return isShortCastlingPossible; };
+        void SetIsShortCastlingPossible() { isShortCastlingPossible = true; };
+        bool GetIsLongCastlingPossible() { return isLongCastlingPossible; };
+        void SetIsLongCastlingPossible() { isLongCastlingPossible = true; };
         void PreprocessAttackInfo(Board *);
         void SetLegalPositions(Board *);
 };
@@ -270,12 +274,22 @@ class Pawn: public Piece
 {
     private:
         bool hasMovedTwoSteps;
+        bool canMoveTwoSteps;
+        bool canEnPassantLeft;
+        bool canEnPassantRight;
     public:
         Pawn(char piece, bool isWhite);
         ~Pawn();
 
         void SetHasMovedTwoSteps(bool hasMovedTwoSteps) { this->hasMovedTwoSteps = hasMovedTwoSteps; };
         bool GetHasMovedTwoSteps() { return hasMovedTwoSteps; };
+
+        bool GetCanMoveTwoSteps() { return canMoveTwoSteps; };
+        void SetCanMoveTwoSteps() { canMoveTwoSteps = true; };
+        bool GetCanEnPassantLeft() { return canEnPassantLeft; };
+        void SetCanEnPassantLeft() { canEnPassantLeft = true; };
+        bool GetCanEnPassantRight() { return canEnPassantRight; };
+        void SetCanEnPassantRight() { canEnPassantRight = true; };
 
         void PreprocessAttackInfo(Board *);
         void SetLegalPositions(Board *);
@@ -373,13 +387,36 @@ char static GetCharForPiece(Piece *piece)
 
 string static GetCodeForPiece(Piece *piece)
 {
+    std::ostringstream oss;
+
     char pieceChar = GetCharForPiece(piece);
 
     char xPos = (char)piece->GetPosition().col + 'A';
     char yPos = (char)(piece->GetPosition().row + '1');
 
-    std::ostringstream oss;
     oss << pieceChar << xPos << yPos;
+
+    if(piece->GetIsKing())
+    {
+        King* king = (King*)piece;
+        if(king->GetIsShortCastlingPossible())
+            oss << "/" << "o-o";
+        if(king->GetIsLongCastlingPossible())
+            oss << "/" << "o-o-o";
+    }
+
+    if(piece->GetPieceType() == PieceType::Pawn)
+    {
+        Pawn* pawn = (Pawn*)piece;
+
+        if(pawn->GetCanMoveTwoSteps())
+            oss << "/" << "T";
+        if(pawn->GetCanEnPassantLeft())
+            oss << "/" << "L";
+        if(pawn->GetCanEnPassantRight())
+            oss << "/" << "R"; 
+    }
+
     return oss.str();
 }
 
