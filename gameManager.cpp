@@ -15,7 +15,8 @@ void GameManager::StartGame()
 
     while (playAgain)
     {
-        Game();
+        if(!Game())
+            return;
 
         cout << "Game complete!" << endl;
 
@@ -33,7 +34,7 @@ void GameManager::StartGame()
     }
 }
 
-void GameManager::Game()
+bool GameManager::Game()
 {
     bool isRunning = true;
 
@@ -74,7 +75,11 @@ void GameManager::Game()
                 }
             }
 
-            InitiateTurn();
+            if(!InitiateTurn())
+            {
+                cout << "Error initiating turn!" << endl;
+                return false;
+            }
 
             board->ResetPawnsTwoStepsMove(false);
             currentGameState = BlackTurn;
@@ -96,7 +101,11 @@ void GameManager::Game()
                 }
             }
 
-            InitiateTurn();
+            if(!InitiateTurn())
+            {
+                cout << "Error initiating turn!" << endl;
+                return false;
+            }
 
             board->ResetPawnsTwoStepsMove(true);
             currentGameState = WhiteTurn;
@@ -122,9 +131,11 @@ void GameManager::Game()
 
     delete board;
     board = nullptr;
+
+    return true;
 }
 
-void GameManager::InitiateTurn()
+bool GameManager::InitiateTurn()
 {
     while (true)
     {
@@ -194,11 +205,17 @@ void GameManager::InitiateTurn()
         }
     }
 
-    board->MovePieceToSquare(selectedPiece, selectedSquare->GetPosition().row, selectedSquare->GetPosition().col);
+    if(!board->MovePieceToSquare(selectedPiece, selectedSquare->GetPosition().row, selectedSquare->GetPosition().col))
+    {
+        cout << "Error moving piece!" << endl;
+        return false;
+    }
 
     board->UnMarkPositions();
 
     board->DisplayBoard();
+
+    return true;
 }
 
 Square *GameManager::SelectSquareFromInput()

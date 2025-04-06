@@ -84,13 +84,14 @@ class Board
         Piece** blackPieces;
         Pawn** whitePawns;
         Pawn** blackPawns;
-        int pieceCount;
-        int whitePieceCount;
-        int blackPieceCount;
-        int whitePawnCount;
-        int blackPawnCount;
         Piece *whiteKing;
         Piece *blackKing;
+
+        int pieceCount = 0;
+        int whitePieceCount = 0;
+        int blackPieceCount = 0;
+        int whitePawnCount = 0;
+        int blackPawnCount = 0;
 
         int blackKnightCount = 0;
         int whiteKnightCount = 0;
@@ -157,19 +158,19 @@ class Piece
 {
     protected:
         char piece;
-        int moveCount;
+        int moveCount = 0;
         bool isWhite;
         PieceType pieceType;
 
         Position position;
-        LegalPositionData *legalPositionData;
+        LegalPositionData *legalPositionData = nullptr;
 
         bool isPinned;
-        Piece *pinningPiece;
+        Piece *pinningPiece = nullptr;
 
         bool isInCheck;
-        int attackerCount;
-        Square **attackPath;
+        int attackerCount = 0;
+        Square **attackPath = new Square *[100];
         int attackPathSquareCount;
 
     public:
@@ -217,6 +218,9 @@ class Rook: public Piece
 
 class King: public Piece
 {
+    private:
+        bool isShortCastlingPossible;
+        bool isLongCastlingPossible;
     public:
         King(char piece, bool isWhite);
         ~King();
@@ -293,8 +297,8 @@ class GameManager
         ~GameManager();
         
         void StartGame();
-        void Game();
-        void InitiateTurn();
+        bool Game();
+        bool InitiateTurn();
 
         Square *SelectSquareFromInput();
         bool ParseInput(string *, int *, int *);
@@ -366,4 +370,37 @@ string static GetCodeForPiece(Piece *piece)
     std::ostringstream oss;
     oss << pieceChar << xPos << yPos;
     return oss.str();
+}
+
+string static GetCodeForSquare(int row, int col)
+{
+    char xPos = (char)col + 'A';
+    char yPos = (char)(row + '1');
+
+    std::ostringstream oss;
+    oss << xPos << yPos;
+    return oss.str();
+}
+
+void static GetCastlingPositions(int &rookRow, int &rookCol, int &kingRow, int &kingCol, bool isWhite, bool isLongCastling)
+{
+    // if king is white and short castle, then king moves to G1 and rook moves to F1
+    // if king is white and long castle, then king moves to C1 and rook moves to D1
+    // if king is black and short castle, then king moves to G8 and rook moves to F8
+    // if king is black and long castle, then king moves to C8 and rook moves to D8
+
+    if (isWhite)
+    {
+        kingRow = 0;
+        kingCol = isLongCastling ? 2 : 6;
+        rookRow = 0;
+        rookCol = isLongCastling ? 3 : 5;
+    }
+    else
+    {
+        kingRow = 7;
+        kingCol = isLongCastling ? 2 : 6;
+        rookRow = 7;
+        rookCol = isLongCastling ? 3 : 5;
+    }
 }

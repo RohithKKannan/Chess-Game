@@ -28,12 +28,6 @@ Board::Board()
             board[i][j].SetPosition(i, j);
         }
     }
-
-    pieceCount = 0;
-    whitePieceCount = 0;
-    blackPieceCount = 0;
-    whitePawnCount = 0;
-    blackPawnCount = 0;
 }
 
 Board::~Board()
@@ -65,6 +59,8 @@ Board::~Board()
 void Board::SetupBoard()
 {
     string initialBoardState = "RA1 RH1 rA8 rH8 KE1 kE8 QD1 qD8 BC1 BF1 bC8 bF8 NB1 NG1 nB8 nG8 PA2 pA7 PB2 pB7 PC2 pC7 PD2 pD7 PE2 pE7 PF2 pF7 PG2 pG7 PH2 pH7";
+
+    // string initialBoardState = "RA1 RH1 rA8 rH8 KE1 kE8";
 
     std::stringstream ss(initialBoardState);
     std::string word;
@@ -273,8 +269,6 @@ void Board::AddPiece(Piece *piece, int row, int col)
             blackPawns[blackPawnCount++] = (Pawn*)piece;
     }
 
-    piece->SetPosition(row, col);
-
     pieces[pieceCount++] = piece;
 }
 
@@ -409,7 +403,7 @@ bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
 
     if(destination->GetPiece() == NULL)
     {
-        destination->SetPiece(selectedPiece);
+        bool isCastling = false;
 
         if (selectedPiece->GetPieceType() == PieceType::Pawn)
         {
@@ -442,8 +436,65 @@ bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
 
             moveCountWithoutPawnMoveOrCapture = 0;
         }
+        else if(selectedPiece->GetPieceType() == PieceType::King)
+        {
+            King* king = (King*)selectedPiece;
+
+            if(col - oldPosition.col == 2 || col - oldPosition.col == -2)
+            {
+                bool isLongCastling = (col - oldPosition.col == -2);
+
+                // Castling
+                // loop until the end and rook is found in the direction of the move
+
+                isCastling = true;
+
+                for(int i = isLongCastling ? col - 1 : col + 1; isLongCastling ? i >= 0 : i < BOARD_SIZE; isLongCastling ? i-- : i++)
+                {
+                    Piece* rook = board[king->GetPosition().row][i].GetPiece();
+
+                    if(rook != nullptr)
+                    {
+                        if(rook->GetPieceType() == PieceType::Rook)
+                        {
+                            int rookRow;
+                            int rookCol;
+                            int kingRow;
+                            int kingCol;
+
+                            GetCastlingPositions(rookRow, rookCol, kingRow, kingCol, king->GetIsWhite(), isLongCastling);
+
+                            Square* kingDestination = &board[kingRow][kingCol];
+                            Square* rookDestination = &board[rookRow][rookCol];
+
+                            Square* rookSource = &board[rook->GetPosition().row][rook->GetPosition().col];
+
+                            // Clear the rook's square
+                            rookSource->ClearPiece();
+
+                            kingDestination->SetPiece(king);
+                            rookDestination->SetPiece(rook);
+
+                            rook->SetPieceMoved();
+
+                            break;
+                        }
+                        else
+                        {
+                            cout << "Error: Found piece that's not rook in path!" << endl;
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            moveCountWithoutPawnMoveOrCapture++;
+        }
         else
             moveCountWithoutPawnMoveOrCapture++;
+
+        if(!isCastling)
+            destination->SetPiece(selectedPiece);
     }
     else
     {

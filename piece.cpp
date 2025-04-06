@@ -7,8 +7,6 @@ Piece::Piece(char piece, bool isWhite)
 
     legalPositionData = new LegalPositionData();
 
-    attackPath = new Square *[100];
-
     ResetPieceInfo();
 }
 

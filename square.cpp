@@ -3,7 +3,10 @@
 Square::Square()
 {
     this->isMarked = false;
-    this->piece = NULL;
+    this->piece = nullptr;
+
+    position.row = -1;
+    position.col = -1;
 }
 
 Square::~Square()
@@ -30,7 +33,7 @@ void Square::UnMarkSquare()
 Piece* Square::ClearPiece()
 {
     Piece* pieceToRemove = this->piece;
-    this->piece = NULL;
+    this->piece = nullptr;
 
     return pieceToRemove;
 }
@@ -44,7 +47,7 @@ void Square::SetPiece(Piece *piece)
 
 void Square::PrintSquare()
 {
-    if(piece != NULL)
+    if(piece != nullptr)
     {
         piece->PrintPiece();
         return;
