@@ -13,37 +13,37 @@ Rook::~Rook()
 void Rook::PreprocessAttackInfo(Board *board)
 {
     // Up
-    if (!board->ProcessAttackInDirection(this, 1, 0))
+    if (!ProcessAttackInDirection(board, this, 1, 0))
         return;
 
     // Down
-    if (!board->ProcessAttackInDirection(this, -1, 0))
+    if (!ProcessAttackInDirection(board, this, -1, 0))
         return;
 
     // Left
-    if (!board->ProcessAttackInDirection(this, 0, -1))
+    if (!ProcessAttackInDirection(board, this, 0, -1))
         return;
 
     // Right
-    if (!board->ProcessAttackInDirection(this, 0, 1))
+    if (!ProcessAttackInDirection(board, this, 0, 1))
         return;
 }
 
 void Rook::SetLegalPositions(Board *board)
 {
     // Up
-    if (!board->SetLegalMovesInDirection(this, 1, 0))
+    if (!SetLegalMovesInDirection(board, this, 1, 0))
         return;
 
     // Down
-    if (!board->SetLegalMovesInDirection(this, -1, 0))
+    if (!SetLegalMovesInDirection(board, this, -1, 0))
         return;
 
     // Left
-    if (!board->SetLegalMovesInDirection(this, 0, -1))
+    if (!SetLegalMovesInDirection(board, this, 0, -1))
         return;
 
     // Right
-    if (!board->SetLegalMovesInDirection(this, 0, 1))
+    if (!SetLegalMovesInDirection(board, this, 0, 1))
         return;
 }

@@ -152,9 +152,6 @@ class Board
         void SetAllPieceLegalMoves();
         void ResetAllPieceInfo();
         void ResetPawnsTwoStepsMove(bool isWhite);
-
-        bool ProcessAttackInDirection(Piece *piece, int rowDir, int colDir);
-        bool SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir);
 };
 
 #pragma endregion
@@ -330,152 +327,18 @@ class GameManager
 
 #pragma endregion
 
-std::tuple<PieceType, bool> static GetPieceTypeAndIsWhiteForChar(char pieceChar)
-{
-    PieceType pieceType;
-    bool isWhite = (pieceChar >= 'A' && pieceChar <= 'Z');
+std::tuple<PieceType, bool> GetPieceTypeAndIsWhiteForChar(char pieceChar);
 
-    switch (tolower(pieceChar))
-    {
-    case 'k':
-        pieceType = PieceType::King;
-        break;
-    case 'q':
-        pieceType = PieceType::Queen;
-        break;
-    case 'b':
-        pieceType = PieceType::Bishop;
-        break;
-    case 'n':
-        pieceType = PieceType::Knight;
-        break;
-    case 'r':
-        pieceType = PieceType::Rook;
-        break;
-    case 'p':
-        pieceType = PieceType::Pawn;
-        break;
-    default:
-        return {PieceType::None, false};
-    }
+char GetCharForPiece(Piece *piece);
 
-    return {pieceType, isWhite};
-}
+string GetCodeForSquare(int row, int col);
 
-char static GetCharForPiece(Piece *piece)
-{
-    bool isWhite = piece->GetIsWhite();
-    switch (piece->GetPieceType())
-    {
-    case PieceType::King:
-        return isWhite ? 'K' : 'k';
-    case PieceType::Queen:
-        return isWhite ? 'Q' : 'q';
-    case PieceType::Bishop:
-        return isWhite ? 'B' : 'b';
-    case PieceType::Knight:
-        return isWhite ? 'N' : 'n';
-    case PieceType::Rook:
-        return isWhite ? 'R' : 'r';
-    case PieceType::Pawn:
-        return isWhite ? 'P' : 'p';
-    }
+string GetCodeForPiece(Piece *piece);
 
-    return '-';
-}
+void GetCastlingPositions(int &rookRow, int &rookCol, int &kingRow, int &kingCol, bool isWhite, bool isLongCastling);
 
-string static GetCodeForPiece(Piece *piece)
-{
-    std::ostringstream oss;
+PieceType GetPromotionPieceType();
 
-    char pieceChar = GetCharForPiece(piece);
+bool ProcessAttackInDirection(Board* board, Piece* piece, int rowDir, int colDir);
 
-    char xPos = (char)piece->GetPosition().col + 'A';
-    char yPos = (char)(piece->GetPosition().row + '1');
-
-    oss << pieceChar << xPos << yPos;
-
-    if(piece->GetIsKing())
-    {
-        King* king = (King*)piece;
-        if(king->GetIsShortCastlingPossible())
-            oss << "/" << "o-o";
-        if(king->GetIsLongCastlingPossible())
-            oss << "/" << "o-o-o";
-    }
-
-    if(piece->GetPieceType() == PieceType::Pawn)
-    {
-        Pawn* pawn = (Pawn*)piece;
-
-        if(pawn->GetCanMoveTwoSteps())
-            oss << "/" << "T";
-        if(pawn->GetCanEnPassantLeft())
-            oss << "/" << "L";
-        if(pawn->GetCanEnPassantRight())
-            oss << "/" << "R"; 
-    }
-
-    return oss.str();
-}
-
-string static GetCodeForSquare(int row, int col)
-{
-    char xPos = (char)col + 'A';
-    char yPos = (char)(row + '1');
-
-    std::ostringstream oss;
-    oss << xPos << yPos;
-    return oss.str();
-}
-
-void static GetCastlingPositions(int &rookRow, int &rookCol, int &kingRow, int &kingCol, bool isWhite, bool isLongCastling)
-{
-    // if king is white and short castle, then king moves to G1 and rook moves to F1
-    // if king is white and long castle, then king moves to C1 and rook moves to D1
-    // if king is black and short castle, then king moves to G8 and rook moves to F8
-    // if king is black and long castle, then king moves to C8 and rook moves to D8
-
-    if (isWhite)
-    {
-        kingRow = 0;
-        kingCol = isLongCastling ? 2 : 6;
-        rookRow = 0;
-        rookCol = isLongCastling ? 3 : 5;
-    }
-    else
-    {
-        kingRow = 7;
-        kingCol = isLongCastling ? 2 : 6;
-        rookRow = 7;
-        rookCol = isLongCastling ? 3 : 5;
-    }
-}
-
-PieceType static GetPromotionPieceType()
-{
-    char pieceChar;
-
-    while(pieceChar != 'Q' && pieceChar != 'R' && pieceChar != 'B' && pieceChar != 'N')
-    {
-        cout << "Enter the piece type to promote to (Q/R/B/N): ";
-        cin >> pieceChar;
-
-        switch (pieceChar)
-        {
-            case 'Q':
-                return PieceType::Queen;
-            case 'R':
-                return PieceType::Rook;
-            case 'B':
-                return PieceType::Bishop;
-            case 'N':
-                return PieceType::Knight;
-            default:
-                cout << "Invalid piece type! Please enter a valid piece type (Q/R/B/N): ";
-                break;
-        }
-    }
-
-    return PieceType::None;
-}
+bool SetLegalMovesInDirection(Board* board, Piece* piece, int rowDir, int colDir);
