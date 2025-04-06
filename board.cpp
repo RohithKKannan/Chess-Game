@@ -154,6 +154,20 @@ void Board::ResetPawnsTwoStepsMove(bool isWhite)
     }
 }
 
+void Board::ExecuteCommands()
+{
+    Command* command;
+
+    while(!commandQueue.empty())
+    {
+        command = commandQueue.front();
+
+        command->Execute();
+
+        commandQueue.pop();
+    }
+}
+
 void Board::PreprocessAllPieceAttacks()
 {
     // cout << "Starting Preprocessed Attack : " << endl;
@@ -575,7 +589,10 @@ bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
             moveCountWithoutPawnMoveOrCapture++;
 
         if(!isCastling)
-            destination->SetPiece(selectedPiece);
+        {
+            Command* moveCommand = new MoveCommand(selectedPiece, source, destination);
+            AddCommandToQueue(moveCommand);
+        }
     }
     else
     {

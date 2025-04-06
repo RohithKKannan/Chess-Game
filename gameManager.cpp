@@ -205,6 +205,8 @@ bool GameManager::InitiateTurn()
         return false;
     }
 
+    board->ExecuteCommands();
+
     board->UnMarkPositions();
 
     board->DisplayBoard();

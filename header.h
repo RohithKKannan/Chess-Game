@@ -1,6 +1,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <sstream>
+#include <queue>
 using namespace std;
 
 #define BOARD_SIZE 8
@@ -57,6 +58,8 @@ class LegalPositionData
 
 class Piece;
 class Pawn;
+class Command;
+class MoveCommand;
 
 #pragma region Board Elements
 
@@ -116,6 +119,8 @@ class Board
 
         std::unordered_map<string, int> positionCount;
 
+        std::queue<Command*> commandQueue;
+
     public:
         Board();
         ~Board();
@@ -152,6 +157,9 @@ class Board
         void SetAllPieceLegalMoves();
         void ResetAllPieceInfo();
         void ResetPawnsTwoStepsMove(bool isWhite);
+
+        void AddCommandToQueue(Command* command) { commandQueue.push(command); };
+        void ExecuteCommands();
 };
 
 #pragma endregion
@@ -289,6 +297,158 @@ class Pawn: public Piece
 
         void PreprocessAttackInfo(Board *);
         void SetLegalPositions(Board *);
+};
+
+#pragma endregion
+
+#pragma region Command
+
+class Command
+{
+    public:
+        Command() {};
+        virtual ~Command() {};
+
+        virtual bool Execute() = 0;
+        virtual bool Undo() = 0;
+};
+
+class AddPieceCommand : public Command
+{
+    private:
+        PieceType pieceType;
+        bool isWhite;
+        Square* squareToAddAt;
+
+    public:
+        AddPieceCommand(PieceType pieceType, bool isWhite, Square* squareToAddAt)
+        {
+            this->pieceType = pieceType;
+            this->isWhite = isWhite;
+            this->squareToAddAt = squareToAddAt;
+        }
+        ~AddPieceCommand() {};
+
+        bool Execute(Board*);
+        bool Undo(Board*);
+};
+
+class RemovePieceCommand : public Command
+{
+    private:
+        Piece* pieceToRemove;
+        Square* squareToRemoveFrom;
+
+    public:
+        RemovePieceCommand(Square* squareToRemoveFrom)
+        {
+            this->squareToRemoveFrom = squareToRemoveFrom;
+        }
+        ~RemovePieceCommand() {};
+
+        bool Execute();
+        bool Undo();
+};
+
+class MoveCommand : public Command
+{
+    private:
+        Piece* piece;
+        Square* sourceSquare;
+        Square* destinationSquare;
+
+    public:
+        MoveCommand(Piece* piece, Square* sourceSquare, Square* destinationSquare)
+        {
+            this->piece = piece;
+            this->sourceSquare = sourceSquare;
+            this->destinationSquare = destinationSquare;
+        }
+        ~MoveCommand() {};
+
+        bool Execute();
+        bool Undo();
+};
+
+class CaptureCommand : public Command
+{
+    private:
+        Piece* attackingPiece;
+        Piece* capturedPiece;
+
+    public:
+        CaptureCommand(Piece* attackingPiece, Piece* capturedPiece)
+        {
+            this->attackingPiece = attackingPiece;
+            this->capturedPiece = capturedPiece;
+        }
+        ~CaptureCommand() {};
+
+        bool Execute();
+        bool Undo();
+};
+
+class PromoteCommand : public Command
+{
+    private:
+        PieceType typeToPromoteTo;
+        Piece* pawnToPromote;
+        Piece* promotedPiece;
+
+    public:
+        PromoteCommand(PieceType typeToPromoteTo, Piece* pawnToPromote)
+        {
+            this->typeToPromoteTo = typeToPromoteTo;
+            this->pawnToPromote = pawnToPromote;
+        }
+        ~PromoteCommand() {};
+
+        bool Execute();
+        bool Undo();
+};
+
+class CastleCommand : public Command
+{
+    private:
+        King* king;
+        Rook* rook;
+
+        Square* kingSource;
+        Square* kingDestination;
+        Square* rookSource;
+        Square* rookDestination;
+
+    public:
+        CastleCommand(King *king, Rook *rook, Square* kingSource, Square *kingDestination, Square* rookSource, Square* rookDestination)
+        {
+            this->king = king;
+            this->rook = rook;
+            this->kingSource = kingSource;
+            this->kingDestination = kingDestination;
+            this->rookSource = rookSource;
+            this->rookDestination = rookDestination;
+        }
+        ~CastleCommand() {};
+
+        bool Execute();
+        bool Undo();
+};
+
+class EnPassantCommand : public Command
+{
+    private:
+        Pawn* pawn;
+        Pawn* pawnToCapture;
+        Square* sourceSquare;
+        Square* destinationSquare;
+        Square* capturingSquare;
+
+    public:
+        EnPassantCommand() {};
+        ~EnPassantCommand() {};
+
+        bool Execute();
+        bool Undo();
 };
 
 #pragma endregion
