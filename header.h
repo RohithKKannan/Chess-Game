@@ -155,9 +155,6 @@ class Board
 
         bool ProcessAttackInDirection(Piece *piece, int rowDir, int colDir);
         bool SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir);
-
-        bool ProcessKnightAttack(Piece *knight, int row, int col);
-        bool SetLegalMoveForKnight(Piece *knight, int row, int col);
 };
 
 #pragma endregion
@@ -268,6 +265,8 @@ class Knight: public Piece
         ~Knight();
         void PreprocessAttackInfo(Board *);
         void SetLegalPositions(Board *);
+        bool ProcessKnightAttack(Board *, int, int);
+        bool SetLegalMoveForKnight(Board *, int, int);
 };
 
 class Pawn: public Piece
