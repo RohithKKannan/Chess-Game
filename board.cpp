@@ -62,6 +62,8 @@ void Board::SetupBoard()
 
     // string initialBoardState = "RA1 RH1 rA8 rH8 KE1 kE8";
 
+    // string initialBoardState = "PB7 pA2 rA8 KE1 kE8";
+
     std::stringstream ss(initialBoardState);
     std::string word;
 
@@ -434,6 +436,43 @@ bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
                 }
             }
 
+            // Promotion
+
+            // Check if pawn reached the last row
+            bool promotion = pawn->GetIsWhite() ? row == 7 : row == 0;
+
+            if(promotion)
+            {
+                PieceType promotionPieceType = GetPromotionPieceType();
+
+                Piece* newPiece = nullptr;
+
+                switch (promotionPieceType)
+                {
+                    case PieceType::Queen:
+                        newPiece = new Queen(pawn->GetIsWhite() ? 'Q' : 'q', pawn->GetIsWhite());
+                        break;
+                    case PieceType::Rook:
+                        newPiece = new Rook(pawn->GetIsWhite() ? 'R' : 'r', pawn->GetIsWhite());
+                        break;
+                    case PieceType::Bishop:
+                        newPiece = new Bishop(pawn->GetIsWhite() ? 'B' : 'b', pawn->GetIsWhite());
+                        break;
+                    case PieceType::Knight:
+                        newPiece = new Knight(pawn->GetIsWhite() ? 'N' : 'n', pawn->GetIsWhite());
+                        break;
+                    default:
+                        cout << "Invalid promotion piece type!" << endl;
+                        return false;
+                }
+
+                RemovePiece(pawn);
+                AddPiece(newPiece, row, col);
+
+                moveCountWithoutPawnMoveOrCapture = 0;
+                return true;
+            }
+
             moveCountWithoutPawnMoveOrCapture = 0;
         }
         else if(selectedPiece->GetPieceType() == PieceType::King)
@@ -564,6 +603,9 @@ bool Board::ProcessAttackInDirection(Piece *piece, int rowDir, int colDir)
 
     int limit = BOARD_SIZE;
 
+    // add piece's square to attack path
+    attackPath[attackPathIndex++] = GetSquare(row, col);
+
     // cout << "Piece square " << row << " " << col << " Limit : " << limit << endl;
 
     for (int i = 1; i < limit; i++)
@@ -641,7 +683,7 @@ bool Board::SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir)
     int row = piece->GetPosition().row;
     int col = piece->GetPosition().col;
 
-    // cout << "Piece square " << row << " " << col << endl;
+    // cout << "Piece " << piece->GetPieceChar() << " square " << GetCodeForSquare(row, col) << endl;
 
     Piece *king = GetKing(piece->GetIsWhite());
 
@@ -669,15 +711,15 @@ bool Board::SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir)
         if (newRow < 0 || newRow >= BOARD_SIZE || newCol < 0 || newCol >= BOARD_SIZE)
             break; // Out of bounds, stop checking
 
-        // cout << "Checking square at " << newRow << " " << newCol << endl;
+        // cout << "Checking square at " << GetCodeForSquare(newRow, newCol) << endl;
 
         if (piece->GetIsPinned() && !piece->CheckIfAttackPathContainsPosition(newRow, newCol))
         {
-            // cout << "Pinned piece and Square " << newRow << " " << newCol << " not in attack path" << endl;
+            // cout << "Pinned piece and Square " << GetCodeForSquare(newRow, newCol) << " not in attack path" << endl;
             continue;
         }
 
-        // cout << "Adding square " << newRow << " " << newCol << " to Legal Positions without King " << endl;
+        // cout << "Adding square " << GetCodeForSquare(newRow, newCol) << " to Legal Positions without King " << endl;
 
         legalPositionData->legalPositionsWithoutKing[legalPositionData->numberOfPositionsWithoutKing].row = newRow;
         legalPositionData->legalPositionsWithoutKing[legalPositionData->numberOfPositionsWithoutKing].col = newCol;
@@ -701,11 +743,11 @@ bool Board::SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir)
             {
                 if (kingInCheck && !king->CheckIfAttackPathContainsPosition(newRow, newCol))
                 {
-                    // cout << "King in check and Square " << newRow << " " << newCol << " not in King's attack path" << endl;
+                    // cout << "King in check and Square " << GetCodeForSquare(newRow, newCol) << " not in King's attack path" << endl;
                     continue;
                 }
 
-                // cout << "Adding square " << newRow << " " << newCol << " to Legal Positions " << endl;
+                // cout << "Adding square " << GetCodeForSquare(newRow, newCol) << " to Legal Positions " << endl;
 
                 legalPositionData->legalPositions[legalPositionData->numberOfPositions].row = newRow;
                 legalPositionData->legalPositions[legalPositionData->numberOfPositions].col = newCol;
@@ -724,11 +766,11 @@ bool Board::SetLegalMovesInDirection(Piece *piece, int rowDir, int colDir)
         {
             if (kingInCheck && !king->CheckIfAttackPathContainsPosition(newRow, newCol))
             {
-                // cout << "King in check and Square " << newRow << " " << newCol << " not in King's attack path" << endl;
+                // cout << "King in check and Square " << GetCodeForSquare(newRow, newCol) << " not in King's attack path" << endl;
                 continue;
             }
 
-            // cout << "Adding square " << newRow << " " << newCol << " to Legal Positions " << endl;
+            // cout << "Adding square " << GetCodeForSquare(newRow, newCol) << " to Legal Positions " << endl;
 
             legalPositionData->legalPositions[legalPositionData->numberOfPositions].row = newRow;
             legalPositionData->legalPositions[legalPositionData->numberOfPositions].col = newCol;
@@ -856,6 +898,7 @@ string Board::GetBoardState()
 
 void Board::TrackBoardState(const string &boardState)
 {
+    cout << boardState << endl;
     positionCount[boardState]++;
 }
 

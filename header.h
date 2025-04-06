@@ -33,8 +33,18 @@ struct Position
 class LegalPositionData
 {
     public:
-        LegalPositionData();
-        ~LegalPositionData();
+        LegalPositionData()
+        {
+            legalPositions = new Position[100];
+            legalPositionsWithoutKing = new Position[100];
+            numberOfPositions = 0;
+            numberOfPositionsWithoutKing = 0;
+        }
+        ~LegalPositionData()
+        {
+            delete[] legalPositions;
+            delete[] legalPositionsWithoutKing;
+        }
 
         Position *legalPositions;
         Position *legalPositionsWithoutKing;
@@ -180,6 +190,7 @@ class Piece
         void SetPosition(int, int);
         void SetPieceMoved() { moveCount++; };
         void PrintPiece();
+        char GetPieceChar() { return piece; };
 
         bool GetIsKing() { return pieceType == PieceType::King; };
         bool GetIsWhite() { return isWhite; };
@@ -403,4 +414,32 @@ void static GetCastlingPositions(int &rookRow, int &rookCol, int &kingRow, int &
         rookRow = 7;
         rookCol = isLongCastling ? 3 : 5;
     }
+}
+
+PieceType static GetPromotionPieceType()
+{
+    char pieceChar;
+
+    while(pieceChar != 'Q' && pieceChar != 'R' && pieceChar != 'B' && pieceChar != 'N')
+    {
+        cout << "Enter the piece type to promote to (Q/R/B/N): ";
+        cin >> pieceChar;
+
+        switch (pieceChar)
+        {
+            case 'Q':
+                return PieceType::Queen;
+            case 'R':
+                return PieceType::Rook;
+            case 'B':
+                return PieceType::Bishop;
+            case 'N':
+                return PieceType::Knight;
+            default:
+                cout << "Invalid piece type! Please enter a valid piece type (Q/R/B/N): ";
+                break;
+        }
+    }
+
+    return PieceType::None;
 }

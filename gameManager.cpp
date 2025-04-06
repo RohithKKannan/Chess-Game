@@ -50,6 +50,12 @@ bool GameManager::Game()
         board->ResetAllPieceInfo();
 
         board->PreprocessAllPieceAttacks();
+        
+        Piece* king = board->GetKing(currentGameState == WhiteTurn);
+        if (king->GetIsInCheck())
+        {
+            cout << "King is in check!" << endl;
+        }
 
         board->SetAllPieceLegalMoves();
 
@@ -76,10 +82,7 @@ bool GameManager::Game()
             }
 
             if(!InitiateTurn())
-            {
-                cout << "Error initiating turn!" << endl;
                 return false;
-            }
 
             board->ResetPawnsTwoStepsMove(false);
             currentGameState = BlackTurn;
@@ -102,10 +105,7 @@ bool GameManager::Game()
             }
 
             if(!InitiateTurn())
-            {
-                cout << "Error initiating turn!" << endl;
                 return false;
-            }
 
             board->ResetPawnsTwoStepsMove(true);
             currentGameState = WhiteTurn;

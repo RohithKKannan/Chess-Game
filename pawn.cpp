@@ -64,6 +64,16 @@ void Pawn::SetLegalPositions(Board *board)
     int row = position.row;
     int col = position.col;
 
+    Piece *king = board->GetKing(isWhite);
+
+    bool kingInCheck = king->GetIsInCheck();
+
+    if (kingInCheck && king->GetAttackerCount() > 1)
+    {
+        // cout << "King in check more than once! Skip legal moves for this piece!" << endl;
+        return;
+    }
+
     int direction = isWhite ? 1 : -1;
 
     // Pawn can move 
@@ -80,25 +90,32 @@ void Pawn::SetLegalPositions(Board *board)
 
     if (newRow >= 0 && newRow < BOARD_SIZE && newCol >= 0 && newCol < BOARD_SIZE)
     {
-        tempPiece = board->GetSquare(newRow, newCol)->GetPiece();
-
-        if (tempPiece == nullptr)
+        if(!(kingInCheck && king->CheckIfAttackPathContainsPosition(newRow, newCol)))
         {
-            legalPositionData->legalPositions[legalPositionData->numberOfPositions].row = newRow;
-            legalPositionData->legalPositions[legalPositionData->numberOfPositions].col = newCol;
-            legalPositionData->numberOfPositions++;
+            tempPiece = board->GetSquare(newRow, newCol)->GetPiece();
 
-            if(moveCount == 0)
+            if (tempPiece == nullptr)
             {
-                // Pawn can move two squares forward if it hasn't moved yet
-                newRow += direction;
-                tempPiece = board->GetSquare(newRow, newCol)->GetPiece();
+                legalPositionData->legalPositions[legalPositionData->numberOfPositions].row = newRow;
+                legalPositionData->legalPositions[legalPositionData->numberOfPositions].col = newCol;
+                legalPositionData->numberOfPositions++;
 
-                if (tempPiece == nullptr)
+                if(moveCount == 0)
                 {
-                    legalPositionData->legalPositions[legalPositionData->numberOfPositions].row = newRow;
-                    legalPositionData->legalPositions[legalPositionData->numberOfPositions].col = newCol;
-                    legalPositionData->numberOfPositions++;
+                    // Pawn can move two squares forward if it hasn't moved yet
+                    newRow += direction;
+
+                    if(newRow >= 0 && newRow < BOARD_SIZE && newCol >= 0 && newCol < BOARD_SIZE)
+                    {
+                        tempPiece = board->GetSquare(newRow, newCol)->GetPiece();
+
+                        if (tempPiece == nullptr)
+                        {
+                            legalPositionData->legalPositions[legalPositionData->numberOfPositions].row = newRow;
+                            legalPositionData->legalPositions[legalPositionData->numberOfPositions].col = newCol;
+                            legalPositionData->numberOfPositions++;
+                        }
+                    }
                 }
             }
         }
@@ -110,13 +127,16 @@ void Pawn::SetLegalPositions(Board *board)
 
     if (newRow >= 0 && newRow < BOARD_SIZE && newCol >= 0 && newCol < BOARD_SIZE)
     {
-        tempPiece = board->GetSquare(newRow, newCol)->GetPiece();
-        
-        if (tempPiece != nullptr && tempPiece->GetIsWhite() != isWhite)
+        if(!(kingInCheck && king->CheckIfAttackPathContainsPosition(newRow, newCol)))
         {
-            legalPositionData->legalPositions[legalPositionData->numberOfPositions].row = newRow;
-            legalPositionData->legalPositions[legalPositionData->numberOfPositions].col = newCol;
-            legalPositionData->numberOfPositions++;
+            tempPiece = board->GetSquare(newRow, newCol)->GetPiece();
+            
+            if (tempPiece != nullptr && tempPiece->GetIsWhite() != isWhite)
+            {
+                legalPositionData->legalPositions[legalPositionData->numberOfPositions].row = newRow;
+                legalPositionData->legalPositions[legalPositionData->numberOfPositions].col = newCol;
+                legalPositionData->numberOfPositions++;
+            }
         }
     }
 
@@ -125,13 +145,16 @@ void Pawn::SetLegalPositions(Board *board)
 
     if (newRow >= 0 && newRow < BOARD_SIZE && newCol >= 0 && newCol < BOARD_SIZE)
     {
-        tempPiece = board->GetSquare(newRow, newCol)->GetPiece();
-        
-        if (tempPiece != nullptr && tempPiece->GetIsWhite() != isWhite)
+        if(!(kingInCheck && king->CheckIfAttackPathContainsPosition(newRow, newCol)))
         {
-            legalPositionData->legalPositions[legalPositionData->numberOfPositions].row = newRow;
-            legalPositionData->legalPositions[legalPositionData->numberOfPositions].col = newCol;
-            legalPositionData->numberOfPositions++;
+            tempPiece = board->GetSquare(newRow, newCol)->GetPiece();
+            
+            if (tempPiece != nullptr && tempPiece->GetIsWhite() != isWhite)
+            {
+                legalPositionData->legalPositions[legalPositionData->numberOfPositions].row = newRow;
+                legalPositionData->legalPositions[legalPositionData->numberOfPositions].col = newCol;
+                legalPositionData->numberOfPositions++;
+            }
         }
     }
 
@@ -143,16 +166,19 @@ void Pawn::SetLegalPositions(Board *board)
 
     if (newRow >= 0 && newRow < BOARD_SIZE && newCol >= 0 && newCol < BOARD_SIZE)
     {
-        tempPiece = board->GetSquare(newRow, newCol)->GetPiece();
-
-        if (tempPiece != nullptr && tempPiece->GetIsWhite() != isWhite && tempPiece->GetPieceType() == PieceType::Pawn)
+        if(!(kingInCheck && king->CheckIfAttackPathContainsPosition(newRow, newCol)))
         {
-            Pawn *opponentPawn = (Pawn *)tempPiece;
-            if(opponentPawn->GetHasMovedTwoSteps())
+            tempPiece = board->GetSquare(newRow, newCol)->GetPiece();
+
+            if (tempPiece != nullptr && tempPiece->GetIsWhite() != isWhite && tempPiece->GetPieceType() == PieceType::Pawn)
             {
-                legalPositionData->legalPositions[legalPositionData->numberOfPositions].row = newRow + direction;
-                legalPositionData->legalPositions[legalPositionData->numberOfPositions].col = newCol;
-                legalPositionData->numberOfPositions++;
+                Pawn *opponentPawn = (Pawn *)tempPiece;
+                if(opponentPawn->GetHasMovedTwoSteps())
+                {
+                    legalPositionData->legalPositions[legalPositionData->numberOfPositions].row = newRow + direction;
+                    legalPositionData->legalPositions[legalPositionData->numberOfPositions].col = newCol;
+                    legalPositionData->numberOfPositions++;
+                }
             }
         }
     }
@@ -163,16 +189,19 @@ void Pawn::SetLegalPositions(Board *board)
 
     if (newRow >= 0 && newRow < BOARD_SIZE && newCol >= 0 && newCol < BOARD_SIZE)
     {
-        tempPiece = board->GetSquare(newRow, newCol)->GetPiece();
-
-        if (tempPiece != nullptr && tempPiece->GetIsWhite() != isWhite && tempPiece->GetPieceType() == PieceType::Pawn)
+        if(!(kingInCheck && king->CheckIfAttackPathContainsPosition(newRow, newCol)))
         {
-            Pawn *opponentPawn = (Pawn *)tempPiece;
-            if(opponentPawn->GetHasMovedTwoSteps())
+            tempPiece = board->GetSquare(newRow, newCol)->GetPiece();
+
+            if (tempPiece != nullptr && tempPiece->GetIsWhite() != isWhite && tempPiece->GetPieceType() == PieceType::Pawn)
             {
-                legalPositionData->legalPositions[legalPositionData->numberOfPositions].row = newRow + direction;
-                legalPositionData->legalPositions[legalPositionData->numberOfPositions].col = newCol;
-                legalPositionData->numberOfPositions++;
+                Pawn *opponentPawn = (Pawn *)tempPiece;
+                if(opponentPawn->GetHasMovedTwoSteps())
+                {
+                    legalPositionData->legalPositions[legalPositionData->numberOfPositions].row = newRow + direction;
+                    legalPositionData->legalPositions[legalPositionData->numberOfPositions].col = newCol;
+                    legalPositionData->numberOfPositions++;
+                }
             }
         }
     }
