@@ -409,7 +409,7 @@ void Board::RemovePiece(Piece *pieceToRemove)
                 {
                     whitePieces[i] = whitePieces[i + 1];
                 }
-            }
+            }   
         }
 
         if (swap)
@@ -444,8 +444,6 @@ void Board::RemovePiece(Piece *pieceToRemove)
             blackPieceCount--;
         }
     }
-
-    delete pieceToRemove;
 }
 
 bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
@@ -457,7 +455,8 @@ bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
     Position oldPosition = selectedPiece->GetPosition();
     
     Square *source = &board[oldPosition.row][oldPosition.col];
-    source->ClearPiece();
+
+    moveCountWithoutPawnMoveOrCapture++;
 
     if(destination->GetPiece() == NULL)
     {
@@ -466,6 +465,8 @@ bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
         if (selectedPiece->GetPieceType() == PieceType::Pawn)
         {
             Pawn* pawn = (Pawn*)selectedPiece;
+
+            moveCountWithoutPawnMoveOrCapture = 0;
             
             if(row - oldPosition.row == 2 || row - oldPosition.row == -2)
             {
@@ -473,63 +474,26 @@ bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
             }
 
             // En passant
-            // Check if pawn moved diagonally
-            // Check if the square in the direction of the move , in the same row, is occupied by an opponent's pawn
-            // Remove that pawn from the board
-            
             if(col - oldPosition.col == 1 || col - oldPosition.col == -1)
             {
-                int opponentRow = oldPosition.row;
-                int opponentCol = col;
+                Command* enPassantCommand = new EnPassantCommand(this, pawn, source, destination, GetSquare(row, col));
+                AddCommandToQueue(enPassantCommand);
 
-                Piece* opponentPiece = board[opponentRow][opponentCol].GetPiece();
-    
-                if(opponentPiece != NULL && opponentPiece->GetIsWhite() != selectedPiece->GetIsWhite() && opponentPiece->GetPieceType() == PieceType::Pawn)
-                {
-                    Piece* removedPiece = board[opponentRow][opponentCol].ClearPiece();
-
-                    RemovePiece(removedPiece);
-                }
-            }
-
-            // Promotion
-
-            // Check if pawn reached the last row
-            bool promotion = pawn->GetIsWhite() ? row == 7 : row == 0;
-
-            if(promotion)
-            {
-                PieceType promotionPieceType = GetPromotionPieceType();
-
-                Piece* newPiece = nullptr;
-
-                switch (promotionPieceType)
-                {
-                    case PieceType::Queen:
-                        newPiece = new Queen(pawn->GetIsWhite() ? 'Q' : 'q', pawn->GetIsWhite());
-                        break;
-                    case PieceType::Rook:
-                        newPiece = new Rook(pawn->GetIsWhite() ? 'R' : 'r', pawn->GetIsWhite());
-                        break;
-                    case PieceType::Bishop:
-                        newPiece = new Bishop(pawn->GetIsWhite() ? 'B' : 'b', pawn->GetIsWhite());
-                        break;
-                    case PieceType::Knight:
-                        newPiece = new Knight(pawn->GetIsWhite() ? 'N' : 'n', pawn->GetIsWhite());
-                        break;
-                    default:
-                        cout << "Invalid promotion piece type!" << endl;
-                        return false;
-                }
-
-                RemovePiece(pawn);
-                AddPiece(newPiece, row, col);
-
-                moveCountWithoutPawnMoveOrCapture = 0;
                 return true;
             }
 
-            moveCountWithoutPawnMoveOrCapture = 0;
+            // Promotion
+            // Check if pawn reached the last row
+            bool promotion = pawn->GetIsWhite() ? row == 7 : row == 0;
+            if(promotion)
+            {
+                PieceType pieceTypeToPromoteTo = GetPromotionPieceType();
+
+                Command* promoteCommand = new PromoteCommand(this, pieceTypeToPromoteTo, pawn);
+                AddCommandToQueue(promoteCommand);
+
+                return true;
+            }
         }
         else if(selectedPiece->GetPieceType() == PieceType::King)
         {
@@ -564,15 +528,10 @@ bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
 
                             Square* rookSource = &board[rook->GetPosition().row][rook->GetPosition().col];
 
-                            // Clear the rook's square
-                            rookSource->ClearPiece();
+                            Command* castlingCommand = new CastleCommand(this, king, (Rook*)rook, source, kingDestination, rookSource, rookDestination);
+                            AddCommandToQueue(castlingCommand);
 
-                            kingDestination->SetPiece(king);
-                            rookDestination->SetPiece(rook);
-
-                            rook->SetPieceMoved();
-
-                            break;
+                            return true;
                         }
                         else
                         {
@@ -582,31 +541,21 @@ bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
                     }
                 }
             }
-
-            moveCountWithoutPawnMoveOrCapture++;
         }
-        else
-            moveCountWithoutPawnMoveOrCapture++;
 
-        if(!isCastling)
-        {
-            Command* moveCommand = new MoveCommand(selectedPiece, source, destination);
-            AddCommandToQueue(moveCommand);
-        }
+        Command* moveCommand = new MoveCommand(this, selectedPiece, source, destination);
+        AddCommandToQueue(moveCommand);
     }
     else
     {
-        // Take over -> Black takes white and vice versa
-        Piece* removedPiece = destination->ClearPiece();
+        Command* removePieceCommand = new RemovePieceCommand(this, destination);
+        AddCommandToQueue(removePieceCommand);
 
-        destination->SetPiece(selectedPiece);
-    
-        RemovePiece(removedPiece);
+        Command* movePieceCommand = new MoveCommand(this, selectedPiece, source, destination);
+        AddCommandToQueue(movePieceCommand);
 
         moveCountWithoutPawnMoveOrCapture = 0;
     }
-
-    selectedPiece->SetPieceMoved();
 
     return true;
 }
@@ -637,11 +586,6 @@ bool Board::CheckIfAnyLegalMovesAvailable(bool isWhite)
     }
 
     return false;
-}
-
-Square *Board::SelectSquare(int row, int col)
-{
-    return &board[row][col];
 }
 
 #pragma region Board State

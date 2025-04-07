@@ -139,7 +139,7 @@ class Board
         void TrackBoardState(const string &boardState);
 
         Square* GetSquare(int row, int col) { return &board[row][col]; };
-        Square *SelectSquare(int, int);
+        Square *SelectSquare(int row, int col) { return &board[row][col]; };
 
         void AddPiece(Piece*, int, int);
         void AddPiece(char, int, int);
@@ -191,6 +191,7 @@ class Piece
 
         void SetPosition(int, int);
         void SetPieceMoved() { moveCount++; };
+        void UndoPieceMoved() { if(moveCount > 0) moveCount--; };
         void PrintPiece();
         char GetPieceChar() { return piece; };
 
@@ -305,8 +306,13 @@ class Pawn: public Piece
 
 class Command
 {
+    protected:
+        Board* board;
     public:
-        Command() {};
+        Command(Board *board) 
+        {
+            this->board = board;
+        };
         virtual ~Command() {};
 
         virtual bool Execute() = 0;
@@ -321,7 +327,7 @@ class AddPieceCommand : public Command
         Square* squareToAddAt;
 
     public:
-        AddPieceCommand(PieceType pieceType, bool isWhite, Square* squareToAddAt)
+        AddPieceCommand(Board *board, PieceType pieceType, bool isWhite, Square* squareToAddAt) : Command(board)
         {
             this->pieceType = pieceType;
             this->isWhite = isWhite;
@@ -329,8 +335,8 @@ class AddPieceCommand : public Command
         }
         ~AddPieceCommand() {};
 
-        bool Execute(Board*);
-        bool Undo(Board*);
+        bool Execute();
+        bool Undo();
 };
 
 class RemovePieceCommand : public Command
@@ -340,7 +346,7 @@ class RemovePieceCommand : public Command
         Square* squareToRemoveFrom;
 
     public:
-        RemovePieceCommand(Square* squareToRemoveFrom)
+        RemovePieceCommand(Board* board, Square* squareToRemoveFrom) : Command(board)
         {
             this->squareToRemoveFrom = squareToRemoveFrom;
         }
@@ -358,7 +364,7 @@ class MoveCommand : public Command
         Square* destinationSquare;
 
     public:
-        MoveCommand(Piece* piece, Square* sourceSquare, Square* destinationSquare)
+        MoveCommand(Board* board, Piece* piece, Square* sourceSquare, Square* destinationSquare) : Command(board)
         {
             this->piece = piece;
             this->sourceSquare = sourceSquare;
@@ -377,7 +383,7 @@ class CaptureCommand : public Command
         Piece* capturedPiece;
 
     public:
-        CaptureCommand(Piece* attackingPiece, Piece* capturedPiece)
+        CaptureCommand(Board *board, Piece* attackingPiece, Piece* capturedPiece) : Command(board)
         {
             this->attackingPiece = attackingPiece;
             this->capturedPiece = capturedPiece;
@@ -391,14 +397,14 @@ class CaptureCommand : public Command
 class PromoteCommand : public Command
 {
     private:
-        PieceType typeToPromoteTo;
+        PieceType pieceType;
         Piece* pawnToPromote;
         Piece* promotedPiece;
 
     public:
-        PromoteCommand(PieceType typeToPromoteTo, Piece* pawnToPromote)
+        PromoteCommand(Board *board, PieceType pieceType, Piece* pawnToPromote) : Command(board)
         {
-            this->typeToPromoteTo = typeToPromoteTo;
+            this->pieceType = pieceType;
             this->pawnToPromote = pawnToPromote;
         }
         ~PromoteCommand() {};
@@ -419,7 +425,7 @@ class CastleCommand : public Command
         Square* rookDestination;
 
     public:
-        CastleCommand(King *king, Rook *rook, Square* kingSource, Square *kingDestination, Square* rookSource, Square* rookDestination)
+        CastleCommand(Board *board, King *king, Rook *rook, Square* kingSource, Square *kingDestination, Square* rookSource, Square* rookDestination) : Command(board)
         {
             this->king = king;
             this->rook = rook;
@@ -438,13 +444,20 @@ class EnPassantCommand : public Command
 {
     private:
         Pawn* pawn;
-        Pawn* pawnToCapture;
+        Piece* capturedPawn;
         Square* sourceSquare;
         Square* destinationSquare;
         Square* capturingSquare;
 
     public:
-        EnPassantCommand() {};
+        EnPassantCommand(Board *board, Pawn* pawn, Square* source, Square* destination, Square* captureSquare) : Command(board)
+        {
+            this->pawn = pawn;
+            this->capturedPawn = nullptr;
+            this->sourceSquare = source;
+            this->destinationSquare = destination;
+            this->capturingSquare = captureSquare;
+        };
         ~EnPassantCommand() {};
 
         bool Execute();

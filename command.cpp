@@ -1,6 +1,6 @@
 #include "header.h"
 
-bool AddPieceCommand::Execute(Board* board)
+bool AddPieceCommand::Execute()
 {
     Position position = squareToAddAt->GetPosition();
 
@@ -32,7 +32,7 @@ bool AddPieceCommand::Execute(Board* board)
     return true;
 }
 
-bool AddPieceCommand::Undo(Board* board)
+bool AddPieceCommand::Undo()
 {
     squareToAddAt->ClearPiece();
     return true;
@@ -56,6 +56,8 @@ bool MoveCommand::Execute()
 
     destinationSquare->SetPiece(piece);
 
+    piece->SetPieceMoved();
+
     return true;
 }
 
@@ -64,6 +66,110 @@ bool MoveCommand::Undo()
     destinationSquare->ClearPiece();
 
     sourceSquare->SetPiece(piece);
+
+    piece->UndoPieceMoved();
+
+    return true;
+}
+
+bool EnPassantCommand::Execute()
+{
+    Piece* opponentPiece = capturingSquare->GetPiece();
+
+    if(opponentPiece != NULL && opponentPiece->GetIsWhite() != pawn->GetIsWhite() && opponentPiece->GetPieceType() == PieceType::Pawn)
+    {
+        capturedPawn = capturingSquare->ClearPiece();
+
+        board->RemovePiece(capturedPawn);
+
+        sourceSquare->ClearPiece();
+
+        destinationSquare->SetPiece(pawn);
+
+        pawn->SetPieceMoved();
+    }
+
+    return true;
+}
+
+bool EnPassantCommand::Undo()
+{
+    board->AddPiece(capturedPawn, capturingSquare->GetPosition().row, capturingSquare->GetPosition().col);
+
+    destinationSquare->ClearPiece();
+
+    sourceSquare->SetPiece(pawn);
+
+    pawn->UndoPieceMoved();
+
+    return true;
+}
+
+bool PromoteCommand::Execute()
+{
+    switch (pieceType)
+    {
+        case PieceType::Queen:
+            promotedPiece = new Queen(pawnToPromote->GetIsWhite() ? 'Q' : 'q', pawnToPromote->GetIsWhite());
+            break;
+        case PieceType::Rook:
+            promotedPiece = new Rook(pawnToPromote->GetIsWhite() ? 'R' : 'r', pawnToPromote->GetIsWhite());
+            break;
+        case PieceType::Bishop:
+            promotedPiece = new Bishop(pawnToPromote->GetIsWhite() ? 'B' : 'b', pawnToPromote->GetIsWhite());
+            break;
+        case PieceType::Knight:
+            promotedPiece = new Knight(pawnToPromote->GetIsWhite() ? 'N' : 'n', pawnToPromote->GetIsWhite());
+            break;
+        default:
+            cout << "Invalid promotion piece type!" << endl;
+            return false;
+    }
+
+    board->RemovePiece(pawnToPromote);
+
+    board->AddPiece(promotedPiece, pawnToPromote->GetPosition().row, pawnToPromote->GetPosition().col);
+
+    promotedPiece->SetPieceMoved();
+
+    return true;
+}
+
+bool PromoteCommand::Undo()
+{
+    board->RemovePiece(promotedPiece);
+
+    board->AddPiece(pawnToPromote, pawnToPromote->GetPosition().row, pawnToPromote->GetPosition().col);
+
+    promotedPiece->UndoPieceMoved();
+
+    return true;
+}
+
+bool CastleCommand::Execute()
+{
+    kingSource->ClearPiece();
+    rookSource->ClearPiece();
+
+    kingDestination->SetPiece(king);
+    rookDestination->SetPiece(rook);
+
+    king->SetPieceMoved();
+    rook->SetPieceMoved();
+
+    return true;
+}
+
+bool CastleCommand::Undo()
+{
+    kingDestination->ClearPiece();
+    rookDestination->ClearPiece();
+
+    kingSource->SetPiece(king);
+    rookSource->SetPiece(rook);
+
+    king->UndoPieceMoved();
+    rook->UndoPieceMoved();
 
     return true;
 }
