@@ -72,6 +72,30 @@ bool MoveCommand::Undo()
     return true;
 }
 
+bool CaptureCommand::Execute()
+{
+    capturedPiece = sourceSquare->ClearPiece();
+
+    sourceSquare->ClearPiece();
+    
+    destinationSquare->SetPiece(attackingPiece);
+
+    attackingPiece->SetPieceMoved();
+
+    return true;
+}
+
+bool CaptureCommand::Undo()
+{
+    destinationSquare->SetPiece(capturedPiece);
+
+    sourceSquare->SetPiece(attackingPiece);
+
+    attackingPiece->UndoPieceMoved();
+
+    return true;
+}
+
 bool EnPassantCommand::Execute()
 {
     Piece* opponentPiece = capturingSquare->GetPiece();

@@ -448,20 +448,15 @@ void Board::RemovePiece(Piece *pieceToRemove)
 
 bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
 {
-    // Check if destination square is occupied
-
-    Square *destination = &board[row][col];
-
     Position oldPosition = selectedPiece->GetPosition();
-    
+
     Square *source = &board[oldPosition.row][oldPosition.col];
+    Square *destination = &board[row][col];
 
     moveCountWithoutPawnMoveOrCapture++;
 
     if(destination->GetPiece() == NULL)
     {
-        bool isCastling = false;
-
         if (selectedPiece->GetPieceType() == PieceType::Pawn)
         {
             Pawn* pawn = (Pawn*)selectedPiece;
@@ -506,8 +501,6 @@ bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
                 // Castling
                 // loop until the end and rook is found in the direction of the move
 
-                isCastling = true;
-
                 for(int i = isLongCastling ? col - 1 : col + 1; isLongCastling ? i >= 0 : i < BOARD_SIZE; isLongCastling ? i-- : i++)
                 {
                     Piece* rook = board[king->GetPosition().row][i].GetPiece();
@@ -548,11 +541,8 @@ bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
     }
     else
     {
-        Command* removePieceCommand = new RemovePieceCommand(this, destination);
-        AddCommandToQueue(removePieceCommand);
-
-        Command* movePieceCommand = new MoveCommand(this, selectedPiece, source, destination);
-        AddCommandToQueue(movePieceCommand);
+        Command* captureCommand = new CaptureCommand(this, selectedPiece, source, destination);
+        AddCommandToQueue(captureCommand);
 
         moveCountWithoutPawnMoveOrCapture = 0;
     }

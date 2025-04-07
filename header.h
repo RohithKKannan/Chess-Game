@@ -381,12 +381,15 @@ class CaptureCommand : public Command
     private:
         Piece* attackingPiece;
         Piece* capturedPiece;
+        Square* sourceSquare;
+        Square* destinationSquare;
 
     public:
-        CaptureCommand(Board *board, Piece* attackingPiece, Piece* capturedPiece) : Command(board)
+        CaptureCommand(Board *board, Piece* attackingPiece, Square* sourceSquare, Square* destinationSquare) : Command(board)
         {
             this->attackingPiece = attackingPiece;
-            this->capturedPiece = capturedPiece;
+            this->sourceSquare = sourceSquare;
+            this->destinationSquare = destinationSquare;
         }
         ~CaptureCommand() {};
 
