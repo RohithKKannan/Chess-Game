@@ -1,4 +1,5 @@
-#include "header.h"
+#include "queen.h"
+#include "../Utils/utilities.h"
 
 Queen::Queen(char piece, bool isWhite) : Piece(piece, isWhite)
 {

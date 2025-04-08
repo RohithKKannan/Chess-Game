@@ -1,4 +1,5 @@
-#include "header.h"
+#include "rook.h"
+#include "../Utils/utilities.h"
 
 Rook::Rook(char piece, bool isWhite) : Piece(piece, isWhite)
 {

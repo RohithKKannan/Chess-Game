@@ -1,23 +1,30 @@
-#include "header.h"
+#include <iostream>
+
+#include "square.h"
+#include "../Core/core.h"
+#include "../Pieces/piece.h"
 
 Square::Square()
 {
     this->isMarked = false;
     this->piece = nullptr;
 
-    position.row = -1;
-    position.col = -1;
+    position = new Position();
+
+    position->row = -1;
+    position->col = -1;
 }
 
 Square::~Square()
 {
-
+    if(position != nullptr)
+        delete position;
 }
 
 void Square::SetPosition(int row, int col)
 {
-    this->position.row = row;
-    this->position.col = col;
+    this->position->row = row;
+    this->position->col = col;
 }
 
 void Square::MarkSquare()
@@ -42,7 +49,7 @@ void Square::SetPiece(Piece *piece)
 {
     this->piece = piece;
 
-    piece->SetPosition(this->position.row, this->position.col);
+    piece->SetPosition(this->position->row, this->position->col);
 }
 
 void Square::PrintSquare()
@@ -55,9 +62,9 @@ void Square::PrintSquare()
     
     if(isMarked)
     {
-        cout << "x";
+        std::cout << "x";
         return;
     }
 
-    cout << " ";
+    std::cout << " ";
 }

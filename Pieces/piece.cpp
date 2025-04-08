@@ -1,4 +1,7 @@
-#include "header.h"
+#include <iostream>
+
+#include "piece.h"
+#include "../Board/square.h"
 
 Piece::Piece(char piece, bool isWhite)
 {
@@ -25,7 +28,7 @@ Piece::~Piece()
 
 void Piece::PrintPiece()
 {
-    cout << this->piece;
+    std::cout << this->piece;
 }
 
 bool Piece::CheckIfPositionInLegalPositionsWithoutKing(int row, int col)
@@ -57,12 +60,12 @@ void Piece::ResetPieceInfo()
 
 bool Piece::CheckIfAttackPathContainsPosition(int row, int col)
 {
-    Position position;
+    Position* position;
 
     for (int i = 0; i < attackPathSquareCount; i++)
     {
         position = attackPath[i]->GetPosition();
-        if (position.row == row && position.col == col)
+        if (position->row == row && position->col == col)
             return true;
     }
 

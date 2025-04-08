@@ -1,4 +1,6 @@
-#include "header.h"
+#include "knight.h"
+#include "../Board/square.h"
+#include "../Board/board.h"
 
 Knight::Knight(char piece, bool isWhite) : Piece(piece, isWhite)
 {

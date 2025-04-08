@@ -1,4 +1,5 @@
-#include "header.h"
+#include "bishop.h"
+#include "../Utils/utilities.h"
 
 Bishop::Bishop(char piece, bool isWhite) : Piece(piece, isWhite)
 {

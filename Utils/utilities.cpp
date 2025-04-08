@@ -1,4 +1,16 @@
-#include "header.h"
+#include <iostream>
+#include <tuple>
+#include <ctype.h>
+#include <string>
+#include <sstream>
+
+#include "utilities.h"
+#include "../Board/square.h"
+#include "../Board/board.h"
+#include "../Pieces/king.h"
+#include "../Pieces/pawn.h"
+
+using namespace std;
 
 std::tuple<PieceType, bool> GetPieceTypeAndIsWhiteForChar(char pieceChar)
 {
@@ -49,6 +61,8 @@ char GetCharForPiece(Piece *piece)
         return isWhite ? 'R' : 'r';
     case PieceType::Pawn:
         return isWhite ? 'P' : 'p';
+    case PieceType::None:
+        break;
     }
 
     return '-';
@@ -64,8 +78,10 @@ string GetCodeForSquare(int row, int col)
     return oss.str();
 }
 
-string GetCodeForPiece(Piece *piece)
+string GetCodeForPiece(Piece* piece)
 {
+    // std::cout << typeid(piece).name() << std::endl;
+
     std::ostringstream oss;
 
     char pieceChar = GetCharForPiece(piece);
@@ -180,7 +196,7 @@ bool ProcessAttackInDirection(Board* board, Piece* piece, int rowDir, int colDir
 
         // cout << "Checking square at " << newRow << " " << newCol << endl;
 
-        currentSquare = board->SelectSquare(newRow,newCol);
+        currentSquare = board->GetSquare(newRow,newCol);
         tempPiece = currentSquare->GetPiece();
 
         if (tempPiece != nullptr)
@@ -226,7 +242,7 @@ bool ProcessAttackInDirection(Board* board, Piece* piece, int rowDir, int colDir
                     }
                     // Add attacking piece to attack path
                     // cout << "Adding current square " << row << " " << col << endl;
-                    firstPiece->AddSquareToAttackPath(board->SelectSquare(row, col));
+                    firstPiece->AddSquareToAttackPath(board->GetSquare(row, col));
                     break;
                 }
             }

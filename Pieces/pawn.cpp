@@ -1,4 +1,6 @@
-#include "header.h"
+#include "pawn.h"
+#include "../Board/square.h"
+#include "../Board/board.h"
 
 Pawn::Pawn(char piece, bool isWhite) : Piece(piece, isWhite)
 {
@@ -97,7 +99,8 @@ void Pawn::SetLegalPositions(Board *board)
 
     if (newRow >= 0 && newRow < BOARD_SIZE && newCol >= 0 && newCol < BOARD_SIZE)
     {
-        if(!(kingInCheck && king->CheckIfAttackPathContainsPosition(newRow, newCol)))
+        bool positionInAttackPath = king->CheckIfAttackPathContainsPosition(newRow, newCol);
+        if ((kingInCheck && positionInAttackPath) || !kingInCheck)
         {
             tempPiece = board->GetSquare(newRow, newCol)->GetPiece();
 
@@ -136,7 +139,8 @@ void Pawn::SetLegalPositions(Board *board)
 
     if (newRow >= 0 && newRow < BOARD_SIZE && newCol >= 0 && newCol < BOARD_SIZE)
     {
-        if(!(kingInCheck && king->CheckIfAttackPathContainsPosition(newRow, newCol)))
+        bool positionInAttackPath = king->CheckIfAttackPathContainsPosition(newRow, newCol);
+        if ((kingInCheck && positionInAttackPath) || !kingInCheck)
         {
             tempPiece = board->GetSquare(newRow, newCol)->GetPiece();
             
@@ -154,7 +158,8 @@ void Pawn::SetLegalPositions(Board *board)
 
     if (newRow >= 0 && newRow < BOARD_SIZE && newCol >= 0 && newCol < BOARD_SIZE)
     {
-        if(!(kingInCheck && king->CheckIfAttackPathContainsPosition(newRow, newCol)))
+        bool positionInAttackPath = king->CheckIfAttackPathContainsPosition(newRow, newCol);
+        if ((kingInCheck && positionInAttackPath) || !kingInCheck)
         {
             tempPiece = board->GetSquare(newRow, newCol)->GetPiece();
             
@@ -177,7 +182,8 @@ void Pawn::SetLegalPositions(Board *board)
 
     if (newRow >= 0 && newRow < BOARD_SIZE && newCol >= 0 && newCol < BOARD_SIZE)
     {
-        if(!(kingInCheck && king->CheckIfAttackPathContainsPosition(newRow, newCol)))
+        bool positionInAttackPath = king->CheckIfAttackPathContainsPosition(newRow, newCol);
+        if ((kingInCheck && positionInAttackPath) || !kingInCheck)
         {
             tempPiece = board->GetSquare(newRow, newCol)->GetPiece();
 
@@ -204,7 +210,8 @@ void Pawn::SetLegalPositions(Board *board)
 
     if (newRow >= 0 && newRow < BOARD_SIZE && newCol >= 0 && newCol < BOARD_SIZE)
     {
-        if(!(kingInCheck && king->CheckIfAttackPathContainsPosition(newRow, newCol)))
+        bool positionInAttackPath = king->CheckIfAttackPathContainsPosition(newRow, newCol);
+        if ((kingInCheck && positionInAttackPath) || !kingInCheck)
         {
             tempPiece = board->GetSquare(newRow, newCol)->GetPiece();
 

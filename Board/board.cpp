@@ -1,4 +1,26 @@
-#include "header.h"
+#include <string>
+#include <sstream>
+#include <iostream>
+
+#include "board.h"
+#include "square.h"
+#include "../Core/core.h"
+#include "../Utils/utilities.h"
+#include "../Pieces/piece.h"
+#include "../Pieces/king.h"
+#include "../Pieces/queen.h"
+#include "../Pieces/bishop.h"
+#include "../Pieces/knight.h"
+#include "../Pieces/rook.h"
+#include "../Pieces/pawn.h"
+#include "../CommandSystem/command.h"
+#include "../CommandSystem/captureCommand.h"
+#include "../CommandSystem/castleCommand.h"
+#include "../CommandSystem/enPassantCommand.h"
+#include "../CommandSystem/moveCommand.h"
+#include "../CommandSystem/promoteCommand.h"
+
+using namespace std;
 
 Board::Board()
 {
@@ -58,7 +80,7 @@ Board::~Board()
 
 void Board::SetupBoard()
 {
-    string initialBoardState = "RA1 RH1 rA8 rH8 KE1 kE8 QD1 qD8 BC1 BF1 bC8 bF8 NB1 NG1 nB8 nG8 PA2 pA7 PB2 pB7 PC2 pC7 PD2 pD7 PE2 pE7 PF2 pF7 PG2 pG7 PH2 pH7";
+    std::string initialBoardState = "RA1 RH1 rA8 rH8 KE1 kE8 QD1 qD8 BC1 BF1 bC8 bF8 NB1 NG1 nB8 nG8 PA2 pA7 PB2 pB7 PC2 pC7 PD2 pD7 PE2 pE7 PF2 pF7 PG2 pG7 PH2 pH7";
 
     // string initialBoardState = "RA1 RH1 rA8 rH8 KE1 kE8";
 
@@ -340,8 +362,6 @@ void Board::AddPiece(char pieceChar, int row, int col)
         return;
     }
 
-    Piece *piece = nullptr;
-
     switch (pieceType)
     {
     case PieceType::King:
@@ -594,6 +614,7 @@ string Board::GetBoardState()
 
             if(piece != nullptr)
             {
+                // std::cout << typeid(piece).name() << std::endl;
                 oss << GetCodeForPiece(piece) << " ";
             }
         
@@ -611,6 +632,11 @@ void Board::TrackBoardState(const string &boardState)
 {
     // cout << boardState << endl;
     positionCount[boardState]++;
+}
+
+Square *Board::GetSquare(int row, int col)
+{
+    return (&board[row][col]);
 }
 
 #pragma endregion

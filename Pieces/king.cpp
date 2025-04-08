@@ -1,4 +1,6 @@
-#include "header.h"
+#include "king.h"
+#include "../Board/square.h"
+#include "../Board/board.h"
 
 King::King(char piece, bool isWhite) : Piece(piece, isWhite)
 {
@@ -12,7 +14,7 @@ King::~King()
 {
 }
 
-void King::PreprocessAttackInfo(Board *board)
+void King::PreprocessAttackInfo(Board*)
 {
     return;
 }
@@ -46,7 +48,7 @@ void King::SetLegalPositions(Board *board)
 
         if (newRow >= 0 && newRow < BOARD_SIZE && newCol >= 0 && newCol < BOARD_SIZE)
         {
-            pieceAtPosition = board->SelectSquare(newRow, newCol)->GetPiece();
+            pieceAtPosition = board->GetSquare(newRow, newCol)->GetPiece();
 
             if (pieceAtPosition == nullptr || pieceAtPosition->GetIsWhite() != isWhite)
             {
@@ -80,11 +82,11 @@ void King::SetLegalPositions(Board *board)
 
     for(int i = col - 1; i >= 0; i--)
     {
-        Piece *piece = board->SelectSquare(row, i)->GetPiece();
+        Piece *piece = board->GetSquare(row, i)->GetPiece();
 
         if(piece != nullptr)
         {
-            if(piece->GetPieceType() == PieceType::Rook && (piece->GetIsWhite() == isWhite) && !piece->GetMoveCount() > 0)
+            if(piece->GetPieceType() == PieceType::Rook && (piece->GetIsWhite() == isWhite) && !(piece->GetMoveCount() > 0))
             {
                 rookPosition.row = row;
                 rookPosition.col = i;
@@ -98,7 +100,7 @@ void King::SetLegalPositions(Board *board)
 
     if(rookFound)
     {
-        rook = board->SelectSquare(rookPosition.row, rookPosition.col)->GetPiece();
+        rook = board->GetSquare(rookPosition.row, rookPosition.col)->GetPiece();
 
         if(rook->GetMoveCount() == 0)
         {
@@ -139,11 +141,11 @@ void King::SetLegalPositions(Board *board)
 
     for(int i = col + 1; i < BOARD_SIZE; i++)
     {
-        Piece *piece = board->SelectSquare(row, i)->GetPiece();
+        Piece *piece = board->GetSquare(row, i)->GetPiece();
 
         if(piece != nullptr)
         {
-            if(piece->GetPieceType() == PieceType::Rook && !piece->GetMoveCount() > 0)
+            if(piece->GetPieceType() == PieceType::Rook && !(piece->GetMoveCount() > 0))
             {
                 rookPosition.row = row;
                 rookPosition.col = i;
@@ -157,7 +159,7 @@ void King::SetLegalPositions(Board *board)
 
     if(rookFound)
     {
-        rook = board->SelectSquare(rookPosition.row, rookPosition.col)->GetPiece();
+        rook = board->GetSquare(rookPosition.row, rookPosition.col)->GetPiece();
     
         if(rook->GetMoveCount() == 0)
         {
