@@ -3,7 +3,7 @@
 #include <tuple>
 #include <string>
 
-#include "Core/core.h"
+#include "../Core/core.h"
 #include "../Pieces/piece.h"
 
 class Board;

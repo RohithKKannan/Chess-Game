@@ -33,3 +33,8 @@
 
 # VS
 **/.vscode/
+
+# DevC++
+*.dev
+*.layout
+*.bak
