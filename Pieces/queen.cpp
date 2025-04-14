@@ -1,9 +1,12 @@
+#include <iostream>
+
 #include "queen.h"
 #include "../Utils/utilities.h"
 
 Queen::Queen(char piece, bool isWhite) : Piece(piece, isWhite)
 {
-	pieceImage.CreateFromPng(isWhite ? "res/Game/queen.png" : "res/Game/queen1.png");
+	if(!pieceImage.CreateFromPng(isWhite ? "res/Game/queen.png" : "res/Game/queen1.png"))
+		std::cout << "Error creating image for piece! Queen" << std::endl;
 	
     pieceType = PieceType::Queen;
 }

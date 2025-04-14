@@ -1,9 +1,12 @@
+#include <iostream>
+
 #include "rook.h"
 #include "../Utils/utilities.h"
 
 Rook::Rook(char piece, bool isWhite) : Piece(piece, isWhite)
 {
-	pieceImage.CreateFromPng(isWhite ? "res/Game/rook.png" : "res/Game/rook1.png");
+	if(!pieceImage.CreateFromPng(isWhite ? "res/Game/rook.png" : "res/Game/rook1.png"))
+		std::cout << "Error creating image for piece! Rook" << std::endl;
 	
     pieceType = PieceType::Rook;
 }

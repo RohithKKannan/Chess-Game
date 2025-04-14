@@ -8,7 +8,9 @@
 
 class Board;
 
-std::tuple<PieceType, bool> GetPieceTypeAndIsWhiteForChar(char pieceChar);
+PieceType GetPieceTypeForChar(char pieceChar);
+
+bool GetIsWhiteForChar(char pieceChar);
 
 char GetCharForPiece(Piece *piece);
 

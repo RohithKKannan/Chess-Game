@@ -1,9 +1,12 @@
+#include <iostream>
+
 #include "bishop.h"
 #include "../Utils/utilities.h"
 
 Bishop::Bishop(char piece, bool isWhite) : Piece(piece, isWhite)
 {
-	pieceImage.CreateFromPng(isWhite ? "res/Game/bishop.png" : "res/Game/bishop1.png");
+	if(!pieceImage.CreateFromPng(isWhite ? "res/Game/bishop.png" : "res/Game/bishop1.png"))
+		std::cout << "Error creating image for piece! Bishop" << std::endl;
 		
     pieceType = PieceType::Bishop;
 }

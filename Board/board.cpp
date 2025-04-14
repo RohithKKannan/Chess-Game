@@ -302,6 +302,33 @@ void Board::DisplayBoard()
 void Board::DisplayBoard(spn::Canvas* canvas)
 {
 	canvas->DrawImage(&boardImage, 0, 0);
+	
+	Piece* piece = nullptr;
+	
+	int xOffset = 10;
+	int yOffset = 10;
+	
+	int tileSize = 60;
+	int xPos, yPos;
+	
+	for(int x = 0; x < BOARD_SIZE; x++)
+	{
+		for(int y = 0; y < BOARD_SIZE; y++)
+		{	
+			xPos = y;
+			yPos = x + ((BOARD_SIZE - 1) - (2 * x));
+			
+			xPos = (xPos * tileSize) + xOffset;
+			yPos = (yPos * tileSize) + yOffset;
+			
+			piece = board[x][y].GetPiece();
+			if((piece != nullptr))
+			{
+				canvas->DrawImageChromaKeyed(&piece->pieceImage, xPos, yPos, 0, 0, 0);
+			}
+			piece = nullptr;
+		}
+	}
 }
 
 void Board::MarkPositions(LegalPositionData *legalPositionData)
@@ -361,7 +388,8 @@ void Board::AddPiece(Piece *piece, int row, int col)
 
 void Board::AddPiece(char pieceChar, int row, int col)
 {
-    auto [pieceType, isWhite] = GetPieceTypeAndIsWhiteForChar(pieceChar);
+    PieceType pieceType = GetPieceTypeForChar(pieceChar);
+    bool isWhite = GetIsWhiteForChar(pieceChar);
 
     if (pieceType == PieceType::None)
     {

@@ -1,10 +1,13 @@
+#include <iostream>
+
 #include "knight.h"
 #include "../Board/square.h"
 #include "../Board/board.h"
 
 Knight::Knight(char piece, bool isWhite) : Piece(piece, isWhite)
 {
-	pieceImage.CreateFromPng(isWhite ? "res/Game/knight.png" : "res/Game/knight1.png");
+	if(!pieceImage.CreateFromPng(isWhite ? "res/Game/knight.png" : "res/Game/knight1.png"))
+		std::cout << "Error creating image for piece! Knight" << std::endl;
 	
     pieceType = PieceType::Knight;
 }

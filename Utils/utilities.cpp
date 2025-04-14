@@ -12,36 +12,32 @@
 
 using namespace std;
 
-std::tuple<PieceType, bool> GetPieceTypeAndIsWhiteForChar(char pieceChar)
+PieceType GetPieceTypeForChar(char pieceChar)
 {
-    PieceType pieceType;
-    bool isWhite = (pieceChar >= 'A' && pieceChar <= 'Z');
-
-    switch (tolower(pieceChar))
+	PieceType pieceType;
+	
+	switch (tolower(pieceChar))
     {
     case 'k':
-        pieceType = PieceType::King;
-        break;
+    case 'K': return PieceType::King;
     case 'q':
-        pieceType = PieceType::Queen;
-        break;
+	case 'Q': return PieceType::Queen;
     case 'b':
-        pieceType = PieceType::Bishop;
-        break;
+    case 'B': return PieceType::Bishop;
     case 'n':
-        pieceType = PieceType::Knight;
-        break;
+	case 'N': return PieceType::Knight;
     case 'r':
-        pieceType = PieceType::Rook;
-        break;
+    case 'R': return PieceType::Rook;
     case 'p':
-        pieceType = PieceType::Pawn;
-        break;
+    case 'P': return PieceType::Pawn;
     default:
-        return {PieceType::None, false};
+        return PieceType::None;
     }
+}
 
-    return {pieceType, isWhite};
+bool GetIsWhiteForChar(char pieceChar)
+{
+	return (pieceChar >= 'A' && pieceChar <= 'Z');
 }
 
 char GetCharForPiece(Piece *piece)

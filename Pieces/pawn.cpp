@@ -1,9 +1,14 @@
+#include <iostream>
+
 #include "pawn.h"
 #include "../Board/square.h"
 #include "../Board/board.h"
 
 Pawn::Pawn(char piece, bool isWhite) : Piece(piece, isWhite)
 {
+	if(!pieceImage.CreateFromPng(isWhite ? "res/Game/pawn.png" : "res/Game/pawn1.png"))
+		std::cout << "Error creating image for piece! Pawn" << std::endl;
+	
     pieceType = PieceType::Pawn;
 
     canMoveTwoSteps = false;
