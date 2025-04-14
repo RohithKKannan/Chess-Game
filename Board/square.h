@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../Libraries/Spinach/spinach/core/spn_core.h"
+
 class Position;
 class Piece;
 

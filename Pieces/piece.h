@@ -2,6 +2,8 @@
 
 #include "../Core/core.h"
 
+#include "../Libraries/Spinach/spinach/core/spn_core.h"
+
 class Position;
 class LegalPositionData;
 class Square;
@@ -29,6 +31,8 @@ class Piece
     public:
         Piece(char, bool);
         virtual ~Piece();
+        
+        spn::Image pieceImage;
 
         void SetPosition(int, int);
         void SetPieceMoved() { moveCount++; };

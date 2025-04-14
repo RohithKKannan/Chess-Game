@@ -222,6 +222,22 @@ bool GameManager::InitiateTurn()
     return true;
 }
 
+void GameManager::InitGame()
+{
+	board = new Board();
+	board->SetupBoard();
+}
+
+void GameManager::Update(spn::Canvas* canvas)
+{
+	board->DisplayBoard(canvas);
+}
+
+void GameManager::ProcessInput(const SDL_Event* sdl_event)
+{
+	
+}
+
 Square *GameManager::SelectSquareFromInput()
 {
     string input;

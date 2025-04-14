@@ -3,6 +3,8 @@
 
 Bishop::Bishop(char piece, bool isWhite) : Piece(piece, isWhite)
 {
+	pieceImage.CreateFromPng(isWhite ? "res/Game/bishop.png" : "res/Game/bishop1.png");
+		
     pieceType = PieceType::Bishop;
 }
 

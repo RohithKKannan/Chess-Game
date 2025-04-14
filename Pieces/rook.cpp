@@ -3,6 +3,8 @@
 
 Rook::Rook(char piece, bool isWhite) : Piece(piece, isWhite)
 {
+	pieceImage.CreateFromPng(isWhite ? "res/Game/rook.png" : "res/Game/rook1.png");
+	
     pieceType = PieceType::Rook;
 }
 

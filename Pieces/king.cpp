@@ -4,6 +4,8 @@
 
 King::King(char piece, bool isWhite) : Piece(piece, isWhite)
 {
+	pieceImage.CreateFromPng(isWhite ? "res/Game/king.png" : "res/Game/king1.png");
+	
     pieceType = PieceType::King;
 
     isShortCastlingPossible = false;

@@ -5,7 +5,7 @@
 #include "../Pieces/piece.h"
 
 Square::Square()
-{
+{	    
     this->isMarked = false;
     this->piece = nullptr;
 

@@ -4,6 +4,8 @@
 
 Knight::Knight(char piece, bool isWhite) : Piece(piece, isWhite)
 {
+	pieceImage.CreateFromPng(isWhite ? "res/Game/knight.png" : "res/Game/knight1.png");
+	
     pieceType = PieceType::Knight;
 }
 

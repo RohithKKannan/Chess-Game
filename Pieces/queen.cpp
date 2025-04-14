@@ -3,6 +3,8 @@
 
 Queen::Queen(char piece, bool isWhite) : Piece(piece, isWhite)
 {
+	pieceImage.CreateFromPng(isWhite ? "res/Game/queen.png" : "res/Game/queen1.png");
+	
     pieceType = PieceType::Queen;
 }
 

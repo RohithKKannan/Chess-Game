@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../Libraries/Spinach/spinach/core/spn_core.h"
+
 #include <unordered_map>
 #include <queue>
 #include <string>
@@ -47,10 +49,13 @@ class Board
     public:
         Board();
         ~Board();
+        
+        spn::Image boardImage;
 
         void SetupBoard();
         void ClearBoard();
         void DisplayBoard();
+        void DisplayBoard(spn::Canvas*);
 
         bool CheckForDraw();
         bool CheckIfPositionRepeatedThrice();

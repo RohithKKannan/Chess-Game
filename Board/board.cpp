@@ -24,6 +24,8 @@ using namespace std;
 
 Board::Board()
 {
+	boardImage.CreateCheckerImage(480,480, 60, 118, 150, 86, 238, 238, 210);
+		
     pieces = new Piece*[32];
     whitePieces = new Piece*[16];
     blackPieces = new Piece*[16];
@@ -295,6 +297,11 @@ void Board::DisplayBoard()
         cout << endl;
     }
     cout << "   A B C D E F G H" << endl << endl;
+}
+
+void Board::DisplayBoard(spn::Canvas* canvas)
+{
+	canvas->DrawImage(&boardImage, 0, 0);
 }
 
 void Board::MarkPositions(LegalPositionData *legalPositionData)
