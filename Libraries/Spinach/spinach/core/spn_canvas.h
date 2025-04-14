@@ -90,16 +90,20 @@ namespace spn
 		}
 		Canvas * Clone();
 		
-		inline void SetFont(RFont* pRFont){
+		inline void SetFont(RFont* pRFont) {
 			font = pRFont;
 		}
 
-		inline RFont* GetFont(){
+		inline RFont* GetFont() {
 			return font;
 		}
 
-		inline float GetAspectRatio(){
+		inline float GetAspectRatio() {
 			return aspectRatio;
+		}
+
+		inline void EnableAlphaBlending(bool flag) {
+			isAlphaBlendingEnabled = flag;
 		}
 
 	private:
@@ -119,57 +123,76 @@ namespace spn
 		unsigned char clearColorR;
 		unsigned char clearColorG;
 		unsigned char clearColorB;
+		bool isAlphaBlendingEnabled;
 
-		void CopyAllPixels(
-			int srcWidth,
-			int srcHeight,
-			unsigned char * srcPixels,
-			int dstXStart,
-			int dstYStart);
-
-		void CopyPixels(
-			int srcXStart,
-			int srcYStart,
-			int srcWidth,
-			int srcHeight,
+		void BitBlockTransfer(
+			unsigned char* srcPixels,
 			int srcTotalWidth,
 			int srcTotalHeight,
-			unsigned char * srcPixels,
-			int dstXStart, 
-			int dstYStart);
-
-		void CopyPixels(
-			int srcXStart,
-			int srcYStart,
-			int srcWidth,
-			int srcHeight,
-			int srcTotalWidth,
-			int srcTotalHeight,
-			unsigned char * srcPixels,
 			int dstXStart,
 			int dstYStart,
-			int chroma_r,
-			int chroma_g,
-			int chroma_b
-			);
+			int srcXStart = 0,
+			int srcYStart = 0,
+			int srcWidth = -1,
+			int srcHeight = -1,
+			int chromaR = -1,
+			int chromaG = -1,
+			int chromaB = -1,
+			int newColorR = -1,
+			int newColorG = -1,
+			int newColorB = -1
+		);
 
-		void CopyPixels(
-			int srcXStart,
-			int srcYStart,
-			int srcWidth,
-			int srcHeight,
-			int srcTotalWidth,
-			int srcTotalHeight,
-			unsigned char * srcPixels,
-			int dstXStart,
-			int dstYStart,
-			int chroma_r,
-			int chroma_g,
-			int chroma_b,
-			int textcolor_r,
-			int textcolor_g,
-			int textcolor_b
-			);
+	//	void CopyAllPixels(
+	//		int srcWidth,
+	//		int srcHeight,
+	//		unsigned char * srcPixels,
+	//		int dstXStart,
+	//		int dstYStart);
+
+	//	void CopyPixels(
+	//		int srcXStart,
+	//		int srcYStart,
+	//		int srcWidth,
+	//		int srcHeight,
+	//		int srcTotalWidth,
+	//		int srcTotalHeight,
+	//		unsigned char * srcPixels,
+	//		int dstXStart, 
+	//		int dstYStart);
+
+	//	void CopyPixels(
+	//		int srcXStart,
+	//		int srcYStart,
+	//		int srcWidth,
+	//		int srcHeight,
+	//		int srcTotalWidth,
+	//		int srcTotalHeight,
+	//		unsigned char * srcPixels,
+	//		int dstXStart,
+	//		int dstYStart,
+	//		int chroma_r,
+	//		int chroma_g,
+	//		int chroma_b
+	//		);
+
+	//	void CopyPixels(
+	//		int srcXStart,
+	//		int srcYStart,
+	//		int srcWidth,
+	//		int srcHeight,
+	//		int srcTotalWidth,
+	//		int srcTotalHeight,
+	//		unsigned char * srcPixels,
+	//		int dstXStart,
+	//		int dstYStart,
+	//		int chroma_r,
+	//		int chroma_g,
+	//		int chroma_b,
+	//		int textcolor_r,
+	//		int textcolor_g,
+	//		int textcolor_b
+	//		);
 	};
 }
 
