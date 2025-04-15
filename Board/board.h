@@ -56,6 +56,8 @@ class Board
         void ClearBoard();
         void DisplayBoard();
         void DisplayBoard(spn::Canvas*);
+        
+        Square* GetSquareAtCoords(int,int);
 
         bool CheckForDraw();
         bool CheckIfPositionRepeatedThrice();

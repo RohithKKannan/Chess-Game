@@ -21,12 +21,20 @@ enum BishopType
 
 enum GameState
 {
+	Menu,
     WhiteTurn,
     BlackTurn,
     Stalemate,
     WhiteWins,
     BlackWins,
     Draw
+};
+
+enum InputState
+{
+	Idle,
+	WaitingForSourceSelect,
+	WaitingForDestinationSelect
 };
 
 struct Position

@@ -17,6 +17,7 @@ class GameManager
         Piece *selectedPiece;
         Square *selectedSquare;
         GameState currentGameState;
+        InputState currentInputState;
 
     public:
         GameManager();
@@ -29,6 +30,17 @@ class GameManager
         void InitGame();
         void Update(spn::Canvas*);
         void ProcessInput(const SDL_Event*);
+        void ProcessMouseClick(int, int);
+        
+        void GUIStartGame();
+        void GUIInitiateTurn();
+        void GUIEndGame();
+        
+    	void SourceSelected(Square*);
+    	void PieceSelected(Piece*);
+    	void DestinationSelected(Square*);
+        
+        void SelectSquareAt(int,int);
 
         Square *SelectSquareFromInput();
         bool ParseInput(std::string *, int *, int *);

@@ -24,7 +24,7 @@ using namespace std;
 
 Board::Board()
 {
-	boardImage.CreateCheckerImage(480,480, 60, 118, 150, 86, 238, 238, 210);
+	boardImage.CreateCheckerImage(480,480, 60, 238, 238, 210, 118, 150, 86);
 		
     pieces = new Piece*[32];
     whitePieces = new Piece*[16];
@@ -311,6 +311,8 @@ void Board::DisplayBoard(spn::Canvas* canvas)
 	int tileSize = 60;
 	int xPos, yPos;
 	
+	char buffer[50];
+	
 	for(int x = 0; x < BOARD_SIZE; x++)
 	{
 		for(int y = 0; y < BOARD_SIZE; y++)
@@ -326,9 +328,50 @@ void Board::DisplayBoard(spn::Canvas* canvas)
 			{
 				canvas->DrawImageChromaKeyed(&piece->pieceImage, xPos, yPos, 0, 0, 0);
 			}
+			sprintf(buffer, "%d, %d", y, x); 
+			canvas->DrawText(buffer, xPos, yPos);
 			piece = nullptr;
 		}
 	}
+
+	/*
+	for(int x = 0; x < BOARD_SIZE; x++)
+	{
+		for(int y = 0; y < BOARD_SIZE; y++)
+		{
+			xPos = (x * tileSize) + xOffset;
+			yPos = (y * tileSize) + yOffset;
+			
+			piece = board[x][y].GetPiece();
+			
+			if(piece != nullptr)
+				canvas->DrawImageChromaKeyed(&piece->pieceImage, xPos, yPos, 0, 0, 0);
+				
+			sprintf(buffer, "%d, %d", x, y); 
+			canvas->DrawText(buffer, xPos, yPos);
+				
+			piece = nullptr;
+		}
+	}
+	*/
+}
+
+Square* Board::GetSquareAtCoords(int xCoord, int yCoord)
+{
+	cout << "Getting square at : " << xCoord << " " << yCoord << endl;
+	
+	int offset = 10;
+	int tileSize = 60;
+	
+	int xPos, yPos;
+	xPos = xCoord / tileSize;
+	
+	int screenY = yCoord / tileSize;
+	yPos = BOARD_SIZE - 1 - screenY;
+	
+	cout << "Translated to : " << xPos << " " << yPos << endl;
+	
+	return &board[yPos][xPos];
 }
 
 void Board::MarkPositions(LegalPositionData *legalPositionData)

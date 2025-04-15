@@ -10,6 +10,8 @@ using namespace std;
 
 GameManager::GameManager()
 {
+	currentGameState = WhiteTurn;
+	currentInputState = Idle;
 }
 
 GameManager::~GameManager()
@@ -226,14 +228,184 @@ void GameManager::InitGame()
 {
 	board = new Board();
 	board->SetupBoard();
+	
+	currentGameState = Menu;
 }
 
 void GameManager::Update(spn::Canvas* canvas)
 {
-	board->DisplayBoard(canvas);
+	switch(currentGameState)
+	{
+		case Menu:
+			canvas->DrawText("2D Chess Game", 100, 50);
+			canvas->DrawText("Click to Start", 100, 70);
+			break;
+		case WhiteTurn:
+		case BlackTurn: 
+			canvas->DrawText(currentGameState == WhiteTurn ? "White's Turn" : "Black's Turn", 100, 50);
+			board->DisplayBoard(canvas);
+			break;
+		case Stalemate:
+			canvas->DrawText("Stalemate! Game Over!", 100, 50);
+			break;
+		case WhiteWins:
+		case BlackWins:
+			canvas->DrawText(currentGameState == WhiteWins ? "White Wins!" : "Black Wins!", 100, 50);
+			break;
+		case Draw:
+			canvas->DrawText("It's a Draw!", 100, 50);
+	}
 }
 
-void GameManager::ProcessInput(const SDL_Event* sdl_event)
+void GameManager::ProcessInput(const SDL_Event* event)
+{
+	switch (event->type) {
+		case SDL_EVENT_MOUSE_BUTTON_UP:
+			if (event->button.button == SDL_BUTTON_LEFT) {
+//				std::cout << "left: ";
+				ProcessMouseClick(event->motion.x, event->motion.y);
+			}
+			else if (event->button.button == SDL_BUTTON_RIGHT) {
+//				std::cout << "right : ";
+			}
+//			std::cout << event->motion.x <<", " << event->motion.y << "\n";
+			return;
+		default:
+			return;
+	}
+}
+
+void GameManager::GUIStartGame()
+{
+    currentGameState = WhiteTurn;
+    
+    GUIInitiateTurn();
+}
+
+void GameManager::GUIInitiateTurn()
+{
+	board->ResetAllPieceInfo();
+
+    board->PreprocessAllPieceAttacks();
+
+    board->SetAllPieceLegalMoves();
+
+    board->TrackBoardState(board->GetBoardState());
+
+    if (board->CheckForDraw())
+    {
+    	currentGameState = GameState::Draw;
+    	return;
+	}
+	
+	switch (currentGameState)
+    {
+    case WhiteTurn:
+        if (!board->CheckIfAnyLegalMovesAvailable(currentGameState == GameState::WhiteTurn))
+        {
+            if (board->GetKing(currentGameState == GameState::WhiteTurn)->GetIsInCheck())
+            {
+                cout << "White King is in check, and there are no other moves!" << endl;
+                currentGameState = GameState::BlackWins;
+                return;
+            }
+            else
+            {
+                currentGameState = GameState::Stalemate;
+                cout << "No Legal moves available for " << (currentGameState == GameState::WhiteTurn ? "White " : "Black ") << endl;
+                return;
+            }
+        }
+
+        board->ResetPawnsTwoStepsMove(false);
+        currentGameState = GameState::BlackTurn;
+        currentInputState = WaitingForSourceSelect;
+        return;
+        
+    case BlackTurn:
+        if (!board->CheckIfAnyLegalMovesAvailable(currentGameState == GameState::WhiteTurn))
+        {
+            if (board->GetKing(currentGameState == GameState::WhiteTurn)->GetIsInCheck())
+            {
+                cout << "Black King is in check, and there are no other moves!" << endl;
+                currentGameState = GameState::WhiteWins;
+                return;
+            }
+            else
+            {
+                currentGameState = GameState::Stalemate;
+                cout << "No Legal moves available for " << (currentGameState == GameState::WhiteTurn ? "White " : "Black ") << endl;
+                return;
+            }
+        }
+
+        board->ResetPawnsTwoStepsMove(true);
+        currentGameState = GameState::WhiteTurn;
+        currentInputState = WaitingForSourceSelect;
+        return;
+    }
+}
+
+void GameManager::GUIEndGame()
+{
+	
+}
+
+void GameManager::ProcessMouseClick(int xCoord, int yCoord)
+{
+	if(currentGameState == Menu)
+		GUIStartGame();
+	else if(currentGameState == WhiteTurn || currentGameState == BlackTurn)
+		SelectSquareAt(xCoord, yCoord);
+}
+
+void GameManager::SelectSquareAt(int xCoord, int yCoord)
+{
+	Square* square = board->GetSquareAtCoords(xCoord, yCoord);
+	
+	if(currentInputState == WaitingForSourceSelect)
+	{
+		SourceSelected(square);
+	}
+	else if(currentInputState == WaitingForDestinationSelect)
+	{
+		DestinationSelected(square);
+	}
+}
+
+void GameManager::SourceSelected(Square* square)
+{
+	Piece* piece = nullptr;
+	
+	piece = square->GetPiece();
+	
+	if(piece == nullptr)
+	{
+		cout << "Selected square is empty! Select valid source";
+	}
+	else
+	{
+		if (selectedPiece->GetIsWhite() != (currentGameState == WhiteTurn))
+        {
+            cout << "Select a square that has a " << (currentGameState == WhiteTurn ? "White" : "Black") << " piece!" << endl;
+        }
+        else if (selectedPiece->GetLegalPositionData()->numberOfPositions == 0)
+        {
+            cout << "Selected piece cant move! Pick valid square!" << endl;
+        }
+        else
+        {
+        	PieceSelected(piece);
+		}
+	}
+}
+
+void GameManager::PieceSelected(Piece* piece)
+{
+	
+}
+
+void GameManager::DestinationSelected(Square* square)
 {
 	
 }
