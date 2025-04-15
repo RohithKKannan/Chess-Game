@@ -2,6 +2,7 @@
 
 #include "../Libraries/Spinach/spinach/core/spn_core.h"
 
+#include "../Core/core.h"
 #include <unordered_map>
 #include <queue>
 #include <string>
@@ -11,6 +12,7 @@ class Piece;
 class Pawn;
 class Command;
 class LegalPositionData;
+class GameManager;
 
 class Board
 {
@@ -45,9 +47,15 @@ class Board
         std::unordered_map<std::string, int> positionCount;
 
         std::queue<Command*> commandQueue;
+        
+        GameManager* gameManager;
+        
+        Piece* pawnToPromote = nullptr;
+        Square* promotionSquare = nullptr;
+        Square* promotionSourceSquare = nullptr;
 
     public:
-        Board();
+        Board(GameManager*);
         ~Board();
         
         spn::Image boardImage;
@@ -90,4 +98,6 @@ class Board
 
         void AddCommandToQueue(Command* command) { commandQueue.push(command); };
         bool ExecuteCommands();
+        
+        void PromotePawn(PieceType);
 };

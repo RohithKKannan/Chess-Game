@@ -5,6 +5,7 @@
 #include "board.h"
 #include "square.h"
 #include "../Core/core.h"
+#include "../Game/gameManager.h"
 #include "../Utils/utilities.h"
 #include "../Pieces/piece.h"
 #include "../Pieces/king.h"
@@ -22,9 +23,11 @@
 
 using namespace std;
 
-Board::Board()
+Board::Board(GameManager* gameManager)
 {
-	boardImage.CreateCheckerImage(480,480, 60, 238, 238, 210, 118, 150, 86);
+	this->gameManager = gameManager;
+	
+	boardImage.CreateCheckerImage(480, 480, 60, 238, 238, 210, 85, 107, 47);
 	overlayImage.CreateSolidColorBlockImage(42, 42, 128, 0, 0, 0.5f);
 		
     pieces = new Piece*[32];
@@ -85,9 +88,9 @@ void Board::SetupBoard()
 {
     std::string initialBoardState = "RA1 RH1 rA8 rH8 KE1 kE8 QD1 qD8 BC1 BF1 bC8 bF8 NB1 NG1 nB8 nG8 PA2 pA7 PB2 pB7 PC2 pC7 PD2 pD7 PE2 pE7 PF2 pF7 PG2 pG7 PH2 pH7";
 
-    // string initialBoardState = "RA1 RH1 rA8 rH8 KE1 kE8";
+//    string initialBoardState = "RA1 RH1 rA8 rH8 KE1 kE8";
 
-    // string initialBoardState = "PB7 pA2 rA8 KE1 kE8";
+//    string initialBoardState = "PB7 pA2 rA8 KE1 kE8";
 
     std::stringstream ss(initialBoardState);
     std::string piece;
@@ -382,7 +385,13 @@ Square* Board::GetSquareAtCoords(int xCoord, int yCoord)
 	
 	cout << "Translated to : " << xPos << " " << yPos << endl;
 	
-	return &board[yPos][xPos];
+	if (xPos >= 0 && xPos < BOARD_SIZE && yPos >= 0 && yPos < BOARD_SIZE)
+		return &board[yPos][xPos];
+	else
+	{
+		cout << "Not in range!" << endl;
+		return nullptr;
+	}
 }
 
 void Board::MarkPositions(LegalPositionData *legalPositionData)
@@ -591,10 +600,12 @@ bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
             bool promotion = pawn->GetIsWhite() ? row == 7 : row == 0;
             if(promotion)
             {
-                PieceType pieceTypeToPromoteTo = GetPromotionPieceType();
-
-                Command* promoteCommand = new PromoteCommand(this, pieceTypeToPromoteTo, pawn);
-                AddCommandToQueue(promoteCommand);
+            	pawnToPromote = pawn;
+            	promotionSquare = destination;
+            	promotionSourceSquare = source;
+                
+                // Switch gameManager input state to waiting for promotion select
+                gameManager->InitiatePromotePawn();
 
                 return true;
             }
@@ -657,6 +668,18 @@ bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
     }
 
     return true;
+}
+
+void Board::PromotePawn(PieceType pieceType)
+{
+    Command* promoteCommand = new PromoteCommand(this, pieceType, pawnToPromote, promotionSquare, promotionSourceSquare);
+    AddCommandToQueue(promoteCommand);
+    
+    pawnToPromote = nullptr;
+    promotionSquare = nullptr;
+    promotionSourceSquare = nullptr;
+    
+    gameManager->PromotionComplete();
 }
 
 bool Board::CheckIfPositionProtected(int row, int col, bool protectedByWhite)

@@ -5,6 +5,7 @@
 
 class Piece;
 class Board;
+class Square;
 
 class PromoteCommand : public Command
 {
@@ -12,12 +13,16 @@ class PromoteCommand : public Command
         PieceType pieceType;
         Piece* pawnToPromote;
         Piece* promotedPiece;
+        Square* promotionSquare;
+        Square* sourceSquare;
 
     public:
-        PromoteCommand(Board *board, PieceType pieceType, Piece* pawnToPromote) : Command(board)
+        PromoteCommand(Board *board, PieceType pieceType, Piece* pawnToPromote, Square* promotionSquare, Square* sourceSquare) : Command(board)
         {
             this->pieceType = pieceType;
             this->pawnToPromote = pawnToPromote;
+            this->promotionSquare = promotionSquare;
+            this->sourceSquare = sourceSquare;
         }
         ~PromoteCommand() {};
 

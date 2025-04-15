@@ -12,6 +12,30 @@ GameManager::GameManager()
 {
 	currentGameState = WhiteTurn;
 	currentInputState = Idle;
+
+	if(!whiteQueenImage.CreateFromPng("res/Game/queen.png"))
+		std::cout << "Error creating image for piece! W Queen" << std::endl;
+	
+	if(!blackQueenImage.CreateFromPng("res/Game/queen1.png"))
+		std::cout << "Error creating image for piece! B Queen" << std::endl;
+			
+	if(!whiteBishopImage.CreateFromPng("res/Game/bishop.png"))
+		std::cout << "Error creating image for piece! W Bishop" << std::endl;
+		
+	if(!blackBishopImage.CreateFromPng("res/Game/bishop1.png"))
+		std::cout << "Error creating image for piece! B Bishop" << std::endl;
+		
+	if(!whiteKnightImage.CreateFromPng("res/Game/knight.png"))
+		std::cout << "Error creating image for piece! W Knight" << std::endl;
+	
+	if(!blackKnightImage.CreateFromPng("res/Game/knight1.png"))
+		std::cout << "Error creating image for piece! B Knight" << std::endl;
+		
+	if(!whiteRookImage.CreateFromPng("res/Game/rook.png"))
+		std::cout << "Error creating image for piece! W Rook" << std::endl;
+	
+	if(!blackRookImage.CreateFromPng("res/Game/rook1.png"))
+		std::cout << "Error creating image for piece! B Rook" << std::endl;
 }
 
 GameManager::~GameManager()
@@ -48,7 +72,7 @@ bool GameManager::Game()
 {
     bool isRunning = true;
 
-    board = new Board();
+    board = new Board(this);
     board->SetupBoard();
 
     currentGameState = GameState::WhiteTurn;
@@ -269,7 +293,7 @@ bool GameManager::ParseInput(string *input, int *row, int *col)
 
 void GameManager::InitGame()
 {
-	board = new Board();
+	board = new Board(this);
 	board->SetupBoard();
 	
 	currentGameState = Menu;
@@ -277,34 +301,35 @@ void GameManager::InitGame()
 
 void GameManager::Update(spn::Canvas* canvas)
 {
+	canvas->Clear();
 	switch(currentGameState)
 	{
 		case Menu:
-			canvas->Clear();
 			canvas->DrawText("2D Chess Game", 100, 50);
 			canvas->DrawText("Click to Start", 100, 70);
 			break;
 		case WhiteTurn:
 		case BlackTurn: 
-			canvas->DrawText(currentGameState == WhiteTurn ? "White's Turn" : "Black's Turn", 100, 50);
+			canvas->DrawText(currentGameState == WhiteTurn ? "White's Turn" : "Black's Turn", 500, 50);
 			canvas->EnableAlphaBlending(currentInputState == WaitingForDestinationSelect);
 			board->DisplayBoard(canvas);
+			if(currentInputState == WaitingForPromotionSelect)
+				DisplayPromotionPopup(canvas);
 			break;
 		case Stalemate:
-			canvas->Clear();
 			canvas->DrawText("Stalemate! Game Over!", 100, 50);
+			canvas->DrawText("Click to play again", 100, 70);
 			break;
 		case WhiteWins:
 		case BlackWins:
-			canvas->Clear();
 			canvas->DrawText(currentGameState == WhiteWins ? "White Wins!" : "Black Wins!", 100, 50);
+			canvas->DrawText("Click to play again", 100, 70);
 			break;
 		case Draw:
-			canvas->Clear();
 			canvas->DrawText("It's a Draw!", 100, 50);
+			canvas->DrawText("Click to play again", 100, 70);
 			break;
 		case Error:
-			canvas->Clear();
 			canvas->DrawText("Error!", 100, 50);
 	}
 }
@@ -425,7 +450,16 @@ void GameManager::ProcessMouseClick(int xCoord, int yCoord)
 
 void GameManager::SelectSquareAt(int xCoord, int yCoord)
 {
+	if(currentInputState == WaitingForPromotionSelect)
+	{
+		PromotePieceSelected(xCoord, yCoord);
+		return;
+	}
+			
 	Square* square = board->GetSquareAtCoords(xCoord, yCoord);
+	
+	if(square == nullptr)
+		return;
 	
 	if(currentInputState == WaitingForSourceSelect)
 	{
@@ -519,15 +553,106 @@ void GameManager::DestinationSelected(Square* square)
 void GameManager::MoveComplete()
 {
 	if(!board->ExecuteCommands())
-	{
-		cout << "Error executing command!" << endl;
-		currentGameState = Error;
 		return;
-	}
 
     board->UnMarkPositions();
     
+    if(currentInputState == WaitingForPromotionSelect)
+    	return;
+    
     if(currentGameState == WhiteTurn)
+    {
+    	board->ResetPawnsTwoStepsMove(false);
+    	currentGameState = BlackTurn;
+	}
+	else if(currentGameState == BlackTurn)
+	{
+		board->ResetPawnsTwoStepsMove(true);
+		currentGameState = WhiteTurn;
+	}
+
+	GUIInitiateTurn();
+}
+
+void GameManager::InitiatePromotePawn()
+{
+	currentInputState = WaitingForPromotionSelect;
+}
+
+void GameManager::PromotePieceSelected(int xCoord, int yCoord)
+{
+	cout << "Promoting Piece at : " << xCoord << " " << yCoord << endl;
+	
+	int offset = 10;
+	int tileSize = 60;
+	
+	int xPos, yPos;
+	xPos = xCoord / tileSize;
+	
+	int screenY = yCoord / tileSize;
+	yPos = BOARD_SIZE - 1 - screenY;
+	
+	cout << "Translated to : " << xPos << " " << yPos << " " << endl;
+	
+	if(xPos == 8)
+	{
+		switch(yPos)
+		{
+			case 5: board->PromotePawn(PieceType::Queen); break;
+			case 4: board->PromotePawn(PieceType::Rook); break;
+			case 3: board->PromotePawn(PieceType::Bishop); break;
+			case 2: board->PromotePawn(PieceType::Knight); break;
+		}
+	}
+}
+
+void GameManager::DisplayPromotionPopup(spn::Canvas* canvas)
+{
+	canvas->DrawText("Choose a piece", 500, 70);
+	canvas->DrawText("to promote to:", 500, 90);
+	
+	bool isWhite = currentGameState == WhiteTurn;
+	
+	int xPos, yPos;
+		
+	int offset = 10;
+	
+	int tileSize = 60;
+	
+	// Queen
+	xPos = 8;
+	yPos = 2;
+	
+	xPos = (xPos * tileSize) + offset;
+	yPos = (yPos * tileSize) + offset;
+	canvas->DrawImage(isWhite ? &whiteQueenImage : &blackQueenImage, xPos, yPos);
+	
+	// Rook
+	yPos = 3;
+	
+	yPos = (yPos * tileSize) + offset;
+	canvas->DrawImage(isWhite ? &whiteRookImage : &blackRookImage, xPos, yPos);
+	
+	// Bishop
+	yPos = 4;
+	
+	yPos = (yPos * tileSize) + offset;
+	canvas->DrawImage(isWhite ? &whiteBishopImage : &blackBishopImage, xPos, yPos);
+	
+	// Knight
+	yPos = 5;
+	
+	yPos = (yPos * tileSize) + offset;
+	canvas->DrawImage(isWhite ? &whiteKnightImage : &blackKnightImage, xPos, yPos);
+}
+
+void GameManager::PromotionComplete()
+{
+	board->ExecuteCommands();
+		
+	currentInputState = Idle;
+	
+	if(currentGameState == WhiteTurn)
     {
     	board->ResetPawnsTwoStepsMove(false);
     	currentGameState = BlackTurn;

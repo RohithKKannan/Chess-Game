@@ -35,7 +35,8 @@ enum InputState
 {
 	Idle,
 	WaitingForSourceSelect,
-	WaitingForDestinationSelect
+	WaitingForDestinationSelect,
+	WaitingForPromotionSelect
 };
 
 struct Position

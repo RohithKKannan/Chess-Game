@@ -13,6 +13,8 @@ int main() {
 	
 	gm.InitGame();
 	
+	sc.SetWindowTitle("2D Chess Game");
+	
 	sc.SetUpdateAndRenderHandler(std::bind(&GameManager::Update, &gm, std::placeholders::_1));
 	
 	sc.SetInputHandler(std::bind(&GameManager::ProcessInput, &gm, std::placeholders::_1));

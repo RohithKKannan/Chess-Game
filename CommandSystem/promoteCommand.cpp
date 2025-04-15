@@ -25,10 +25,12 @@ bool PromoteCommand::Execute()
         default:
             return false;
     }
-
+    
+    sourceSquare->ClearPiece();
+    
     board->RemovePiece(pawnToPromote);
-
-    board->AddPiece(promotedPiece, pawnToPromote->GetPosition().row, pawnToPromote->GetPosition().col);
+    
+    board->AddPiece(promotedPiece, promotionSquare->GetPosition()->row, promotionSquare->GetPosition()->col);
 
     promotedPiece->SetPieceMoved();
 
