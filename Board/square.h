@@ -21,6 +21,7 @@ class Square
         
         void MarkSquare();
         void UnMarkSquare();
+        bool GetIsMarked() { return isMarked; };
         
         void SetPiece(Piece *);
         Piece* GetPiece() { return piece; };

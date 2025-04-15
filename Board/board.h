@@ -51,6 +51,7 @@ class Board
         ~Board();
         
         spn::Image boardImage;
+        spn::Image overlayImage;
 
         void SetupBoard();
         void ClearBoard();

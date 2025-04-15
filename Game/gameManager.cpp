@@ -287,6 +287,7 @@ void GameManager::Update(spn::Canvas* canvas)
 		case WhiteTurn:
 		case BlackTurn: 
 			canvas->DrawText(currentGameState == WhiteTurn ? "White's Turn" : "Black's Turn", 100, 50);
+			canvas->EnableAlphaBlending(currentInputState == WaitingForDestinationSelect);
 			board->DisplayBoard(canvas);
 			break;
 		case Stalemate:

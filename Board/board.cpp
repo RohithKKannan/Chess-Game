@@ -25,6 +25,7 @@ using namespace std;
 Board::Board()
 {
 	boardImage.CreateCheckerImage(480,480, 60, 238, 238, 210, 118, 150, 86);
+	overlayImage.CreateSolidColorBlockImage(42, 42, 128, 0, 0, 0.5f);
 		
     pieces = new Piece*[32];
     whitePieces = new Piece*[16];
@@ -307,6 +308,7 @@ void Board::DisplayBoard(spn::Canvas* canvas)
 	canvas->DrawImage(&boardImage, 0, 0);
 	
 	Piece* piece = nullptr;
+	Square* square = nullptr;
 	
 	int xOffset = 10;
 	int yOffset = 10;
@@ -326,11 +328,17 @@ void Board::DisplayBoard(spn::Canvas* canvas)
 			xPos = (xPos * tileSize) + xOffset;
 			yPos = (yPos * tileSize) + yOffset;
 			
-			piece = board[x][y].GetPiece();
+			square = &board[x][y];
+
+			piece = square->GetPiece();
 			if((piece != nullptr))
 			{
 				canvas->DrawImageChromaKeyed(&piece->pieceImage, xPos, yPos, 0, 0, 0);
 			}
+			
+			if(square->GetIsMarked())
+				canvas->DrawImage(&overlayImage, xPos, yPos);
+
 //			sprintf(buffer, "%d, %d", y, x); 
 //			canvas->DrawText(buffer, xPos, yPos);
 			piece = nullptr;
