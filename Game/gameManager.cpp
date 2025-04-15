@@ -512,9 +512,44 @@ void GameManager::PieceSelected(Piece* piece)
 	currentInputState = WaitingForDestinationSelect;
 }
 
+void GameManager::PieceDeselected()
+{
+	board->UnMarkPositions();
+	
+	selectedPiece = nullptr;
+
+	currentInputState = WaitingForSourceSelect;
+}
+
 void GameManager::DestinationSelected(Square* square)
 {
+	if(square->GetPosition()->row == selectedPiece->GetPosition().row && square->GetPosition()->col == selectedPiece->GetPosition().col)
+	{
+		PieceDeselected();
+		return;
+	}
+	
 	selectedSquare = square;
+	
+	Piece* piece = nullptr;
+	
+	piece = selectedSquare->GetPiece();
+	
+	if(piece != nullptr && selectedPiece->GetIsWhite() == piece->GetIsWhite())
+	{
+        if (piece->GetLegalPositionData()->numberOfPositions == 0)
+        {
+        	cout << "selected piece Legal move count : " << piece->GetLegalPositionData()->numberOfPositions << endl;
+            cout << "Selected piece cant move! Pick valid square!" << endl;
+            return;
+        }
+        else
+        {
+        	PieceDeselected();
+        	PieceSelected(piece);
+        	return;
+		}
+	}
 	
 	Position *positions = selectedPiece->GetLegalPositionData()->legalPositions;
 	
@@ -536,8 +571,6 @@ void GameManager::DestinationSelected(Square* square)
         return;
     }
     
-    currentInputState = Idle;
-    
     if(board->MovePieceToSquare(selectedPiece, selectedSquare->GetPosition()->row, selectedSquare->GetPosition()->col))
     {
     	MoveComplete();
@@ -545,6 +578,7 @@ void GameManager::DestinationSelected(Square* square)
     else
     {
     	cout << "Error moving piece!" << endl;
+    	currentInputState = Idle;
         currentGameState = Error;
         return;
 	}
@@ -560,18 +594,7 @@ void GameManager::MoveComplete()
     if(currentInputState == WaitingForPromotionSelect)
     	return;
     
-    if(currentGameState == WhiteTurn)
-    {
-    	board->ResetPawnsTwoStepsMove(false);
-    	currentGameState = BlackTurn;
-	}
-	else if(currentGameState == BlackTurn)
-	{
-		board->ResetPawnsTwoStepsMove(true);
-		currentGameState = WhiteTurn;
-	}
-
-	GUIInitiateTurn();
+    PrepForNextTurn();
 }
 
 void GameManager::InitiatePromotePawn()
@@ -650,6 +673,11 @@ void GameManager::PromotionComplete()
 {
 	board->ExecuteCommands();
 		
+	PrepForNextTurn();
+}
+
+void GameManager::PrepForNextTurn()
+{
 	currentInputState = Idle;
 	
 	if(currentGameState == WhiteTurn)

@@ -51,11 +51,13 @@ class GameManager
         
     	void SourceSelected(Square*);
     	void PieceSelected(Piece*);
+    	void PieceDeselected();
     	void DestinationSelected(Square*);
         
         void SelectSquareAt(int,int);
         
         void MoveComplete();
+        void PrepForNextTurn();
         
         void InitiatePromotePawn();
         void PromotePieceSelected(int, int);
