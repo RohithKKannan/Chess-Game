@@ -88,5 +88,5 @@ class Board
         void ResetPawnsTwoStepsMove(bool isWhite);
 
         void AddCommandToQueue(Command* command) { commandQueue.push(command); };
-        void ExecuteCommands();
+        bool ExecuteCommands();
 };

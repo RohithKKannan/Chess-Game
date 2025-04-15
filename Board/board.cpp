@@ -178,7 +178,7 @@ void Board::ResetPawnsTwoStepsMove(bool isWhite)
     }
 }
 
-void Board::ExecuteCommands()
+bool Board::ExecuteCommands()
 {
     Command* command;
 
@@ -186,10 +186,13 @@ void Board::ExecuteCommands()
     {
         command = commandQueue.front();
 
-        command->Execute();
+        if(!command->Execute())
+        	return false;
 
         commandQueue.pop();
     }
+    
+    return true;
 }
 
 void Board::PreprocessAllPieceAttacks()
@@ -569,7 +572,7 @@ bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
             // En passant
             if(col - oldPosition.col == 1 || col - oldPosition.col == -1)
             {
-                Command* enPassantCommand = new EnPassantCommand(this, pawn, source, destination, GetSquare(row, col));
+                Command* enPassantCommand = new EnPassantCommand(this, pawn, source, destination, GetSquare(oldPosition.row, col));
                 AddCommandToQueue(enPassantCommand);
 
                 return true;

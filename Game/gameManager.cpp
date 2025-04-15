@@ -280,6 +280,7 @@ void GameManager::Update(spn::Canvas* canvas)
 	switch(currentGameState)
 	{
 		case Menu:
+			canvas->Clear();
 			canvas->DrawText("2D Chess Game", 100, 50);
 			canvas->DrawText("Click to Start", 100, 70);
 			break;
@@ -289,16 +290,20 @@ void GameManager::Update(spn::Canvas* canvas)
 			board->DisplayBoard(canvas);
 			break;
 		case Stalemate:
+			canvas->Clear();
 			canvas->DrawText("Stalemate! Game Over!", 100, 50);
 			break;
 		case WhiteWins:
 		case BlackWins:
+			canvas->Clear();
 			canvas->DrawText(currentGameState == WhiteWins ? "White Wins!" : "Black Wins!", 100, 50);
 			break;
 		case Draw:
+			canvas->Clear();
 			canvas->DrawText("It's a Draw!", 100, 50);
 			break;
 		case Error:
+			canvas->Clear();
 			canvas->DrawText("Error!", 100, 50);
 	}
 }
@@ -402,7 +407,9 @@ void GameManager::GUIInitiateTurn()
 
 void GameManager::GUIEndGame()
 {
+	delete board;
 	
+	InitGame();
 }
 
 void GameManager::ProcessMouseClick(int xCoord, int yCoord)
@@ -411,6 +418,8 @@ void GameManager::ProcessMouseClick(int xCoord, int yCoord)
 		GUIStartGame();
 	else if(currentGameState == WhiteTurn || currentGameState == BlackTurn)
 		SelectSquareAt(xCoord, yCoord);
+	else
+		GUIEndGame();
 }
 
 void GameManager::SelectSquareAt(int xCoord, int yCoord)
@@ -494,21 +503,26 @@ void GameManager::DestinationSelected(Square* square)
     
     currentInputState = Idle;
     
-    if(!board->MovePieceToSquare(selectedPiece, selectedSquare->GetPosition()->row, selectedSquare->GetPosition()->col))
+    if(board->MovePieceToSquare(selectedPiece, selectedSquare->GetPosition()->row, selectedSquare->GetPosition()->col))
     {
-        cout << "Error moving piece!" << endl;
-        currentGameState = Error;
-        return;
+    	MoveComplete();
     }
     else
     {
-    	MoveComplete();
+    	cout << "Error moving piece!" << endl;
+        currentGameState = Error;
+        return;
 	}
 }
 
 void GameManager::MoveComplete()
 {
-	board->ExecuteCommands();
+	if(!board->ExecuteCommands())
+	{
+		cout << "Error executing command!" << endl;
+		currentGameState = Error;
+		return;
+	}
 
     board->UnMarkPositions();
     

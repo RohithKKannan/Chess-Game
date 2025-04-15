@@ -18,9 +18,11 @@ bool EnPassantCommand::Execute()
         destinationSquare->SetPiece(pawn);
 
         pawn->SetPieceMoved();
-    }
-
-    return true;
+        
+		return true;
+	}
+	else
+		return false;
 }
 
 bool EnPassantCommand::Undo()

@@ -101,6 +101,12 @@ void Pawn::SetLegalPositions(Board *board)
     canMoveTwoSteps = false;
 
     Piece *tempPiece;
+    
+    if (GetIsPinned() && !CheckIfAttackPathContainsPosition(newRow, newCol))
+    {
+//    	cout << "Pinned piece and Square " << GetCodeForSquare(newRow, newCol) << " not in attack path" << endl;
+        return;
+    }
 
     if (newRow >= 0 && newRow < BOARD_SIZE && newCol >= 0 && newCol < BOARD_SIZE)
     {
