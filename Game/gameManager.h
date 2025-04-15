@@ -26,6 +26,9 @@ class GameManager
         void StartGame();
         bool Game();
         bool InitiateTurn();
+
+        Square *SelectSquareFromInput();
+        bool ParseInput(std::string *, int *, int *);
         
         void InitGame();
         void Update(spn::Canvas*);
@@ -41,7 +44,6 @@ class GameManager
     	void DestinationSelected(Square*);
         
         void SelectSquareAt(int,int);
-
-        Square *SelectSquareFromInput();
-        bool ParseInput(std::string *, int *, int *);
+        
+        void MoveComplete();
 };

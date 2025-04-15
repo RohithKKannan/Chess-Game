@@ -27,7 +27,8 @@ enum GameState
     Stalemate,
     WhiteWins,
     BlackWins,
-    Draw
+    Draw,
+    Error
 };
 
 enum InputState

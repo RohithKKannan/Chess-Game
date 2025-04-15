@@ -311,7 +311,7 @@ void Board::DisplayBoard(spn::Canvas* canvas)
 	int tileSize = 60;
 	int xPos, yPos;
 	
-	char buffer[50];
+//	char buffer[50];
 	
 	for(int x = 0; x < BOARD_SIZE; x++)
 	{
@@ -328,8 +328,8 @@ void Board::DisplayBoard(spn::Canvas* canvas)
 			{
 				canvas->DrawImageChromaKeyed(&piece->pieceImage, xPos, yPos, 0, 0, 0);
 			}
-			sprintf(buffer, "%d, %d", y, x); 
-			canvas->DrawText(buffer, xPos, yPos);
+//			sprintf(buffer, "%d, %d", y, x); 
+//			canvas->DrawText(buffer, xPos, yPos);
 			piece = nullptr;
 		}
 	}
