@@ -31,8 +31,6 @@ class Piece
     public:
         Piece(char, bool);
         virtual ~Piece();
-        
-        spn::Image pieceImage;
 
         void SetPosition(int, int);
         void SetPieceMoved() { moveCount++; };

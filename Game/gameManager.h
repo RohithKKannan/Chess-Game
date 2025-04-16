@@ -18,16 +18,6 @@ class GameManager
         Square *selectedSquare;
         GameState currentGameState;
         InputState currentInputState;
-        
-        spn::Image whiteQueenImage;
-        spn::Image whiteBishopImage;
-        spn::Image whiteKnightImage;
-        spn::Image whiteRookImage;
-        
-        spn::Image blackQueenImage;
-        spn::Image blackBishopImage;
-        spn::Image blackKnightImage;
-        spn::Image blackRookImage;
 
     public:
         GameManager();

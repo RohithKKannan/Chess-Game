@@ -5,6 +5,7 @@
 #include "../Board/square.h"
 #include "../Board/board.h"
 #include "../Pieces/piece.h"
+#include "../Utils/utilities.h"
 
 using namespace std;
 
@@ -12,30 +13,6 @@ GameManager::GameManager()
 {
 	currentGameState = WhiteTurn;
 	currentInputState = Idle;
-
-	if(!whiteQueenImage.CreateFromPng("res/Game/queen.png"))
-		std::cout << "Error creating image for piece! W Queen" << std::endl;
-	
-	if(!blackQueenImage.CreateFromPng("res/Game/queen1.png"))
-		std::cout << "Error creating image for piece! B Queen" << std::endl;
-			
-	if(!whiteBishopImage.CreateFromPng("res/Game/bishop.png"))
-		std::cout << "Error creating image for piece! W Bishop" << std::endl;
-		
-	if(!blackBishopImage.CreateFromPng("res/Game/bishop1.png"))
-		std::cout << "Error creating image for piece! B Bishop" << std::endl;
-		
-	if(!whiteKnightImage.CreateFromPng("res/Game/knight.png"))
-		std::cout << "Error creating image for piece! W Knight" << std::endl;
-	
-	if(!blackKnightImage.CreateFromPng("res/Game/knight1.png"))
-		std::cout << "Error creating image for piece! B Knight" << std::endl;
-		
-	if(!whiteRookImage.CreateFromPng("res/Game/rook.png"))
-		std::cout << "Error creating image for piece! W Rook" << std::endl;
-	
-	if(!blackRookImage.CreateFromPng("res/Game/rook1.png"))
-		std::cout << "Error creating image for piece! B Rook" << std::endl;
 }
 
 GameManager::~GameManager()
@@ -641,31 +618,37 @@ void GameManager::DisplayPromotionPopup(spn::Canvas* canvas)
 	
 	int tileSize = 60;
 	
+	spn::Image* pieceImage = nullptr;
+	
 	// Queen
 	xPos = 8;
 	yPos = 2;
 	
 	xPos = (xPos * tileSize) + offset;
 	yPos = (yPos * tileSize) + offset;
-	canvas->DrawImage(isWhite ? &whiteQueenImage : &blackQueenImage, xPos, yPos);
+	pieceImage = Utilities::GetInstance().GetImageForPiece(PieceType::Queen, isWhite);
+	canvas->DrawImage(pieceImage, xPos, yPos);
 	
 	// Rook
 	yPos = 3;
 	
 	yPos = (yPos * tileSize) + offset;
-	canvas->DrawImage(isWhite ? &whiteRookImage : &blackRookImage, xPos, yPos);
+	pieceImage = Utilities::GetInstance().GetImageForPiece(PieceType::Rook, isWhite);
+	canvas->DrawImage(pieceImage, xPos, yPos);
 	
 	// Bishop
 	yPos = 4;
 	
 	yPos = (yPos * tileSize) + offset;
-	canvas->DrawImage(isWhite ? &whiteBishopImage : &blackBishopImage, xPos, yPos);
+	pieceImage = Utilities::GetInstance().GetImageForPiece(PieceType::Bishop, isWhite);
+	canvas->DrawImage(pieceImage, xPos, yPos);
 	
 	// Knight
 	yPos = 5;
 	
 	yPos = (yPos * tileSize) + offset;
-	canvas->DrawImage(isWhite ? &whiteKnightImage : &blackKnightImage, xPos, yPos);
+	pieceImage = Utilities::GetInstance().GetImageForPiece(PieceType::Knight, isWhite);
+	canvas->DrawImage(pieceImage, xPos, yPos);
 }
 
 void GameManager::PromotionComplete()

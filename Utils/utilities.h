@@ -8,6 +8,38 @@
 
 class Board;
 
+// Singleton class
+class Utilities
+{
+	private:
+		Utilities();
+		
+    	spn::Image whiteKingImage;
+        spn::Image whiteQueenImage;
+        spn::Image whiteBishopImage;
+        spn::Image whiteKnightImage;
+        spn::Image whiteRookImage;
+        spn::Image whitePawnImage;
+        
+        spn::Image blackKingImage;
+        spn::Image blackQueenImage;
+        spn::Image blackBishopImage;
+        spn::Image blackKnightImage;
+        spn::Image blackRookImage;
+        spn::Image blackPawnImage;
+        
+    public:
+    	static Utilities& GetInstance()
+    	{
+    		static Utilities instance;
+    		return instance;
+		}
+		
+		void InitializePieceImages();
+    	
+    	spn::Image* GetImageForPiece(PieceType, bool);
+};
+
 PieceType GetPieceTypeForChar(char pieceChar);
 
 bool GetIsWhiteForChar(char pieceChar);

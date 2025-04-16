@@ -12,6 +12,71 @@
 
 using namespace std;
 
+Utilities::Utilities()
+{
+	
+}
+
+void Utilities::InitializePieceImages()
+{
+	cout << "Initialize Piece Images called" << endl;
+	
+	if(!whiteKingImage.CreateFromPng("res/Game/king.png"))
+		std::cout << "Error creating image for piece! W King" << std::endl;
+	
+	if(!blackKingImage.CreateFromPng("res/Game/king1.png"))
+		std::cout << "Error creating image for piece! B King" << std::endl;
+	
+	if(!whiteQueenImage.CreateFromPng("res/Game/queen.png"))
+		std::cout << "Error creating image for piece! W Queen" << std::endl;
+	
+	if(!blackQueenImage.CreateFromPng("res/Game/queen1.png"))
+		std::cout << "Error creating image for piece! B Queen" << std::endl;
+			
+	if(!whiteBishopImage.CreateFromPng("res/Game/bishop.png"))
+		std::cout << "Error creating image for piece! W Bishop" << std::endl;
+		
+	if(!blackBishopImage.CreateFromPng("res/Game/bishop1.png"))
+		std::cout << "Error creating image for piece! B Bishop" << std::endl;
+		
+	if(!whiteKnightImage.CreateFromPng("res/Game/knight.png"))
+		std::cout << "Error creating image for piece! W Knight" << std::endl;
+	
+	if(!blackKnightImage.CreateFromPng("res/Game/knight1.png"))
+		std::cout << "Error creating image for piece! B Knight" << std::endl;
+		
+	if(!whiteRookImage.CreateFromPng("res/Game/rook.png"))
+		std::cout << "Error creating image for piece! W Rook" << std::endl;
+	
+	if(!blackRookImage.CreateFromPng("res/Game/rook1.png"))
+		std::cout << "Error creating image for piece! B Rook" << std::endl;
+		
+	if(!whitePawnImage.CreateFromPng("res/Game/pawn.png"))
+		std::cout << "Error creating image for piece! W Pawn" << std::endl;
+	
+	if(!blackPawnImage.CreateFromPng("res/Game/pawn1.png"))
+		std::cout << "Error creating image for piece! B Pawn" << std::endl;
+}
+
+spn::Image* Utilities::GetImageForPiece(PieceType pieceType, bool isWhite)
+{
+	switch(pieceType)
+	{
+		case PieceType::King :
+			return (isWhite ? &whiteKingImage : &blackKingImage);
+		case PieceType::Queen :
+			return (isWhite ? &whiteQueenImage : &blackQueenImage);
+		case PieceType::Bishop :
+			return (isWhite ? &whiteBishopImage : &blackBishopImage);
+		case PieceType::Knight :
+			return (isWhite ? &whiteKnightImage : &blackKnightImage);
+		case PieceType::Rook :
+			return (isWhite ? &whiteRookImage : &blackRookImage);
+		case PieceType::Pawn :
+			return (isWhite ? &whitePawnImage : &blackPawnImage);
+	}
+}
+
 PieceType GetPieceTypeForChar(char pieceChar)
 {
 	PieceType pieceType;

@@ -6,9 +6,6 @@
 
 Knight::Knight(char piece, bool isWhite) : Piece(piece, isWhite)
 {
-	if(!pieceImage.CreateFromPng(isWhite ? "res/Game/knight.png" : "res/Game/knight1.png"))
-		std::cout << "Error creating image for piece! Knight" << std::endl;
-	
     pieceType = PieceType::Knight;
 }
 

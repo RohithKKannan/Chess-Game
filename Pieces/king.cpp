@@ -6,9 +6,6 @@
 
 King::King(char piece, bool isWhite) : Piece(piece, isWhite)
 {
-	if(!pieceImage.CreateFromPng(isWhite ? "res/Game/king.png" : "res/Game/king1.png"))
-		std::cout << "Error creating image for piece! King" << std::endl;
-	
     pieceType = PieceType::King;
 
     isShortCastlingPossible = false;

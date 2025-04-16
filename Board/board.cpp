@@ -313,6 +313,8 @@ void Board::DisplayBoard(spn::Canvas* canvas)
 	Piece* piece = nullptr;
 	Square* square = nullptr;
 	
+	spn::Image* pieceImage = nullptr;
+	
 	int xOffset = 10;
 	int yOffset = 10;
 	
@@ -338,7 +340,8 @@ void Board::DisplayBoard(spn::Canvas* canvas)
 			piece = square->GetPiece();
 			if((piece != nullptr))
 			{
-				canvas->DrawImage(&piece->pieceImage, xPos, yPos);
+				pieceImage = Utilities::GetInstance().GetImageForPiece(piece->GetPieceType(), piece->GetIsWhite());
+				canvas->DrawImage(pieceImage, xPos, yPos);
 			}
 			
 			if(square->GetIsMarked())

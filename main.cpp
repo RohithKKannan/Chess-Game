@@ -1,6 +1,7 @@
 #include <functional>
 #include "Libraries/Spinach/spinach/core/spn_core.h"
 #include "Game/gameManager.h"
+#include "Utils/utilities.h"
 
 int main() {
 	spn::SpinachCore sc(640, 480);
@@ -8,6 +9,8 @@ int main() {
 	if (sc.IsInitFailed()){
 		return -1;
 	}
+	
+	Utilities::GetInstance().InitializePieceImages();
 	
 	GameManager gm;
 	
