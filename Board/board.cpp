@@ -574,6 +574,21 @@ bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
             {
                 Command* enPassantCommand = new EnPassantCommand(this, pawn, source, destination, GetSquare(oldPosition.row, col));
                 AddCommandToQueue(enPassantCommand);
+                
+                // Promotion after enPassant - not possible in classic chess
+	            // Check if pawn reached the last row
+	            bool promotion = pawn->GetIsWhite() ? row == 7 : row == 0;
+	            if(promotion)
+	            {
+	            	pawnToPromote = pawn;
+	            	promotionSquare = destination;
+	            	promotionSourceSquare = source;
+	                
+	                // Switch gameManager input state to waiting for promotion select
+	                gameManager->InitiatePromotePawn();
+	
+	                return true;
+	            }
 
                 return true;
             }
@@ -583,6 +598,9 @@ bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
             bool promotion = pawn->GetIsWhite() ? row == 7 : row == 0;
             if(promotion)
             {
+            	Command* moveCommand = new MoveCommand(this, selectedPiece, source, destination);
+        		AddCommandToQueue(moveCommand);
+        
             	pawnToPromote = pawn;
             	promotionSquare = destination;
             	promotionSourceSquare = source;
@@ -646,8 +664,26 @@ bool Board::MovePieceToSquare(Piece *selectedPiece, int row, int col)
     {
         Command* captureCommand = new CaptureCommand(this, selectedPiece, source, destination);
         AddCommandToQueue(captureCommand);
-
+        
         moveCountWithoutPawnMoveOrCapture = 0;
+
+		if(selectedPiece->GetPieceType() == PieceType::Pawn)
+		{
+			// Promotion
+            // Check if pawn reached the last row
+            bool promotion = selectedPiece->GetIsWhite() ? row == 7 : row == 0;
+            if(promotion)
+            {
+            	pawnToPromote = selectedPiece;
+            	promotionSquare = destination;
+            	promotionSourceSquare = source;
+                
+                // Switch gameManager input state to waiting for promotion select
+                gameManager->InitiatePromotePawn();
+
+                return true;
+            }
+		}
     }
 
     return true;
