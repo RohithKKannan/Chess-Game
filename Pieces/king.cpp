@@ -47,10 +47,24 @@ void King::SetLegalPositions(Board *board)
     {
         int newRow = row + directions[i][0];
         int newCol = col + directions[i][1];
-
-        if (board->CheckIfPositionProtected(newRow, newCol, !isWhite) || CheckIfAttackPathContainsPosition(newRow, newCol))
+        
+        if (board->CheckIfPositionProtected(newRow, newCol, !isWhite))
             continue;
-
+           
+		// King shouldnt go to empty attack Path, but can go to square that has opponent piece
+        if(CheckIfAttackPathContainsPosition(newRow, newCol))
+		{
+			Piece* piece = nullptr;
+			piece = board->GetSquare(newRow, newCol)->GetPiece();
+			
+			// If square is in attack path and does NOT have opponent piece then ignore
+			if(!(piece != nullptr && piece->GetIsWhite() != isWhite))
+			{
+				continue;		
+			}
+			// If it does have opponent piece - Add square to legal positions
+		}
+			
         if (newRow >= 0 && newRow < BOARD_SIZE && newCol >= 0 && newCol < BOARD_SIZE)
         {
             pieceAtPosition = board->GetSquare(newRow, newCol)->GetPiece();

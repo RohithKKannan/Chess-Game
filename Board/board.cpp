@@ -27,7 +27,7 @@ Board::Board(GameManager* gameManager)
 {
 	this->gameManager = gameManager;
 	
-	boardImage.CreateCheckerImage(480, 480, 60, 238, 238, 210, 85, 107, 47);
+	boardImage.CreateCheckerImage(480, 480, 60, 238, 238, 210, 118, 150, 86);
 	overlayImage.CreateSolidColorBlockImage(42, 42, 128, 0, 0, 0.5f);
 		
     pieces = new Piece*[32];
