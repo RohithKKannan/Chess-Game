@@ -320,6 +320,8 @@ void Board::DisplayBoard(spn::Canvas* canvas)
 	int xPos, yPos;
 	
 //	char buffer[50];
+
+	canvas->EnableAlphaBlending(true);
 	
 	for(int x = 0; x < BOARD_SIZE; x++)
 	{
@@ -336,7 +338,7 @@ void Board::DisplayBoard(spn::Canvas* canvas)
 			piece = square->GetPiece();
 			if((piece != nullptr))
 			{
-				canvas->DrawImageChromaKeyed(&piece->pieceImage, xPos, yPos, 0, 0, 0);
+				canvas->DrawImage(&piece->pieceImage, xPos, yPos);
 			}
 			
 			if(square->GetIsMarked())
@@ -347,27 +349,8 @@ void Board::DisplayBoard(spn::Canvas* canvas)
 			piece = nullptr;
 		}
 	}
-
-	/*
-	for(int x = 0; x < BOARD_SIZE; x++)
-	{
-		for(int y = 0; y < BOARD_SIZE; y++)
-		{
-			xPos = (x * tileSize) + xOffset;
-			yPos = (y * tileSize) + yOffset;
-			
-			piece = board[x][y].GetPiece();
-			
-			if(piece != nullptr)
-				canvas->DrawImageChromaKeyed(&piece->pieceImage, xPos, yPos, 0, 0, 0);
-				
-			sprintf(buffer, "%d, %d", x, y); 
-			canvas->DrawText(buffer, xPos, yPos);
-				
-			piece = nullptr;
-		}
-	}
-	*/
+	
+	canvas->EnableAlphaBlending(false);
 }
 
 Square* Board::GetSquareAtCoords(int xCoord, int yCoord)

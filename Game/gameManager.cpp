@@ -311,7 +311,6 @@ void GameManager::Update(spn::Canvas* canvas)
 		case WhiteTurn:
 		case BlackTurn: 
 			canvas->DrawText(currentGameState == WhiteTurn ? "White's Turn" : "Black's Turn", 500, 50);
-			canvas->EnableAlphaBlending(currentInputState == WaitingForDestinationSelect);
 			board->DisplayBoard(canvas);
 			if(currentInputState == WaitingForPromotionSelect)
 				DisplayPromotionPopup(canvas);
