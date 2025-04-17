@@ -19,3 +19,9 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+This software links to the following components which are not licensed under
+the above license text. For details on the specific licenses please refer 
+to the provided links.
+
+Libraries/Spinach: https://github.com/mmj-the-fighter/Spinach/blob/main/LICENSE
