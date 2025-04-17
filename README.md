@@ -1,5 +1,7 @@
 # Chess Game
 
+![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)
+
 A two-player chess game built in C++ using object-oriented programming principles and pointers.
 Initially developed as a command-line application, the game now features a fully functional GUI using the [Spinach](https://github.com/mmj-the-fighter/Spinach) framework (SDL-based).
 
