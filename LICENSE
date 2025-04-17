@@ -20,8 +20,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-This software links to the following components which are not licensed under
-the above license text. For details on the specific licenses please refer 
-to the provided links.
+This software uses the following component, which is developed by a 
+different author. For more information about its license, please refer to the 
+link below.
 
 Libraries/Spinach: https://github.com/mmj-the-fighter/Spinach/blob/main/LICENSE

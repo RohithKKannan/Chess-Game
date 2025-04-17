@@ -75,6 +75,8 @@ spn::Image* Utilities::GetImageForPiece(PieceType pieceType, bool isWhite)
 		case PieceType::Pawn :
 			return (isWhite ? &whitePawnImage : &blackPawnImage);
 	}
+	
+	return nullptr;
 }
 
 PieceType GetPieceTypeForChar(char pieceChar)
@@ -201,8 +203,8 @@ void GetCastlingPositions(int &rookRow, int &rookCol, int &kingRow, int &kingCol
 PieceType GetPromotionPieceType()
 {
     char pieceChar;
-
-    while(pieceChar != 'Q' && pieceChar != 'R' && pieceChar != 'B' && pieceChar != 'N')
+    
+    do
     {
         cout << "Enter the piece type to promote to (Q/R/B/N): ";
         cin >> pieceChar;
@@ -221,7 +223,7 @@ PieceType GetPromotionPieceType()
                 cout << "Invalid piece type! Please enter a valid piece type (Q/R/B/N): ";
                 break;
         }
-    }
+    } while (pieceChar != 'Q' && pieceChar != 'R' && pieceChar != 'B' && pieceChar != 'N');
 
     return PieceType::None;
 }

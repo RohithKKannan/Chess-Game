@@ -14,13 +14,12 @@ Initially developed as a command-line application, the game now features a fully
 
 ### Future Features
 
-- Move history UI to review previous moves.
-- Move piece animations.
 - A review system to browse previous board positions.
+- Move piece animations.
 
 ### Credits
 
-- GUI Framework: [Spinach](https://github.com/mmj-the-fighter/Spinach) by [@mmj-the-fighter](https://github.com/mmj-the-fighter).
+- Graphics Framework: [Spinach](https://github.com/mmj-the-fighter/Spinach) by [@mmj-the-fighter](https://github.com/mmj-the-fighter).
 - Chess Piece Art: [Pixel Chess Pieces](https://opengameart.org/content/pixel-chess-pieces)
 
 ### Demo

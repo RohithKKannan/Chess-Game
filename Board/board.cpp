@@ -492,7 +492,7 @@ void Board::RemovePiece(Piece *pieceToRemove)
 
     if (swap)
     {
-        pieces[pieceCount] = nullptr;
+        pieces[pieceCount - 1] = nullptr;
         pieceCount--;
     }
 
@@ -518,7 +518,7 @@ void Board::RemovePiece(Piece *pieceToRemove)
 
         if (swap)
         {
-            whitePieces[whitePieceCount] = nullptr;
+            whitePieces[whitePieceCount - 1] = nullptr;
             whitePieceCount--;
         }
     }
@@ -544,7 +544,7 @@ void Board::RemovePiece(Piece *pieceToRemove)
 
         if (swap)
         {
-            blackPieces[blackPieceCount] = nullptr;
+            blackPieces[blackPieceCount - 1] = nullptr;
             blackPieceCount--;
         }
     }
